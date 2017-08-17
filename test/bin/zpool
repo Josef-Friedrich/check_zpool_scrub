@@ -22,6 +22,42 @@ errors: No known data errors'
 		exit 0
 		;;
 
+
+#   pool: data
+#  state: ONLINE
+#   scan: scrub in progress since Sun Aug 13 00:24:02 2017
+#     7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
+#     0 repaired, 72,38% done
+# config:
+#
+# 	NAME                                          STATE     READ WRITE CKSUM
+# 	data                                          ONLINE       0     0     0
+# 	  raidz1-0                                    ONLINE       0     0     0
+# 	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4EHYCFSFV  ONLINE       0     0     0
+# 	    ata-WDC_WD30EZRX-00DC0B0_WD-WMC1T1621747  ONLINE       0     0     0
+# 	    ata-WDC_WD30EZRX-22D8PB0_WD-WCC4N4YR59K5  ONLINE       0     0     0
+# 	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4ENSLVC17  ONLINE       0     0     0
+#
+# errors: No known data errors
+
+
+#   pool: data
+#  state: ONLINE
+#   scan: scrub repaired 0 in 266h29m with 0 errors on Tue Aug 15 01:12:31 2017
+# config:
+#
+# 	NAME                                     STATE     READ WRITE CKSUM
+# 	data                                     ONLINE       0     0     0
+# 	  raidz1-0                               ONLINE       0     0     0
+# 	    ata-TOSHIBA_MD04ACA400_9614KMR9FSAA  ONLINE       0     0     0
+# 	    ata-TOSHIBA_MD04ACA400_86T2K4B3FSAA  ONLINE       0     0     0
+# 	    ata-TOSHIBA_MD04ACA400_86AIKA2QFSAA  ONLINE       0     0     0
+# 	    ata-TOSHIBA_MD04ACA400_86AIKA2PFSAA  ONLINE       0     0     0
+#
+# errors: No known data errors
+
+
+
 	'history')
 		echo '\
 2017-07-08.23:48:32 zpool import -c /etc/zfs/zpool.cache -aN
