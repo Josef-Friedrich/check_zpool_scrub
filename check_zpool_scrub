@@ -1,0 +1,143 @@
+#! /bin/sh
+
+PREFIX=/sbin/
+
+# MIT License
+#
+# Copyright (c) 2016 Josef Friedrich <josef@friedrich.rocks>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# Exit codes
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+
+_usage() {
+	echo "check_zfs_scrub
+Copyright (c) 2016 Josef Friedrich <josef@friedrich.rocks>
+
+Checks how long ago the last ZFS scrub was performed.
+
+
+Usage: check_zfs_scrub <options>
+
+Options:
+  -c INTERVAL_CRITICAL
+    Interval in seconds for critical state.
+  -p POOL
+    Name of the pool
+  -h
+    Show this help.
+  -w INTERVAL_WARNING
+    Interval in seconds for warning state. Must be lower than -c".
+}
+
+while getopts ":c:hp:w:" OPT; do
+	case $OPT in
+
+		c)
+			INTERVAL_CRITICAL=$OPTARG
+			;;
+
+		h)
+			_usage
+			exit 0
+			;;
+
+		p)
+			POOL="$OPTARG"
+			;;
+
+		w)
+			INTERVAL_WARNING=$OPTARG
+			;;
+
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			exit 1
+			;;
+
+		:)
+			echo "Option -$OPTARG requires an argument." >&2
+			exit 1
+			;;
+
+	esac
+done
+
+if [ -z "$INTERVAL_WARNING" ]; then
+	# 1 month 60*60*24*31
+	INTERVAL_WARNING=2678400
+fi
+
+if [ -z "$INTERVAL_CRITICAL" ]; then
+	# 3 day
+	# 2 month 60*60*24*31*2
+	INTERVAL_CRITICAL=5356800
+fi
+
+if ! ${PREFIX}zpool status $POOL > /dev/null 2>&1; then
+	echo "'$POOL' is no zfs pool!"
+	_usage
+	exit 3
+fi
+
+NOW=$(date +%s)
+
+LAST_SCRUB=$(${PREFIX}zpool history | \
+	grep "zpool scrub $POOL" | \
+	grep -v 'zpool scrub -s' | \
+	tail -n 1 | \
+	awk '{print $1}')
+
+LAST_SCRUB=$(date '+%s' --date="$(echo $LAST_SCRUB | tr '.' ' ')")
+
+DIFF=$((NOW - LAST_SCRUB))
+
+if [ "$INTERVAL_WARNING" -gt "$INTERVAL_CRITICAL" ]; then
+	echo "<warntime> must be smaller than <crittime>"
+	_usage
+	exit 3
+fi
+
+RETURN=STATE_UNKNOWN
+
+if [ "$DIFF" -gt "$INTERVAL_CRITICAL" ]; then
+	RETURN=$STATE_CRITICAL
+	MESSAGE="CRITICAL:"
+elif [ "$DIFF" -gt "$INTERVAL_WARNING" ]; then
+	RETURN=$STATE_WARNING
+	MESSAGE="WARNING:"
+else
+	RETURN=$STATE_OK
+	MESSAGE="OK:"
+fi
+
+DATE=$(date -d @$LAST_SCRUB +"%Y-%m-%dT%H:%M:%SZ")
+
+if [ -n "$POOL" ]; then
+	POOL="'$POOL' "
+fi
+
+echo "$MESSAGE last scrub on ${POOL}have been performed on $DATE"
+
+exit $RETURN
