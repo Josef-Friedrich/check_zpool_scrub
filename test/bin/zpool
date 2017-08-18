@@ -59,13 +59,11 @@ errors: No known data errors'
 
 
 	'history')
-		echo '\
-2017-07-08.23:48:32 zpool import -c /etc/zfs/zpool.cache -aN
+		echo '2017-07-08.23:48:32 zpool import -c /etc/zfs/zpool.cache -aN
 2017-07-09.00:00:05 zfs snapshot -r data@20170709T000000
 2017-07-09.00:24:08 zpool scrub data
 2017-07-09.11:28:22 zpool import -c /etc/zfs/zpool.cache -aN
 2017-07-09.12:58:08 zpool scrub -s data
-
 2017-07-19.21:51:49 zpool import -c /etc/zfs/zpool.cache -aN
 2017-07-19.21:55:04 zfs snapshot -o com.sun:auto-snapshot-desc=- -r data@zfs-auto-snap_hourly-2017-07-19-1954'
 		exit 0

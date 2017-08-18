@@ -49,6 +49,20 @@ Options:
     Interval in seconds for warning state. Must be lower than -c".
 }
 
+_last_scrub_date() {
+	zpool history | \
+		grep "zpool scrub $1" | \
+		grep -v 'zpool scrub -s' | \
+		tail -n 1 | \
+		awk '{print $1}'
+}
+
+_date_to_timestamp() {
+	date +%s --date="$(echo $1 | tr '.' ' ')"
+}
+
+## This SEPARATOR is required for test purposes. Please don’t remove! ##
+
 while getopts ":c:hp:w:" OPT; do
 	case $OPT in
 

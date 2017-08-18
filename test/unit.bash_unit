@@ -1,0 +1,11 @@
+#! /bin/sh
+
+setup() {
+	. ./lib/test-helper.sh
+	mock_path bin
+	source_exec ../check_zpool_scrub
+}
+
+test_function_last_scrub_date() {
+	_last_scrub_date data
+}
