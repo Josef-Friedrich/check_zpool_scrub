@@ -1,0 +1,19 @@
+---
+name: check_zpool_scrub
+description: "file:///README.md"
+url: "https://github.com/JosefFriedrich-shell/check_zpool_scrub
+tags: zpool
+vendor: Linux
+target: Operating System
+type: Plugin
+license: mit
+releases:
+  -
+    name: 1.0
+    description: "1.0 Release"
+    files:
+      -
+        name: check_zpool_scrub
+        url: "file:///check_zpool_scrub"
+        description: "First release"
+        checksum: 525839193dcffe6da1b48c7efe1da93f
