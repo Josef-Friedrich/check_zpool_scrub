@@ -11,20 +11,37 @@ setup() {
 	[ "${lines[0]}" = 'check_zfs_scrub' ]
 }
 
-@test "run ./check_zpool_scrub -p ok_zpool" {
-	run ./check_zpool_scrub -p ok_zpool
-	[ "$status" -eq 0 ]
+# Order;
+# critical
+# to
+# now
+
+@test "run ./check_zpool_scrub -p first_critical_zpool" {
+	run ./check_zpool_scrub -p first_critical_zpool
+	[ "$status" -eq 2 ]
 	#[ "${lines[0]}" = 'check_zfs_scrub' ]
 }
 
-@test "run ./check_zpool_scrub -p warning_zpool" {
-	run ./check_zpool_scrub -p warning_zpool
+@test "run ./check_zpool_scrub -p last_warning_zpool" {
+	run ./check_zpool_scrub -p last_warning_zpool
 	[ "$status" -eq 1 ]
 	#[ "${lines[0]}" = 'check_zfs_scrub' ]
 }
 
-@test "run ./check_zpool_scrub -p critical_zpool" {
-	run ./check_zpool_scrub -p critical_zpool
-	[ "$status" -eq 2 ]
+@test "run ./check_zpool_scrub -p first_warning_zpool" {
+	run ./check_zpool_scrub -p first_warning_zpool
+	[ "$status" -eq 1 ]
+	#[ "${lines[0]}" = 'check_zfs_scrub' ]
+}
+
+@test "run ./check_zpool_scrub -p last_ok_zpool" {
+	run ./check_zpool_scrub -p last_ok_zpool
+	[ "$status" -eq 0 ]
+	#[ "${lines[0]}" = 'check_zfs_scrub' ]
+}
+
+@test "run ./check_zpool_scrub -p first_ok_zpool" {
+	run ./check_zpool_scrub -p first_ok_zpool
+	[ "$status" -eq 0 ]
 	#[ "${lines[0]}" = 'check_zfs_scrub' ]
 }

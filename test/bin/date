@@ -1,22 +1,39 @@
 #! /bin/sh
 
+# Order;
+# critical
+# to
+# now
+
 case $@ in
 
-	# ok_zpool
-	'+%s --date=2017-07-17 10:25:48')
-		echo 1500279948
+	# first_critical_zpool
+	'+%s --date=2017-06-16 10:25:47')
+		echo 1497601547
 		exit 0
 		;;
 
-	# warning_zpool
+	# last_warning_zpool
 	'+%s --date=2017-06-16 10:25:48')
 		echo 1497601548
 		exit 0
 		;;
 
-	# critical_zpool
-	'+%s --date=2017-06-16 10:25:47')
-		echo 1497601547
+	# first_warning_zpool
+	'+%s --date=2017-07-17 10:25:47')
+		echo 1500279947
+		exit 0
+		;;
+
+	# last_ok_zpool
+	'+%s --date=2017-07-17 10:25:48')
+		echo 1500279948
+		exit 0
+		;;
+
+	# first_ok_zpool
+	'+%s --date=2017-08-17 10:25:48')
+		echo 1502958348
 		exit 0
 		;;
 

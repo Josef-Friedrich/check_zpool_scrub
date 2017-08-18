@@ -7,7 +7,7 @@ setup() {
 }
 
 @test "function _last_scrub_date" {
-	result=$(_last_scrub_date ok_zpool)
+	result=$(_last_scrub_date last_ok_zpool)
 	[ "$result" = '2017-07-17.10:25:48' ]
 }
 
@@ -17,6 +17,6 @@ setup() {
 }
 
 @test "function _get_last_scrub" {
-	result=$(_get_last_scrub ok_zpool)
+	result=$(_get_last_scrub last_ok_zpool)
 	[ "$result" -eq 1500279948 ]
 }
