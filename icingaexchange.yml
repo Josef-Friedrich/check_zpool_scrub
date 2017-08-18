@@ -1,7 +1,7 @@
 ---
 name: check_zpool_scrub
 description: "file:///README.md"
-url: "https://github.com/JosefFriedrich-shell/check_zpool_scrub
+url: "https://github.com/JosefFriedrich-shell/check_zpool_scrub"
 tags: zpool
 vendor: Linux
 target: Operating System
