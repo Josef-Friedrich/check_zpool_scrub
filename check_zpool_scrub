@@ -102,7 +102,6 @@ if [ -z "$INTERVAL_WARNING" ]; then
 fi
 
 if [ -z "$INTERVAL_CRITICAL" ]; then
-	# 3 day
 	# 2 month 60*60*24*31*2
 	INTERVAL_CRITICAL=5356800
 fi
