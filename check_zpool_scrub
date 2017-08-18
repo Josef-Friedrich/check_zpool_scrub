@@ -58,7 +58,11 @@ _last_scrub_date() {
 }
 
 _date_to_timestamp() {
-	date +%s --date="$(echo $1 | tr '.' ' ')"
+	date +%s --date="$(echo "$1" | tr '.' ' ')"
+}
+
+_get_last_scrub() {
+	echo "$(_date_to_timestamp "$(_last_scrub_date "$1")")"
 }
 
 ## This SEPARATOR is required for test purposes. Please don’t remove! ##
@@ -113,14 +117,7 @@ if ! zpool status $POOL > /dev/null 2>&1; then
 fi
 
 NOW=$(date +%s)
-
-LAST_SCRUB=$(zpool history | \
-	grep "zpool scrub $POOL" | \
-	grep -v 'zpool scrub -s' | \
-	tail -n 1 | \
-	awk '{print $1}')
-
-LAST_SCRUB=$(date '+%s' --date="$(echo $LAST_SCRUB | tr '.' ' ')")
+LAST_SCRUB=$(_get_last_scrub "$POOL")
 
 DIFF=$((NOW - LAST_SCRUB))
 
@@ -143,7 +140,7 @@ else
 	MESSAGE="OK:"
 fi
 
-DATE=$(date -d @$LAST_SCRUB +"%Y-%m-%dT%H:%M:%SZ")
+DATE=$(date -d @$LAST_SCRUB +%Y-%m-%dT%H:%M:%SZ)
 
 if [ -n "$POOL" ]; then
 	POOL="'$POOL' "

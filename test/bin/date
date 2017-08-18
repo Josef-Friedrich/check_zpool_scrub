@@ -1,30 +1,29 @@
 #! /bin/sh
 
 case $@ in
-	'+%s date=2017-07-09 00:24:08')
-		echo 1499552648
+
+	# ok_zpool
+	'+%s --date=2017-07-17 10:25:48')
+		echo 1500279948
 		exit 0
 		;;
 
-	# ok_dataset
-	'-d @1502914537 +%Y-%m-%dT%H:%M:%SZ')
-		echo '2017-08-16T22:15:37Z'
+	# warning_zpool
+	'+%s --date=2017-06-16 10:25:48')
+		echo 1497601548
 		exit 0
 		;;
 
-	# warning_dataset
-	'-d @1502834464 +%Y-%m-%dT%H:%M:%SZ')
-		echo '2017-08-16T00:01:04Z'
+	# critical_zpool
+	'+%s --date=2017-06-16 10:25:47')
+		echo 1497601547
 		exit 0
 		;;
 
-	# critical_dataset
-	'-d @1469273510 +%Y-%m-%dT%H:%M:%SZ')
-		echo '2016-07-23T13:31:50Z'
+	# now
+	'+%s')
+		echo 1502958348
 		exit 0
 		;;
 
 esac
-
-
-2017-07-09.00:24:08
