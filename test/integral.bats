@@ -11,6 +11,12 @@ setup() {
 	[ "${lines[0]}" = 'check_zfs_scrub' ]
 }
 
+@test "run ./check_zpool_scrub --help" {
+	run ./check_zpool_scrub --help
+	[ "$status" -eq 0 ]
+	[ "${lines[0]}" = 'check_zfs_scrub' ]
+}
+
 # Order;
 # critical
 # to
@@ -74,6 +80,12 @@ setup() {
 	run ./check_zpool_scrub --lol
 	[ "$status" -eq 2 ]
 	[ "${lines[0]}" = "Invalid option “--lol”!" ]
+}
+
+@test "run ./check_zpool_scrub -s" {
+	run ./check_zpool_scrub -s
+	[ "$status" -eq 0 ]
+	[ "${lines[0]}" = 'Monitoring plugin to check how long ago the last ZFS scrub was performed.' ]
 }
 
 @test "run ./check_zpool_scrub --short-description" {

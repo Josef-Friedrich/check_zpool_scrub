@@ -23,22 +23,16 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Exit codes
-STATE_OK=0
-STATE_WARNING=1
-STATE_CRITICAL=2
-STATE_UNKNOWN=3
+PROJECT_PAGES="
+https://github.com/JosefFriedrich-shell/check_zpool_scrub
+https://exchange.icinga.com/joseffriedrich/check_zpool_scrub
+https://exchange.nagios.org/directory/Plugins/System-Metrics/File-System/check_zpool_scrub/details"
 
-_short_description() {
-	echo 'Monitoring plugin to check how long ago the last ZFS scrub was performed.'
-}
-
-_usage() {
-	echo "check_zfs_scrub
+SHORT_DESCRIPTION='Monitoring plugin to check how long ago the last ZFS scrub was performed.'
+USAGE="check_zfs_scrub
 Copyright (c) 2016 Josef Friedrich <josef@friedrich.rocks>
 
-$(_short_description)
-
+$SHORT_DESCRIPTION
 
 Usage: check_zfs_scrub <options>
 
@@ -53,7 +47,12 @@ Options:
     Show a short description / summary.
   -w, --warning=INTERVAL_WARNING
     Interval in seconds for warning state. Must be lower than -c."
-}
+
+# Exit codes
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
 
 _last_scrub_date() {
 	zpool history | \
@@ -72,19 +71,23 @@ _get_last_scrub() {
 }
 
 _getopts() {
-	while getopts ':c:hp:w:-:' OPT ; do
+	while getopts ':c:hp:sw:-:' OPT ; do
 		case $OPT in
 			c)
 				INTERVAL_CRITICAL=$OPTARG
 				;;
 
 			h)
-				_usage
+				echo "$USAGE"
 				exit 0
 				;;
 
 			p)
 				POOL="$OPTARG"
+				;;
+
+			s)
+				echo "$SHORT_DESCRIPTION"
 				;;
 
 			w)
@@ -111,7 +114,7 @@ _getopts() {
 						;;
 
 					help)
-						_usage
+						echo "$USAGE"
 						exit 0
 						;;
 
@@ -120,7 +123,7 @@ _getopts() {
 						;;
 
 					short-description)
-						_short_description
+						echo "$SHORT_DESCRIPTION"
 						exit 0
 						;;
 
