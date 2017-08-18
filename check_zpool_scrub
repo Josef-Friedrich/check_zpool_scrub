@@ -110,10 +110,10 @@ if [ -z "$INTERVAL_CRITICAL" ]; then
 	INTERVAL_CRITICAL=5356800
 fi
 
-if ! zpool status $POOL > /dev/null 2>&1; then
-	echo "'$POOL' is no zfs pool!"
-	_usage
-	exit 3
+if ! zpool status "$POOL" > /dev/null 2>&1; then
+	echo "“$POOL” is no ZFS pool!" >&2
+	_usage  >&2
+	exit $STATE_UNKNOWN
 fi
 
 NOW=$(date +%s)
@@ -121,9 +121,9 @@ LAST_SCRUB=$(_get_last_scrub "$POOL")
 DIFF=$((NOW - LAST_SCRUB))
 
 if [ "$INTERVAL_WARNING" -gt "$INTERVAL_CRITICAL" ]; then
-	echo "<warntime> must be smaller than <crittime>"
-	_usage
-	exit 3
+	echo '<warntime> must be smaller than <crittime>' >&2
+	_usage  >&2
+	exit $STATE_UNKNOWN
 fi
 
 RETURN=STATE_UNKNOWN
