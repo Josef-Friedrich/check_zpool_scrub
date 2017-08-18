@@ -30,7 +30,7 @@ STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
 _short_description() {
-	echo 'Checks how long ago the last ZFS scrub was performed.'
+	echo 'Monitoring plugin to check how long ago the last ZFS scrub was performed.'
 }
 
 _usage() {

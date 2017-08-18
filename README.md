@@ -4,7 +4,7 @@
 
 ## Summary / Short description
 
-> Checks how long ago the last ZFS scrub was performed.
+> Monitoring plugin to check how long ago the last ZFS scrub was performed.
 
 ## Usage
 
@@ -12,7 +12,7 @@
 check_zfs_scrub
 Copyright (c) 2016 Josef Friedrich <josef@friedrich.rocks>
 
-Checks how long ago the last ZFS scrub was performed.
+Monitoring plugin to check how long ago the last ZFS scrub was performed.
 
 
 Usage: check_zfs_scrub <options>

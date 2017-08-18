@@ -75,3 +75,9 @@ setup() {
 	[ "$status" -eq 2 ]
 	[ "${lines[0]}" = "Invalid option “--lol”!" ]
 }
+
+@test "run ./check_zpool_scrub --short-description" {
+	run ./check_zpool_scrub --short-description
+	[ "$status" -eq 0 ]
+	[ "${lines[0]}" = 'Monitoring plugin to check how long ago the last ZFS scrub was performed.' ]
+}
