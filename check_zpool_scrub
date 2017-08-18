@@ -29,24 +29,30 @@ STATE_WARNING=1
 STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
+_short_description() {
+	echo 'Checks how long ago the last ZFS scrub was performed.'
+}
+
 _usage() {
 	echo "check_zfs_scrub
 Copyright (c) 2016 Josef Friedrich <josef@friedrich.rocks>
 
-Checks how long ago the last ZFS scrub was performed.
+$(_short_description)
 
 
 Usage: check_zfs_scrub <options>
 
 Options:
-  -c INTERVAL_CRITICAL
+  -c, --critical=INTERVAL_CRITICAL
     Interval in seconds for critical state.
-  -p POOL
+  -p,--pool=POOL
     Name of the pool
-  -h
+  -h, --help
     Show this help.
-  -w INTERVAL_WARNING
-    Interval in seconds for warning state. Must be lower than -c".
+  -s, --short-description
+    Show a short description / summary.
+  -w, --warning=INTERVAL_WARNING
+    Interval in seconds for warning state. Must be lower than -c."
 }
 
 _last_scrub_date() {
@@ -65,40 +71,92 @@ _get_last_scrub() {
 	echo "$(_date_to_timestamp "$(_last_scrub_date "$1")")"
 }
 
+_getopts() {
+	while getopts ':c:hp:w:-:' OPT ; do
+		case $OPT in
+			c)
+				INTERVAL_CRITICAL=$OPTARG
+				;;
+
+			h)
+				_usage
+				exit 0
+				;;
+
+			p)
+				POOL="$OPTARG"
+				;;
+
+			w)
+				INTERVAL_WARNING=$OPTARG
+				;;
+
+			\?)
+				echo "Invalid option “-$OPTARG”!" >&2
+				exit 2
+				;;
+
+			:)
+				echo "Option “-$OPTARG” requires an argument!" >&2
+				exit 3
+				;;
+
+			-)
+				LONG_OPTARG="${OPTARG#*=}"
+
+				case $OPTARG in
+
+					critical=?*)
+						INTERVAL_CRITICAL=$LONG_OPTARG
+						;;
+
+					help)
+						_usage
+						exit 0
+						;;
+
+					pool=?*)
+						POOL="$LONG_OPTARG"
+						;;
+
+					short-description)
+						_short_description
+						exit 0
+						;;
+
+					warning=?*)
+						INTERVAL_WARNING=$LONG_OPTARG
+						;;
+
+					help*|short-description*)
+						echo "No argument allowed for the option “--$OPTARG”!" >&2
+						exit 4
+						;;
+
+					critical*|pool*|warning*)
+						echo "Option “--$OPTARG” requires an argument!" >&2
+						exit 3
+						;;
+
+					'')	# "--" terminates argument processing
+						break
+						;;
+
+					*)
+						echo "Invalid option “--$OPTARG”!" >&2
+						exit 2
+						;;
+
+				esac
+				;;
+
+		esac
+	done
+}
+
 ## This SEPARATOR is required for test purposes. Please don’t remove! ##
 
-while getopts ":c:hp:w:" OPT; do
-	case $OPT in
-
-		c)
-			INTERVAL_CRITICAL=$OPTARG
-			;;
-
-		h)
-			_usage
-			exit 0
-			;;
-
-		p)
-			POOL="$OPTARG"
-			;;
-
-		w)
-			INTERVAL_WARNING=$OPTARG
-			;;
-
-		\?)
-			echo "Invalid option: -$OPTARG" >&2
-			exit 1
-			;;
-
-		:)
-			echo "Option -$OPTARG requires an argument." >&2
-			exit 1
-			;;
-
-	esac
-done
+_getopts $@
 
 if [ -z "$INTERVAL_WARNING" ]; then
 	# 1 month 60*60*24*31

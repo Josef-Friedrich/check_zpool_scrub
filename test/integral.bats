@@ -52,8 +52,26 @@ setup() {
 	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>' ]
 }
 
+@test "run ./check_zpool_scrub --pool=first_ok_zpool --warning=2 --critical=1" {
+	run ./check_zpool_scrub --pool=first_ok_zpool --warning=2 --critical=1
+	[ "$status" -eq 3 ]
+	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>' ]
+}
+
 @test "run ./check_zpool_scrub -p unkown_zpool" {
 	run ./check_zpool_scrub -p unkown_zpool
 	[ "$status" -eq 3 ]
 	[ "${lines[0]}" = '“unkown_zpool” is no ZFS pool!' ]
+}
+
+@test "run ./check_zpool_scrub --pool=unkown_zpool" {
+	run ./check_zpool_scrub --pool=unkown_zpool
+	[ "$status" -eq 3 ]
+	[ "${lines[0]}" = '“unkown_zpool” is no ZFS pool!' ]
+}
+
+@test "run ./check_zpool_scrub --lol" {
+	run ./check_zpool_scrub --lol
+	[ "$status" -eq 2 ]
+	[ "${lines[0]}" = "Invalid option “--lol”!" ]
 }
