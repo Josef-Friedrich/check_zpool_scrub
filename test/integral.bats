@@ -3,18 +3,19 @@
 setup() {
 	. ./test/lib/test-helper.sh
 	mock_path test/bin
+	source_exec check_zpool_scrub
 }
 
 @test "run ./check_zpool_scrub -h" {
 	run ./check_zpool_scrub -h
 	[ "$status" -eq 0 ]
-	[ "${lines[0]}" = 'check_zfs_scrub' ]
+	[ "${lines[0]}" = "check_zfs_scrub v$VERSION" ]
 }
 
 @test "run ./check_zpool_scrub --help" {
 	run ./check_zpool_scrub --help
 	[ "$status" -eq 0 ]
-	[ "${lines[0]}" = 'check_zfs_scrub' ]
+	[ "${lines[0]}" = "check_zfs_scrub v$VERSION" ]
 }
 
 # Order;
