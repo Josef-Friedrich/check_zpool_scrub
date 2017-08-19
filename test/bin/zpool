@@ -28,23 +28,25 @@ errors: No known data errors'
 		;;
 
 
-#   pool: data
-#  state: ONLINE
-#   scan: scrub in progress since Sun Aug 13 00:24:02 2017
-#     7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
-#     0 repaired, 72,38% done
-# config:
-#
-# 	NAME                                          STATE     READ WRITE CKSUM
-# 	data                                          ONLINE       0     0     0
-# 	  raidz1-0                                    ONLINE       0     0     0
-# 	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4EHYCFSFV  ONLINE       0     0     0
-# 	    ata-WDC_WD30EZRX-00DC0B0_WD-WMC1T1621747  ONLINE       0     0     0
-# 	    ata-WDC_WD30EZRX-22D8PB0_WD-WCC4N4YR59K5  ONLINE       0     0     0
-# 	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4ENSLVC17  ONLINE       0     0     0
-#
-# errors: No known data errors
+	'status first_warning_zpool')
+		echo '  pool: data
+ state: ONLINE
+  scan: scrub in progress since Sun Aug 13 00:24:02 2017
+    7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
+    0 repaired, 72,38% done
+config:
 
+	NAME                                          STATE     READ WRITE CKSUM
+	data                                          ONLINE       0     0     0
+	  raidz1-0                                    ONLINE       0     0     0
+	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4EHYCFSFV  ONLINE       0     0     0
+	    ata-WDC_WD30EZRX-00DC0B0_WD-WMC1T1621747  ONLINE       0     0     0
+	    ata-WDC_WD30EZRX-22D8PB0_WD-WCC4N4YR59K5  ONLINE       0     0     0
+	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4ENSLVC17  ONLINE       0     0     0
+
+errors: No known data errors'
+		exit 0
+		;;
 
 #   pool: data
 #  state: ONLINE

@@ -36,7 +36,7 @@ setup() {
 @test "run ./check_zpool_scrub -p first_warning_zpool" {
 	run ./check_zpool_scrub -p first_warning_zpool
 	[ "$status" -eq 1 ]
-	[ "${lines[0]}" = 'WARNING: The last scrub on zpool “first_warning_zpool” was performed on 2017-07-17T10:25:47 | last_ago=2678401 warning=2678400 critical=5356800' ]
+	[ "${lines[0]}" = 'WARNING: The last scrub on zpool “first_warning_zpool” was performed on 2017-07-17T10:25:47 | last_ago=2678401 warning=2678400 critical=5356800 progress=72.38' ]
 }
 
 @test "run ./check_zpool_scrub -p last_ok_zpool" {
