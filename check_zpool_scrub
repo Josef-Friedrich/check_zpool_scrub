@@ -90,7 +90,9 @@ critical=$INTERVAL_CRITICAL"
 
 _scrub_progress() {
 	zpool status $1 | \
-		grep -E -o '[[:digit:],]*%'
+		grep -E -o '[[:digit:],]*%' | \
+		sed 's/%//' | \
+		tr ',' '.'
 }
 
 _scrub_speed() {

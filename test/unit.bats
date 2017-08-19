@@ -23,7 +23,7 @@ setup() {
 
 @test "function _scrub_progress" {
 	result=$(_scrub_progress first_ok_zpool)
-	[ "$result" = '96,19%' ]
+	[ "$result" = '96.19' ]
 }
 
 @test "function _scrub_speed" {
