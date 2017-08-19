@@ -71,6 +71,7 @@ setup() {
 	run ./check_zpool_scrub -p unkown_zpool
 	[ "$status" -eq 3 ]
 	[ "${lines[0]}" = '“unkown_zpool” is no ZFS pool!' ]
+	[ "${lines[1]}" = "check_zfs_scrub v$VERSION" ]
 }
 
 @test "run ./check_zpool_scrub --pool=unkown_zpool" {

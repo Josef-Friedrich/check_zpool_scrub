@@ -218,7 +218,7 @@ fi
 
 if ! zpool status "$POOL" > /dev/null 2>&1; then
 	echo "“$POOL” is no ZFS pool!" >&2
-	_usage  >&2
+	echo "$USAGE" >&2
 	exit $STATE_UNKNOWN
 fi
 
