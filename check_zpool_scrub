@@ -218,12 +218,8 @@ else
 	MESSAGE="OK:"
 fi
 
-DATE=$(date -d @$LAST_SCRUB +%Y-%m-%dT%H:%M:%SZ)
+DATE=$(date +%Y-%m-%dT%H:%M:%SZ --date @$LAST_SCRUB)
 
-if [ -n "$POOL" ]; then
-	POOL="'$POOL' "
-fi
-
-echo "$MESSAGE last scrub on ${POOL}have been performed on $DATE"
+echo "$MESSAGE The last scrub on zpool “${POOL}” was performed on $DATE $(_performance_data)"
 
 exit $RETURN

@@ -43,4 +43,9 @@ case $@ in
 		exit 0
 		;;
 
+	'+%Y-%m-%dT%H:%M:%SZ --date @1500279947')
+		echo 2017-07-17T10:25:47
+		exit 0
+		;;
+
 esac
