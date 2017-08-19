@@ -59,6 +59,8 @@ Performance data:
       Interval in seconds.
   - progress
       Percent 0 - 100
+  - speed
+      MB per second
 "
 
 # Exit codes
@@ -88,7 +90,8 @@ _performance_data() {
 last_ago=$DIFF \
 warning=$INTERVAL_WARNING \
 critical=$INTERVAL_CRITICAL \
-progress=$PROGRESS"
+progress=$PROGRESS \
+speed=$SPEED"
 }
 
 _scrub_progress() {
@@ -96,6 +99,14 @@ _scrub_progress() {
 		grep -E -o '[[:digit:],]*%' | \
 		sed 's/%//' | \
 		tr ',' '.'
+}
+
+_scrub_speed_normalize() {
+	local SPEED UNIT
+	SPEED=$(echo "$1" | sed 's#/s##' | tr , .)
+	UNIT=$(echo -n "$SPEED" | tail -c  1)
+	SPEED=$(echo "$SPEED" | sed 's/.$//' )
+	echo $SPEED
 }
 
 _scrub_speed() {
@@ -222,6 +233,7 @@ if [ "$INTERVAL_WARNING" -gt "$INTERVAL_CRITICAL" ]; then
 fi
 
 PROGRESS=$(_scrub_progress "$POOL")
+SPEED="$(_scrub_speed_normalize "$(_scrub_speed "$POOL")")"
 
 RETURN=STATE_UNKNOWN
 

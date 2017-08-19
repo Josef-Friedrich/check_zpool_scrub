@@ -30,3 +30,9 @@ setup() {
 	result=$(_scrub_speed first_ok_zpool)
 	[ "$result" = '1,90M/s' ]
 }
+
+@test "function _scrub_speed_normalize" {
+	[ "$(_scrub_speed_normalize 1,90M/s)" = '1.90' ]
+	[ "$(_scrub_speed_normalize 111,90M/s)" = '111.90' ]
+
+}
