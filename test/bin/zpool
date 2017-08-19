@@ -7,8 +7,8 @@ case $@ in
 		exit 1
 		;;
 
-	'status')
-		echo '  pool: data
+	'status first_ok_zpool')
+		echo '  pool: first_ok_zpool
  state: ONLINE
   scan: scrub in progress since Tue Aug  1 23:20:24 2017
     9,12T scanned out of 9,48T at 1,90M/s, 55h33m to go

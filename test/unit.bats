@@ -20,3 +20,13 @@ setup() {
 	result=$(_get_last_scrub last_ok_zpool)
 	[ "$result" -eq 1500279948 ]
 }
+
+@test "function _scrub_progress" {
+	result=$(_scrub_progress first_ok_zpool)
+	[ "$result" = '96,19%' ]
+}
+
+@test "function _scrub_speed" {
+	result=$(_scrub_speed first_ok_zpool)
+	[ "$result" = '1,90M/s' ]
+}

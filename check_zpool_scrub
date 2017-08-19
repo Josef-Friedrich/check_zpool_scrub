@@ -88,6 +88,17 @@ warning=$INTERVAL_WARNING \
 critical=$INTERVAL_CRITICAL"
 }
 
+_scrub_progress() {
+	zpool status $1 | \
+		grep -E -o '[[:digit:],]*%'
+}
+
+_scrub_speed() {
+	zpool status $1 | \
+		grep -E -o '[[:digit:],]*[[:alpha:]]*/s'
+}
+
+
 _getopts() {
 	while getopts ':c:hp:sw:-:' OPT ; do
 		case $OPT in
