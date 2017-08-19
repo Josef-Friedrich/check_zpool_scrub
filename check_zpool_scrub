@@ -27,11 +27,14 @@ PROJECT_PAGES='https://github.com/JosefFriedrich-shell/check_zpool_scrub
 https://exchange.icinga.com/joseffriedrich/check_zpool_scrub
 https://exchange.nagios.org/directory/Plugins/System-Metrics/File-System/check_zpool_scrub/details'
 
+VERSION=1.0
+FIRST_RELEASE=2016-09-08
 SHORT_DESCRIPTION='Monitoring plugin to check how long ago the last ZFS scrub was performed.'
-USAGE="check_zfs_scrub
-Copyright (c) 2016 Josef Friedrich <josef@friedrich.rocks>
+USAGE="check_zfs_scrub v$VERSION
+Copyright (c) $(date +%Y --date=$FIRST_RELEASE)-$(date +%Y) Josef Friedrich <josef@friedrich.rocks>
 
 $SHORT_DESCRIPTION
+
 
 Usage: check_zfs_scrub <options>
 
@@ -45,7 +48,16 @@ Options:
   -s, --short-description
     Show a short description / summary.
   -w, --warning=INTERVAL_WARNING
-    Interval in seconds for warning state. Must be lower than -c."
+    Interval in seconds for warning state. Must be lower than -c.
+
+Performance data:
+  - last_ago
+      Time interval in seconds for last scrub.
+  - warning
+      Interval in seconds.
+  - critical
+      Interval in seconds.
+"
 
 # Exit codes
 STATE_OK=0
@@ -67,6 +79,13 @@ _date_to_timestamp() {
 
 _get_last_scrub() {
 	echo "$(_date_to_timestamp "$(_last_scrub_date "$1")")"
+}
+
+_performance_data() {
+	echo "| \
+last_ago=$DIFF \
+warning=$INTERVAL_WARNING \
+critical=$INTERVAL_CRITICAL"
 }
 
 _getopts() {
