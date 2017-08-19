@@ -9,8 +9,8 @@
 ## Usage
 
 ```
-check_zfs_scrub
-Copyright (c) 2016 Josef Friedrich <josef@friedrich.rocks>
+check_zfs_scrub v1.0
+Copyright (c) 2016-2017 Josef Friedrich <josef@friedrich.rocks>
 
 Monitoring plugin to check how long ago the last ZFS scrub was performed.
 
@@ -28,6 +28,14 @@ Options:
     Show a short description / summary.
   -w, --warning=INTERVAL_WARNING
     Interval in seconds for warning state. Must be lower than -c.
+
+Performance data:
+  - last_ago
+      Time interval in seconds for last scrub.
+  - warning
+      Interval in seconds.
+  - critical
+      Interval in seconds.
 ```
 
 ## Testing
