@@ -36,6 +36,12 @@ Performance data:
       Interval in seconds.
   - critical
       Interval in seconds.
+  - progress
+      Percent 0 - 100
+  - speed
+      MB per second
+  - time_to_go
+      In minutes
 ```
 
 ## Testing

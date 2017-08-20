@@ -61,6 +61,8 @@ Performance data:
       Percent 0 - 100
   - speed
       MB per second
+  - time_to_go
+      In minutes
 "
 
 # Exit codes
@@ -91,7 +93,8 @@ last_ago=$DIFF \
 warning=$INTERVAL_WARNING \
 critical=$INTERVAL_CRITICAL \
 progress=$PROGRESS \
-speed=$SPEED"
+speed=$SPEED \
+time_to_go=$TIME_TO_GO"
 }
 
 _scrub_progress() {
@@ -101,23 +104,52 @@ _scrub_progress() {
 		tr ',' '.'
 }
 
+##
+# Speed
+##
+
 _scrub_speed_normalize() {
 	local SPEED UNIT
 	SPEED=$(echo "$1" | sed 's#/s##' | tr , .)
 	UNIT=$(echo -n "$SPEED" | tail -c  1)
 	SPEED=$(echo "$SPEED" | sed 's/.$//' )
 
-        if [ "$UNIT" = K ]; then
-                SPEED="$(echo "$SPEED" | awk '{MB = $1 / 1024 ; print MB}')"
-        fi
+	if [ "$UNIT" = K ]; then
+		SPEED="$(echo "$SPEED" | awk '{MB = $1 / 1024 ; print MB}')"
+	fi
 	echo $SPEED
 }
 
 _scrub_speed() {
-	zpool status $1 | \
+	zpool status "$1" | \
 		grep -E -o '[[:digit:],]*[[:alpha:]]*/s'
 }
 
+##
+# time to go
+##
+
+_time_to_min() {
+	local HOURS MIN
+	HOURS=$(echo "$1" | sed 's/h.*//')
+	MIN=$(echo "$1" | sed 's/.*h//' | sed 's/m//')
+	echo $((HOURS * 60 + MIN))
+}
+
+_grep_time_to_go() {
+	zpool status "$1" | \
+		grep -P -o '(?<=, )[[:digit:]]*h[[:digit:]]*m(?= to go)'
+}
+
+_time_to_go() {
+	local GREP
+	GREP="$(_grep_time_to_go "$1")"
+	if [ -n "$GREP" ]; then
+		_time_to_min "$GREP"
+	else
+		echo 0
+	fi
+}
 
 _getopts() {
 	while getopts ':c:hp:sw:-:' OPT ; do
@@ -238,6 +270,7 @@ fi
 
 PROGRESS=$(_scrub_progress "$POOL")
 SPEED="$(_scrub_speed_normalize "$(_scrub_speed "$POOL")")"
+TIME_TO_GO="$(_time_to_go "$POOL")"
 
 RETURN=STATE_UNKNOWN
 
