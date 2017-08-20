@@ -48,12 +48,12 @@ setup() {
 }
 
 ##
-# time_to_go
+# time
 ##
 
-@test "function _grep_time_to_go" {
-	[ "$(_grep_time_to_go first_ok_zpool)" = '55h33m' ]
-	[ "$(_grep_time_to_go first_warning_zpool)" = '14h12m' ]
+@test "function _time_grep" {
+	[ "$(_time_grep first_ok_zpool)" = '55h33m' ]
+	[ "$(_time_grep first_warning_zpool)" = '14h12m' ]
 }
 
 @test "function _time_to_min" {
@@ -62,8 +62,8 @@ setup() {
 	[ "$(_time_to_min 11h11m)" = '671' ]
 }
 
-@test "function _time_to_go" {
-	[ "$(_time_to_go first_ok_zpool)" -eq 3333 ]
-	[ "$(_time_to_go first_warning_zpool)" -eq 852 ]
-	[ "$(_time_to_go finished_scrub)" -eq 0 ]
+@test "function _time" {
+	[ "$(_time first_ok_zpool)" -eq 3333 ]
+	[ "$(_time first_warning_zpool)" -eq 852 ]
+	[ "$(_time finished_scrub)" -eq 0 ]
 }

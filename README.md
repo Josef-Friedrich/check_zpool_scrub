@@ -40,8 +40,8 @@ Performance data:
       Percent 0 - 100
   - speed
       MB per second
-  - time_to_go
-      In minutes
+  - time
+      Time to go in minutes
 ```
 
 ## Testing
