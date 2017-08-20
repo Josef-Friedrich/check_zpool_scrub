@@ -106,6 +106,10 @@ _scrub_speed_normalize() {
 	SPEED=$(echo "$1" | sed 's#/s##' | tr , .)
 	UNIT=$(echo -n "$SPEED" | tail -c  1)
 	SPEED=$(echo "$SPEED" | sed 's/.$//' )
+
+        if [ "$UNIT" = K ]; then
+                SPEED="$(echo "$SPEED" | awk '{MB = $1 / 1024 ; print MB}')"
+        fi
 	echo $SPEED
 }
 

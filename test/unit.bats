@@ -34,5 +34,6 @@ setup() {
 @test "function _scrub_speed_normalize" {
 	[ "$(_scrub_speed_normalize 1,90M/s)" = '1.90' ]
 	[ "$(_scrub_speed_normalize 111,90M/s)" = '111.90' ]
-
+	[ "$(_scrub_speed_normalize 872,90K/s)" = '0.852441' ]
+	[ "$(_scrub_speed_normalize 12K/s)" = '0.0117188' ]
 }
