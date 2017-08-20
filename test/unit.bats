@@ -21,9 +21,26 @@ setup() {
 	[ "$result" -eq 1500279948 ]
 }
 
-@test "function _scrub_progress" {
-	result=$(_scrub_progress first_ok_zpool)
-	[ "$result" = '96.19' ]
+##
+# progress
+##
+
+@test "function _progress_grep" {
+	[ "$(_progress_grep first_ok_zpool)" = '96,19%' ]
+	[ "$(_progress_grep first_warning_zpool)" = '72,38%' ]
+	[ -z "$(_progress_grep finished_scrub)" ]
+}
+
+@test "function _progress_normalize" {
+	[ "$(_progress_normalize 96,19%)" = '96.19' ]
+	[ "$(_progress_normalize 72,38%)" = '72.38' ]
+	[ -z "$(_progress_normalize)" ]
+}
+
+@test "function _progress" {
+	[ "$(_progress first_ok_zpool)" = '96.19' ]
+	[ "$(_progress first_warning_zpool)" = '72.38' ]
+	[ "$(_progress finished_scrub)" -eq 100 ]
 }
 
 ##

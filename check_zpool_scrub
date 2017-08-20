@@ -97,11 +97,25 @@ speed=$SPEED \
 time=$TIME"
 }
 
-_scrub_progress() {
-	zpool status $1 | \
-		grep -E -o '[[:digit:],]*%' | \
+_progress_grep() {
+	zpool status "$1" | \
+		grep -E -o '[[:digit:],]*%'
+}
+
+_progress_normalize() {
+	echo $1 | \
 		sed 's/%//' | \
 		tr ',' '.'
+}
+
+_progress() {
+	local GREP
+	GREP="$(_progress_grep "$1")"
+	if [ -n "$GREP" ]; then
+		_progress_normalize "$GREP"
+	else
+		echo 100
+	fi
 }
 
 ##
@@ -278,7 +292,7 @@ if [ "$INTERVAL_WARNING" -gt "$INTERVAL_CRITICAL" ]; then
 	exit $STATE_UNKNOWN
 fi
 
-PROGRESS=$(_scrub_progress "$POOL")
+PROGRESS=$(_progress "$POOL")
 SPEED="$(_speed "$POOL")"
 TIME="$(_time "$POOL")"
 
