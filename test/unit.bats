@@ -49,6 +49,8 @@ setup() {
 
 @test "function _speed_grep" {
 	[ "$(_speed_grep first_ok_zpool)" = '1,90M/s' ]
+	[ "$(_speed_grep first_warning_zpool)" = '57,4M/s' ]
+	[ -z "$(_speed_grep finished_scrub)" ]
 }
 
 @test "function _speed_normalize" {
