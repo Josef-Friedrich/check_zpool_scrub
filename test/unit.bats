@@ -26,17 +26,30 @@ setup() {
 	[ "$result" = '96.19' ]
 }
 
-@test "function _scrub_speed" {
-	result=$(_scrub_speed first_ok_zpool)
-	[ "$result" = '1,90M/s' ]
+##
+# speed
+##
+
+@test "function _speed_grep" {
+	[ "$(_speed_grep first_ok_zpool)" = '1,90M/s' ]
 }
 
-@test "function _scrub_speed_normalize" {
-	[ "$(_scrub_speed_normalize 1,90M/s)" = '1.90' ]
-	[ "$(_scrub_speed_normalize 111,90M/s)" = '111.90' ]
-	[ "$(_scrub_speed_normalize 872,90K/s)" = '0.852441' ]
-	[ "$(_scrub_speed_normalize 12K/s)" = '0.0117188' ]
+@test "function _speed_normalize" {
+	[ "$(_speed_normalize 1,90M/s)" = '1.90' ]
+	[ "$(_speed_normalize 111,90M/s)" = '111.90' ]
+	[ "$(_speed_normalize 872,90K/s)" = '0.852441' ]
+	[ "$(_speed_normalize 12K/s)" = '0.0117188' ]
 }
+
+@test "function _speed" {
+	[ "$(_speed first_ok_zpool)" = '1.90' ]
+	[ "$(_speed first_warning_zpool)" = '57.4' ]
+	[ "$(_speed finished_scrub)" -eq 0 ]
+}
+
+##
+# time_to_go
+##
 
 @test "function _grep_time_to_go" {
 	[ "$(_grep_time_to_go first_ok_zpool)" = '55h33m' ]

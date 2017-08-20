@@ -108,7 +108,12 @@ _scrub_progress() {
 # Speed
 ##
 
-_scrub_speed_normalize() {
+_speed_grep() {
+	zpool status "$1" | \
+		grep -E -o '[[:digit:],]*[[:alpha:]]*/s'
+}
+
+_speed_normalize() {
 	local SPEED UNIT
 	SPEED=$(echo "$1" | sed 's#/s##' | tr , .)
 	UNIT=$(echo -n "$SPEED" | tail -c  1)
@@ -120,9 +125,14 @@ _scrub_speed_normalize() {
 	echo $SPEED
 }
 
-_scrub_speed() {
-	zpool status "$1" | \
-		grep -E -o '[[:digit:],]*[[:alpha:]]*/s'
+_speed() {
+	local SPEED
+	SPEED="$(_speed_grep "$1")"
+	if [ -n "$SPEED" ]; then
+		_speed_normalize "$SPEED"
+	else
+		echo 0
+	fi
 }
 
 ##
@@ -269,7 +279,7 @@ if [ "$INTERVAL_WARNING" -gt "$INTERVAL_CRITICAL" ]; then
 fi
 
 PROGRESS=$(_scrub_progress "$POOL")
-SPEED="$(_scrub_speed_normalize "$(_scrub_speed "$POOL")")"
+SPEED="$(_speed "$POOL")"
 TIME_TO_GO="$(_time_to_go "$POOL")"
 
 RETURN=STATE_UNKNOWN
