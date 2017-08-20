@@ -310,6 +310,7 @@ else
 fi
 
 DATE=$(date +%Y-%m-%dT%H:%M:%SZ --date @$LAST_SCRUB)
+#echo POOL $POOL $LAST_SCRUB $DATE >> $HOME/debug
 
 echo "$MESSAGE The last scrub on zpool “${POOL}” was performed on $DATE $(_performance_data)"
 

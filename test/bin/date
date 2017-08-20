@@ -43,8 +43,21 @@ case $@ in
 		exit 0
 		;;
 
+	# first_critical_zpool
+	'+%Y-%m-%dT%H:%M:%SZ --date @1497601547')
+		echo 2017-06-16T10:25:47Z
+		exit 0
+		;;
+
+	# first_warning_zpool
 	'+%Y-%m-%dT%H:%M:%SZ --date @1500279947')
-		echo 2017-07-17T10:25:47
+		echo 2017-07-17T10:25:47Z
+		exit 0
+		;;
+
+	# first_ok_zpool
+	'+%Y-%m-%dT%H:%M:%SZ --date @1502958348')
+		echo 2017-08-17T10:25:48Z
 		exit 0
 		;;
 

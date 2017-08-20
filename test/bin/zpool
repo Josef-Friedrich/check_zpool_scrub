@@ -48,7 +48,8 @@ errors: No known data errors'
 		exit 0
 		;;
 
-	'status finished_scrub')
+	# Finished
+	'status first_critical_zpool')
 		echo '  pool: data
  state: ONLINE
   scan: scrub repaired 0 in 266h29m with 0 errors on Tue Aug 15 01:12:31 2017

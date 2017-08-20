@@ -17,8 +17,8 @@ setup() {
 }
 
 @test "function _get_last_scrub" {
-	result=$(_get_last_scrub last_ok_zpool)
-	[ "$result" -eq 1500279948 ]
+	[ "$(_get_last_scrub first_critical_zpool)" -eq 1497601547 ]
+	[ "$(_get_last_scrub last_ok_zpool)" -eq 1500279948 ]
 }
 
 ##
@@ -28,7 +28,7 @@ setup() {
 @test "function _progress_grep" {
 	[ "$(_progress_grep first_ok_zpool)" = '96,19%' ]
 	[ "$(_progress_grep first_warning_zpool)" = '72,38%' ]
-	[ -z "$(_progress_grep finished_scrub)" ]
+	[ -z "$(_progress_grep first_critical_zpool)" ]
 }
 
 @test "function _progress_normalize" {
@@ -40,7 +40,7 @@ setup() {
 @test "function _progress" {
 	[ "$(_progress first_ok_zpool)" = '96.19' ]
 	[ "$(_progress first_warning_zpool)" = '72.38' ]
-	[ "$(_progress finished_scrub)" -eq 100 ]
+	[ "$(_progress first_critical_zpool)" -eq 100 ]
 }
 
 ##
@@ -50,7 +50,7 @@ setup() {
 @test "function _speed_grep" {
 	[ "$(_speed_grep first_ok_zpool)" = '1,90M/s' ]
 	[ "$(_speed_grep first_warning_zpool)" = '57,4M/s' ]
-	[ -z "$(_speed_grep finished_scrub)" ]
+	[ -z "$(_speed_grep first_critical_zpool)" ]
 }
 
 @test "function _speed_normalize" {
@@ -63,7 +63,7 @@ setup() {
 @test "function _speed" {
 	[ "$(_speed first_ok_zpool)" = '1.90' ]
 	[ "$(_speed first_warning_zpool)" = '57.4' ]
-	[ "$(_speed finished_scrub)" -eq 0 ]
+	[ "$(_speed first_critical_zpool)" -eq 0 ]
 }
 
 ##
@@ -84,5 +84,5 @@ setup() {
 @test "function _time" {
 	[ "$(_time first_ok_zpool)" -eq 3333 ]
 	[ "$(_time first_warning_zpool)" -eq 852 ]
-	[ "$(_time finished_scrub)" -eq 0 ]
+	[ "$(_time first_critical_zpool)" -eq 0 ]
 }
