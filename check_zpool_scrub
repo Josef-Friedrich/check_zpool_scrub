@@ -94,7 +94,7 @@ warning=$INTERVAL_WARNING \
 critical=$INTERVAL_CRITICAL \
 progress=$PROGRESS \
 speed=$SPEED \
-time=$time"
+time=$TIME"
 }
 
 _scrub_progress() {
@@ -280,7 +280,7 @@ fi
 
 PROGRESS=$(_scrub_progress "$POOL")
 SPEED="$(_speed "$POOL")"
-time="$(_time "$POOL")"
+TIME="$(_time "$POOL")"
 
 RETURN=STATE_UNKNOWN
 
