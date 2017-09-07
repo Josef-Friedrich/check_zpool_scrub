@@ -10,7 +10,7 @@
 ## Usage
 
 ```
-check_zpool_scrub v1.0
+check_zpool_scrub v1.1
 Copyright (c) 2016-2017 Josef Friedrich <josef@friedrich.rocks>
 
 Monitoring plugin to check how long ago the last ZFS scrub was performed.

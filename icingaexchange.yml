@@ -9,11 +9,11 @@ type: Plugin
 license: mit
 releases:
   -
-    name: 1.0
-    description: "1.0 Release"
+    name: 1.1
+    description: "1.1 Release"
     files:
       -
         name: check_zpool_scrub
         url: "file:///check_zpool_scrub"
-        description: "First release"
-        checksum: 5bee9819537f1456c61dd93d0aa13145
+        description: "1.1 Release"
+        checksum: 3a7d155cf1791765a45e07965566ebc7
