@@ -13,13 +13,13 @@ setup() {
 @test "run ./check_zpool_scrub -h" {
 	run ./check_zpool_scrub -h
 	[ "$status" -eq 0 ]
-	[ "${lines[0]}" = "check_zfs_scrub v$VERSION" ]
+	[ "${lines[0]}" = "check_zpool_scrub v$VERSION" ]
 }
 
 @test "run ./check_zpool_scrub --help" {
 	run ./check_zpool_scrub --help
 	[ "$status" -eq 0 ]
-	[ "${lines[0]}" = "check_zfs_scrub v$VERSION" ]
+	[ "${lines[0]}" = "check_zpool_scrub v$VERSION" ]
 }
 
 @test "run ./check_zpool_scrub -s" {
@@ -92,7 +92,7 @@ setup() {
 	run ./check_zpool_scrub -p unkown_zpool
 	[ "$status" -eq 3 ]
 	[ "${lines[0]}" = '“unkown_zpool” is no ZFS pool!' ]
-	[ "${lines[1]}" = "check_zfs_scrub v$VERSION" ]
+	[ "${lines[1]}" = "check_zpool_scrub v$VERSION" ]
 }
 
 @test "run ./check_zpool_scrub --pool=unkown_zpool" {
