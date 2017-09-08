@@ -39,32 +39,32 @@ $SHORT_DESCRIPTION
 Usage: check_zpool_scrub <options>
 
 Options:
-  -c, --critical=OPT_CRITICAL
+ -c, --critical=OPT_CRITICAL
     Interval in seconds for critical state.
-  -p,--pool=OPT_POOL
+ -p,--pool=OPT_POOL
     Name of the pool
-  -h, --help
+ -h, --help
     Show this help.
-  -s, --short-description
+ -s, --short-description
     Show a short description / summary.
-  -v, --version
+ -v, --version
     Show the version number.
-  -w, --warning=OPT_WARNING
+ -w, --warning=OPT_WARNING
     Interval in seconds for warning state. Must be lower than -c.
 
 Performance data:
-  - last_ago
-      Time interval in seconds for last scrub.
-  - warning
-      Interval in seconds.
-  - critical
-      Interval in seconds.
-  - progress
-      Percent 0 - 100
-  - speed
-      MB per second
-  - time
-      Time to go in minutes
+ - last_ago
+    Time interval in seconds for last scrub.
+ - warning
+    Interval in seconds.
+ - critical
+    Interval in seconds.
+ - progress
+    Percent 0 - 100
+ - speed
+    MB per second
+ - time
+    Time to go in minutes
 "
 
 _getopts() {
