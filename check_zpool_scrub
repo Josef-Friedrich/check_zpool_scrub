@@ -45,6 +45,8 @@ Options:
     Name of the pool
  -h, --help
     Show this help.
+ -r, --sudo
+    Run 'zpool history' with the help of sudo. 
  -s, --short-description
     Show a short description / summary.
  -v, --version
@@ -68,11 +70,12 @@ Performance data:
 "
 
 _getopts() {
-	while getopts ':c:hp:svw:-:' OPT ; do
+	while getopts ':c:hp:rsvw:-:' OPT ; do
 		case $OPT in
 			c) OPT_CRITICAL=$OPTARG ;;
 			h) echo "$USAGE" ; exit 0 ;;
 			p) OPT_POOL="$OPTARG" ;;
+			r) OPT_SUDO=1 ;;
 			s) echo "$SHORT_DESCRIPTION" ; exit 0 ;;
 			v) echo "$VERSION" ; exit 0 ;;
 			w) OPT_WARNING=$OPTARG ;;
@@ -103,6 +106,10 @@ _getopts() {
 
 					pool=?*)
 						OPT_POOL="$LONG_OPTARG"
+						;;
+
+					sudo)
+						OPT_SUDO=1
 						;;
 
 					short-description)
@@ -149,10 +156,10 @@ STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
 _last_scrub_date() {
-	if [ $(id -u) -eq 0 ]; then
-		zpool_cmd="zpool"
-	else
+	if [ X$OPT_SUDO = X1 ]; then
 		zpool_cmd="sudo zpool"
+	else
+		zpool_cmd="zpool"
 	fi
 	eval "$zpool_cmd history >/dev/null" || echo "FAIL"
 	eval "$zpool_cmd history" | \
