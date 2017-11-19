@@ -46,7 +46,7 @@ Options:
  -h, --help
     Show this help.
  -r, --sudo
-    Run 'zpool history' with the help of sudo. 
+    Run 'zpool history' with the help of sudo.
  -s, --short-description
     Show a short description / summary.
  -v, --version
@@ -123,7 +123,7 @@ _getopts() {
 						OPT_WARNING=$LONG_OPTARG
 						;;
 
-					help*|short-description*|version*)
+					help*|short-description*|sudo*|version*)
 						echo "No argument allowed for the option “--$OPTARG”!" >&2
 						exit 4
 						;;
