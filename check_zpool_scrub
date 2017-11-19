@@ -156,13 +156,11 @@ STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
 _last_scrub_date() {
-	if [ X$OPT_SUDO = X1 ]; then
-		ZPOOL_CMD="sudo zpool"
-	else
-		ZPOOL_CMD="zpool"
+	if [ -n "$OPT_SUDO" ]; then
+		SUDO="sudo"
 	fi
-	eval "$ZPOOL_CMD history >/dev/null" || echo "FAIL"
-	eval "$ZPOOL_CMD history" | \
+	$SUDO zpool history > /dev/null 2>&1 || echo "FAIL"
+	$SUDO zpool history | \
 		grep "zpool scrub $1" | \
 		grep -v 'zpool scrub -s' | \
 		tail -n 1 | \
