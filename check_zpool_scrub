@@ -157,12 +157,12 @@ STATE_UNKNOWN=3
 
 _last_scrub_date() {
 	if [ X$OPT_SUDO = X1 ]; then
-		zpool_cmd="sudo zpool"
+		ZPOOL_CMD="sudo zpool"
 	else
-		zpool_cmd="zpool"
+		ZPOOL_CMD="zpool"
 	fi
-	eval "$zpool_cmd history >/dev/null" || echo "FAIL"
-	eval "$zpool_cmd history" | \
+	eval "$ZPOOL_CMD history >/dev/null" || echo "FAIL"
+	eval "$ZPOOL_CMD history" | \
 		grep "zpool scrub $1" | \
 		grep -v 'zpool scrub -s' | \
 		tail -n 1 | \
@@ -174,14 +174,14 @@ _date_to_timestamp() {
 }
 
 _get_last_scrub() {
-	last_scrub_date="$(_last_scrub_date "$1")"
-	case "$last_scrub_date" in
+	LAST_SCRUB_DATE="$(_last_scrub_date "$1")"
+	case "$LAST_SCRUB_DATE" in
 	FAIL*)
 		echo -1 ;;
 	"") # Never been scrubbed
 		echo "$(_date_to_timestamp 1970-01-01)" ;;
 	*)
-		echo "$(_date_to_timestamp "$last_scrub_date")" ;;
+		echo "$(_date_to_timestamp "$LAST_SCRUB_DATE")" ;;
 	esac
 }
 
