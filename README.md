@@ -25,6 +25,8 @@ Options:
     Name of the pool
  -h, --help
     Show this help.
+ -r, --sudo
+    Run 'zpool history' with the help of sudo. 
  -s, --short-description
     Show a short description / summary.
  -v, --version
