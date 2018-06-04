@@ -45,7 +45,7 @@ Options:
 	  Show this help message.
 	-r, --render-readme
 	  Render “README.md”.
-	-S, -sync-skeleton
+	-S, --sync-skeleton
 	  Sync your project with the skeleton project and update some
 	  boilerplate files (e. g. Makefile test/lib/skeleton.sh).
 	-s, --short-description
