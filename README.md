@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/JosefFriedrich-shell/check_zpool_scrub.svg?branch=master)](https://travis-ci.org/JosefFriedrich-shell/check_zpool_scrub)
+[![Build Status](https://travis-ci.org/Josef-Friedrich/check_zpool_scrub.svg?branch=master)](https://travis-ci.org/Josef-Friedrich/check_zpool_scrub)
 
 # check_zpool_scrub
 
@@ -52,7 +52,7 @@ Performance data:
 
 ## Project pages
 
-* https://github.com/JosefFriedrich-shell/check_zpool_scrub
+* https://github.com/Josef-Friedrich/check_zpool_scrub
 * https://exchange.icinga.com/joseffriedrich/check_zpool_scrub
 * https://exchange.nagios.org/directory/Plugins/System-Metrics/File-System/check_zpool_scrub/details
 
