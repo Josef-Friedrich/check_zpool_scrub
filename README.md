@@ -11,7 +11,7 @@
 
 ```
 check_zpool_scrub v1.1
-Copyright (c) 2016-2017 Josef Friedrich <josef@friedrich.rocks>
+Copyright (c) 2016-2018 Josef Friedrich <josef@friedrich.rocks>
 
 Monitoring plugin to check how long ago the last ZFS scrub was performed.
 
@@ -26,7 +26,7 @@ Options:
  -h, --help
     Show this help.
  -r, --sudo
-    Run 'zpool history' with the help of sudo. 
+    Run 'zpool history' with the help of sudo.
  -s, --short-description
     Show a short description / summary.
  -v, --version
