@@ -249,6 +249,24 @@ _speed() {
 # time to go
 ##
 
+##
+# Extract the time to go from the zpool status output.
+#
+# Responsible for the output is this line:
+#   (void) printf(gettext(", %lluh%um to go\n"),
+# in the ZFS source code.
+# https://github.com/openzfs/openzfs/blob/ed81aacb0d0fcbf7e0c0745ea4556655050c26bf/usr/src/cmd/zpool/zpool_main.c#L4441
+#
+# For example:
+# Input:
+#   ...
+#   scan: scrub in progress since Sun Aug 13 00:24:02 2017
+#     7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
+#     0 repaired, 72,38% done
+#   ...
+# Output:
+#     14h12m
+##
 _time_grep() {
 	zpool status "$1" | \
 		grep -P -o '(?<=, )[[:digit:]]*h[[:digit:]]*m(?= to go)'
@@ -301,6 +319,7 @@ if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
 	exit $STATE_UNKNOWN
 fi
 
+# OPT_POOL: The name of the ZFS pool.
 PROGRESS=$(_progress "$OPT_POOL")
 SPEED="$(_speed "$OPT_POOL")"
 TIME="$(_time "$OPT_POOL")"
