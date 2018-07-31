@@ -159,9 +159,9 @@ _last_scrub_date() {
 	if [ -n "$OPT_SUDO" ]; then
 		SUDO="sudo"
 	fi
-	$SUDO zpool history > /dev/null 2>&1 || echo "FAIL"
-	$SUDO zpool history | \
-		grep "zpool scrub $1" | \
+	$SUDO zpool history "$1" > /dev/null 2>&1 || echo "FAIL"
+	$SUDO zpool history "$1" | \
+		grep 'zpool scrub' | \
 		grep -v 'zpool scrub -s' | \
 		tail -n 1 | \
 		awk '{print $1}'

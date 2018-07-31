@@ -67,7 +67,6 @@ errors: No known data errors'
 		exit 0
 		;;
 
-
 	'history')
 		echo '2017-06-16.10:25:47 zpool scrub first_critical_zpool
 2017-06-16.10:25:48 zpool scrub last_warning_zpool
@@ -77,4 +76,32 @@ errors: No known data errors'
 2017-08-17.10:25:48 zpool scrub first_ok_zpool'
 		exit 0
 		;;
+
+	'history first_critical_zpool')
+		echo '2017-06-16.10:25:47 zpool scrub first_critical_zpool'
+		exit 0
+		;;
+
+	'history last_warning_zpool')
+		echo '2017-06-16.10:25:48 zpool scrub last_warning_zpool'
+		exit 0
+		;;
+
+
+	'history first_warning_zpool')
+		echo '2017-07-17.10:25:47 zpool scrub first_warning_zpool'
+		exit 0
+		;;
+
+	'history last_ok_zpool')
+		echo '2017-07-17.10:25:48 zpool scrub last_ok_zpool
+2017-07-17.10:25:49 zpool scrub -s last_ok_zpool'
+		exit 0
+		;;
+
+	'history first_ok_zpool')
+		echo '2017-08-17.10:25:48 zpool scrub first_ok_zpool'
+		exit 0
+		;;
+
 esac
