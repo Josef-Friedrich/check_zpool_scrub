@@ -252,6 +252,9 @@ _speed() {
 ##
 # Extract the time to go from the zpool status output.
 #
+# Parameters:
+# $1: POOL: Name of the pool
+#
 # Responsible for the output is this line:
 #   (void) printf(gettext(", %lluh%um to go\n"),
 # in the ZFS source code.
@@ -266,10 +269,20 @@ _speed() {
 #   ...
 # Output:
 #     14h12m
+#
+# Other solutions:
+#
+# Not working on FreeBSD:
+#   grep -P -o '(?<=, )[[:digit:]]*h[[:digit:]]*m(?= to go)'
+#
+# Naive solution:
+#   grep ' to go' |
+#   awk '{ print $8 }'
 ##
 _time_grep() {
 	zpool status "$1" | \
-		grep -P -o '(?<=, )[[:digit:]]*h[[:digit:]]*m(?= to go)'
+		grep ' to go' |
+		sed -E 's/^.*, (.*h.*m) to go.*$/\1/g'
 }
 
 _time_to_min() {
