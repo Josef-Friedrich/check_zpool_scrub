@@ -69,6 +69,12 @@ Performance data:
     Time to go in minutes
 "
 
+# Check which date version is present. On FreeBSD no --version is present
+date --version > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	GNU_DATE=1
+fi
+
 _getopts() {
 	while getopts ':c:hp:rsvw:-:' OPT ; do
 		case $OPT in
@@ -168,7 +174,11 @@ _last_scrub_date() {
 }
 
 _date_to_timestamp() {
-	date +%s --date="$(echo "$1" | tr '.' ' ')"
+	if [ -n "$GNU_DATE" ]; then
+		date +%s --date="$(echo "$1" | tr '.' ' ')"
+	else
+		date -j -u -f %Y-%m-%d.%H:%M:%S "$1" +%s
+	fi
 }
 
 _get_last_scrub() {
