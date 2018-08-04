@@ -40,7 +40,7 @@ Usage: check_zpool_scrub <options>
 
 Options:
  -c, --critical=OPT_CRITICAL
-    Interval in seconds for critical state.
+    Interval in seconds for critical state.This problem is specifically in regards to the date command.
  -p,--pool=OPT_POOL
     Name of the pool
  -h, --help
@@ -69,11 +69,7 @@ Performance data:
     Time to go in minutes
 "
 
-# Check which date version is present. On FreeBSD no --version is present
-date --version > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-	GNU_DATE=1
-fi
+OS=$(uname)
 
 _getopts() {
 	while getopts ':c:hp:rsvw:-:' OPT ; do
@@ -173,21 +169,13 @@ _last_scrub_date() {
 		awk '{print $1}'
 }
 
-_date_to_timestamp() {
-	if [ -n "$GNU_DATE" ]; then
-		date +%s --date="$(echo "$1" | tr '.' ' ')"
-	else
-		date -j -u -f %Y-%m-%d.%H:%M:%S "$1" +%s
-	fi
-}
-
 _get_last_scrub() {
 	LAST_SCRUB_DATE="$(_last_scrub_date "$1")"
 	case "$LAST_SCRUB_DATE" in
 	FAIL*)
 		echo -1 ;;
 	"") # Never been scrubbed
-		echo "$(_date_to_timestamp 1970-01-01)" ;;
+		echo "$(_date_to_timestamp 1970-01-01.01:01:01)" ;;
 	*)
 		echo "$(_date_to_timestamp "$LAST_SCRUB_DATE")" ;;
 	esac
@@ -309,6 +297,30 @@ _time() {
 		_time_to_min "$GREP"
 	else
 		echo 0
+	fi
+}
+
+##
+# Date functions
+##
+
+_yyyy_mm_dd_to_year() {
+        echo
+}
+
+_now_timestamp() {
+        date +%s
+}
+
+##
+# Convert a date string in the format %Y-%m-%d.%H:%M:%S to a UNIX
+# timestamp.
+##
+_date_to_timestamp() {
+	if [ "$OS" = 'Linux' ]; then
+		date +%s --date="$(echo "$1" | tr '.' ' ')"
+	elif [ "$OS" = 'FreeBSD' ]; then
+		date -j -u -f %Y-%m-%d.%H:%M:%S "$1" +%s
 	fi
 }
 
