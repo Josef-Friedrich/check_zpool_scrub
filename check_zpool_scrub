@@ -320,7 +320,7 @@ _date_to_timestamp() {
 	if [ "$OS" = 'Linux' ]; then
 		date +%s --date="$(echo "$1" | tr '.' ' ')"
 	elif [ "$OS" = 'FreeBSD' ]; then
-		date -j -u -f %Y-%m-%d.%H:%M:%S "$1" +%s
+		date -j -f %Y-%m-%d.%H:%M:%S "$1" +%s
 	fi
 }
 
