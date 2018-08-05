@@ -9,65 +9,85 @@ case $@ in
 
 	# to_year ###
 
-	'+%Y') echo 2018 ; exit 0 ;;
-	'-j -f %Y-%m-%d 2016-09-08 +%Y'|'--date 2016-09-08 +%Y') echo 2016 ; exit 0 ;;
+	# _now_to_year
 
-	##
-	# _datetime_to_timestamp
-	##
+	'+%Y')
+		echo 2018
+		exit 0
+		;;
+
+	# _date_to_year
+
+	'--date 2016-09-08 +%Y'|'-j -f %Y-%m-%d 2016-09-08 +%Y')
+		echo 2016
+		exit 0
+		;;
+
+	# to_datetime ###
+
+	# _timestamp_to_datetime
 
 	# first_critical_zpool
-	'-j -f %Y-%m-%d.%H:%M:%S 2017-06-16.10:25:47 +%s'|'--date 2017-06-16 10:25:47 +%s')
-		echo 1497601547
-		exit 0
-		;;
-
-	# last_warning_zpool
-	'-j -f %Y-%m-%d.%H:%M:%S 2017-06-16.10:25:48 +%s'|'--date 2017-06-16 10:25:48 +%s')
-		echo 1497601548
-		exit 0
-		;;
-
-	# first_warning_zpool
-	'-j -f %Y-%m-%d.%H:%M:%S 2017-07-17.10:25:47 +%s'|'--date 2017-07-17 10:25:47 +%s')
-		echo 1500279947
-		exit 0
-		;;
-
-	# last_ok_zpool
-	'-j -f %Y-%m-%d.%H:%M:%S 2017-07-17.10:25:48 +%s'|'--date 2017-07-17 10:25:48 +%s')
-		echo 1500279948
-		exit 0
-		;;
-
-	# first_ok_zpool
-	'-j -f %Y-%m-%d.%H:%M:%S 2017-08-17.10:25:48 +%s'|'--date 2017-08-17 10:25:48 +%s')
-		echo 1502958348
-		exit 0
-		;;
-
-	# now
-	'+%s')
-		echo 1502958348
-		exit 0
-		;;
-
-	# first_critical_zpool
-	'--date @1497601547 +%Y-%m-%d.%H:%M:%S')
+	'--date @1497601547 +%Y-%m-%d.%H:%M:%S'|'-j -f %s 1497601547 +%Y-%m-%d.%H:%M:%S')
 		echo 2017-06-16.10:25:47
 		exit 0
 		;;
 
 	# first_warning_zpool
-	'--date @1500279947 +%Y-%m-%d.%H:%M:%S')
+	'--date @1500279947 +%Y-%m-%d.%H:%M:%S'|'-j -f %s 1500279947 +%Y-%m-%d.%H:%M:%S')
 		echo 2017-07-17.10:25:47
 		exit 0
 		;;
 
 	# first_ok_zpool
-	'--date @1502958348 +%Y-%m-%d.%H:%M:%S')
+	'--date @1502958348 +%Y-%m-%d.%H:%M:%S'|'-j -f %s 1502958348 +%Y-%m-%d.%H:%M:%S')
 		echo 2017-08-17.10:25:48
 		exit 0
 		;;
+
+	# to_timestamp ###
+
+	# _now_to_timestamp
+
+	'+%s')
+		echo 1502958348
+		exit 0
+		;;
+
+	# _datetime_to_timestamp
+
+	# first_critical_zpool
+	'--date 2017-06-16 10:25:47 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-06-16.10:25:47 +%s')
+		echo 1497601547
+		exit 0
+		;;
+
+	# last_warning_zpool
+	'--date 2017-06-16 10:25:48 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-06-16.10:25:48 +%s')
+		echo 1497601548
+		exit 0
+		;;
+
+	# first_warning_zpool
+	'--date 2017-07-17 10:25:47 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-07-17.10:25:47 +%s')
+		echo 1500279947
+		exit 0
+		;;
+
+	# last_ok_zpool
+	'--date 2017-07-17 10:25:48 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-07-17.10:25:48 +%s')
+		echo 1500279948
+		exit 0
+		;;
+
+	# first_ok_zpool
+	'--date 2017-08-17 10:25:48 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-08-17.10:25:48 +%s')
+		echo 1502958348
+		exit 0
+		;;
+
+
+
+
 
 esac
