@@ -1,5 +1,11 @@
 # Date conversion
 
+## Formats
+
+* datetime: 2017-07-17.10:25:48
+* date: 2017-06-16
+* timestamp: 1502958348
+
 ## Date to Timestamp
 
 ```

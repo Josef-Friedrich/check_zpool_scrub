@@ -23,6 +23,75 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+OS=$(uname)
+
+########################################################################
+# Date functions
+########################################################################
+
+# to_year ###
+
+##
+# Get the four digit year integer from now.
+##
+_now_to_year() {
+	date +%Y
+}
+
+##
+# Convert a date in the format YYYY-MM-DD to a four digit year integer.
+##
+_date_to_year() {
+	local OPTIONS
+	if [ "$OS" = 'Linux' ]; then
+		OPTIONS="--date $1"
+	# FreeBSD, Darwin
+	else
+		OPTIONS="-j -f %Y-%m-%d $1"
+	fi
+	date $OPTIONS +%Y
+}
+
+# to_datetime ###
+
+##
+# Convert a UNIX timestamp to a datetime string.
+##
+_timestamp_to_datetime() {
+	local OPTIONS
+	if [ "$OS" = 'Linux' ]; then
+		OPTIONS="--date @$1"
+	# FreeBSD, Darwin
+	else
+		OPTIONS="-j -f %s $1"
+	fi
+	date $OPTIONS +%Y-%m-%d.%H:%M:%S
+}
+
+# to_timestamp ###
+
+##
+# Get the current UNIX timestamp.
+##
+_now_to_timestamp() {
+	date +%s
+}
+
+##
+# Convert a date string in the format %Y-%m-%d.%H:%M:%S to a UNIX
+# timestamp.
+##
+_datetime_to_timestamp() {
+	local OPTIONS
+	if [ "$OS" = 'Linux' ]; then
+		OPTIONS="--date $(echo "$1" | tr '.' ' ')"
+	# FreeBSD, Darwin
+	else
+		OPTIONS="-j -f %Y-%m-%d.%H:%M:%S  $1"
+	fi
+	date $OPTIONS +%s
+}
+
 PROJECT_PAGES='https://github.com/Josef-Friedrich/check_zpool_scrub
 https://exchange.icinga.com/joseffriedrich/check_zpool_scrub
 https://exchange.nagios.org/directory/Plugins/System-Metrics/File-System/check_zpool_scrub/details'
@@ -31,7 +100,7 @@ VERSION=1.1
 FIRST_RELEASE=2016-09-08
 SHORT_DESCRIPTION='Monitoring plugin to check how long ago the last ZFS scrub was performed.'
 USAGE="check_zpool_scrub v$VERSION
-Copyright (c) $(date +%Y --date=$FIRST_RELEASE)-$(date +%Y) Josef Friedrich <josef@friedrich.rocks>
+Copyright (c) $(_date_to_year $FIRST_RELEASE)-$(_now_to_year) Josef Friedrich <josef@friedrich.rocks>
 
 $SHORT_DESCRIPTION
 
@@ -68,8 +137,6 @@ Performance data:
  - time
     Time to go in minutes
 "
-
-OS=$(uname)
 
 _getopts() {
 	while getopts ':c:hp:rsvw:-:' OPT ; do
@@ -175,9 +242,9 @@ _get_last_scrub() {
 	FAIL*)
 		echo -1 ;;
 	"") # Never been scrubbed
-		echo "$(_date_to_timestamp 1970-01-01.01:01:01)" ;;
+		echo "$(_datetime_to_timestamp 1970-01-01.01:01:01)" ;;
 	*)
-		echo "$(_date_to_timestamp "$LAST_SCRUB_DATE")" ;;
+		echo "$(_datetime_to_timestamp "$LAST_SCRUB_DATE")" ;;
 	esac
 }
 
@@ -300,30 +367,6 @@ _time() {
 	fi
 }
 
-##
-# Date functions
-##
-
-_yyyy_mm_dd_to_year() {
-        echo
-}
-
-_now_timestamp() {
-        date +%s
-}
-
-##
-# Convert a date string in the format %Y-%m-%d.%H:%M:%S to a UNIX
-# timestamp.
-##
-_date_to_timestamp() {
-	if [ "$OS" = 'Linux' ]; then
-		date +%s --date="$(echo "$1" | tr '.' ' ')"
-	elif [ "$OS" = 'FreeBSD' ]; then
-		date -j -f %Y-%m-%d.%H:%M:%S "$1" +%s
-	fi
-}
-
 ## This SEPARATOR is required for test purposes. Please don’t remove! ##
 
 _getopts $@
@@ -344,7 +387,7 @@ if ! zpool status "$OPT_POOL" > /dev/null 2>&1; then
 	exit $STATE_UNKNOWN
 fi
 
-NOW=$(date +%s)
+NOW=$(_now_to_timestamp)
 LAST_SCRUB=$(_get_last_scrub "$OPT_POOL")
 DIFF=$((NOW - LAST_SCRUB))
 
@@ -372,13 +415,11 @@ else
 	MESSAGE="OK:"
 fi
 
-DATE=$(date +%Y-%m-%dT%H:%M:%SZ --date @$LAST_SCRUB)
-
 if [ $LAST_SCRUB = -1 ]; then
 	RETURN=$STATE_UNKNOWN
 	echo "UNKNOWN: Failed to run zpool history"
 else
-	echo "$MESSAGE The last scrub on zpool “${OPT_POOL}” was performed on $DATE $(_performance_data)"
+	echo "$MESSAGE The last scrub on zpool “${OPT_POOL}” was performed on $(_timestamp_to_datetime $LAST_SCRUB) $(_performance_data)"
 fi
 
 exit $RETURN

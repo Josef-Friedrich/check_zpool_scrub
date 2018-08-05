@@ -116,7 +116,7 @@ setup() {
 	echo $lines > $HOME/debug
 	[ "$status" -eq 2 ]
 	local TEST="CRITICAL: The last scrub on zpool \
-“first_critical_zpool” was performed on 2017-06-16T10:25:47Z \
+“first_critical_zpool” was performed on 2017-06-16.10:25:47 \
 | last_ago=5356801 warning=2678400 critical=5356800 progress=100 \
 speed=0 time=0"
 	[ "${lines[0]}" = "$TEST" ]
@@ -126,7 +126,7 @@ speed=0 time=0"
 	run ./check_zpool_scrub -p first_warning_zpool
 	[ "$status" -eq 1 ]
 	local TEST="WARNING: The last scrub on zpool \
-“first_warning_zpool” was performed on 2017-07-17T10:25:47Z \
+“first_warning_zpool” was performed on 2017-07-17.10:25:47 \
 | last_ago=2678401 warning=2678400 critical=5356800 progress=72.38 \
 speed=57.4 time=852"
 	[ "${lines[0]}" = "$TEST" ]
@@ -136,7 +136,7 @@ speed=57.4 time=852"
 	run ./check_zpool_scrub -p first_ok_zpool
 	[ "$status" -eq 0 ]
 	local TEST="OK: The last scrub on zpool “first_ok_zpool” \
-was performed on 2017-08-17T10:25:48Z \
+was performed on 2017-08-17.10:25:48 \
 | last_ago=0 warning=2678400 critical=5356800 progress=96.19 \
 speed=1.90 time=3333"
 	[ "${lines[0]}" = "$TEST" ]
@@ -146,7 +146,7 @@ speed=1.90 time=3333"
 	run ./check_zpool_scrub --sudo -p first_ok_zpool
 	[ "$status" -eq 0 ]
 	local TEST="OK: The last scrub on zpool “first_ok_zpool” \
-was performed on 2017-08-17T10:25:48Z \
+was performed on 2017-08-17.10:25:48 \
 | last_ago=0 warning=2678400 critical=5356800 progress=96.19 \
 speed=1.90 time=3333"
 	[ "${lines[0]}" = "$TEST" ]
