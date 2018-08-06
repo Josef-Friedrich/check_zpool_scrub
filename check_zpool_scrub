@@ -271,6 +271,34 @@ _get_last_scrub() {
 	esac
 }
 
+_grab_ctime_from_zpool_status() {
+# Www Mmm dd hh:mm:ss yyyy,
+REGEX="\
+s/\
+^.*\
+(in progress since|errors on)\
+ \
+(\
+[[:alpha:]]{3}\
+ \
+[[:alpha:]]{3}\
+ \
+[[:digit:]]{2}\
+ \
+[[:digit:]]{2}\
+:\
+[[:digit:]]{2}\
+:\
+[[:digit:]]{2}\
+ \
+[[:digit:]]{4}\
+).*$\
+/\2/p"
+	echo "$1" | \
+		grep '  scan: ' | \
+		sed -n -E "$REGEX"
+}
+
 
 
 ##
