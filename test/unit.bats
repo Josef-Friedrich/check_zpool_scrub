@@ -30,6 +30,11 @@ setup() {
 	[ "$result" -eq 1502958348 ]
 }
 
+@test "function _ctime_to_timestamp" {
+	result=$(_ctime_to_timestamp 'Mon Jul 17 10:25:48 2017')
+	[ "$result" -eq 1500279948 ]
+}
+
 @test "function _datetime_to_timestamp" {
 	result=$(_datetime_to_timestamp 2017-07-17.10:25:48)
 	[ "$result" -eq 1500279948 ]

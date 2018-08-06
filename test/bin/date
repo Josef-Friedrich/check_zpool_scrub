@@ -54,6 +54,12 @@ case $@ in
 		exit 0
 		;;
 
+	# ctime_to_timestamp
+	'--date Mon Jul 17 10:25:48 2017 +%s'|'-j -f %c Mon Jul 17 10:25:48 2017 +%s')
+		echo 1500279948
+		exit 0
+		;;
+
 	# _datetime_to_timestamp
 
 	# first_critical_zpool

@@ -78,6 +78,27 @@ _now_to_timestamp() {
 }
 
 ##
+# Convert a datetime in the ctime format to a Unix timestamp.
+# ctime is a textual representation of a datetime derived from the
+# c function ctime (https://en.cppreference.com/w/c/chrono/ctime).
+# The ctime string has the following format:  Www Mmm dd hh:mm:ss yyyy,
+# where Www is the weekday, Mmm the month in letters, dd the day of the
+# month, hh:mm:ss the time, and yyyy the year.
+#
+# see https://www.freebsd.org/cgi/man.cgi?query=strftime&sektion=3
+#  %c is replaced by national representation of time and date.
+_ctime_to_timestamp() {
+	local OPTIONS
+	if [ "$OS" = 'Linux' ]; then
+		OPTIONS='--date'
+	# FreeBSD, Darwin
+	else
+		OPTIONS='-j -f %c'
+	fi
+	date $OPTIONS "$1" +%s
+}
+
+##
 # Convert a date string in the format %Y-%m-%d.%H:%M:%S to a UNIX
 # timestamp.
 ##
