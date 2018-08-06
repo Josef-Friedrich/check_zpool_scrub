@@ -52,13 +52,6 @@ setup() {
 	[ -z "$(_speed_grep first_critical_zpool)" ]
 }
 
-@test "function _speed_normalize" {
-	[ "$(_speed_normalize 1,90M/s)" = '1.90' ]
-	[ "$(_speed_normalize 111,90M/s)" = '111.90' ]
-	[ "$(_speed_normalize 872,90K/s)" = '0.852441' ]
-	[ "$(_speed_normalize 12K/s)" = '0.0117188' ]
-}
-
 @test "function _speed" {
 	[ "$(_speed first_ok_zpool)" = '1.90' ]
 	[ "$(_speed first_warning_zpool)" = '57.4' ]
@@ -66,7 +59,7 @@ setup() {
 }
 
 ##
-# time
+# time to go
 ##
 
 @test "function _time_grep" {
@@ -75,12 +68,6 @@ setup() {
 	[ "$(_time_grep first_warning_zpool)" = '14h12m' ]
 	[ "$(_time_grep first_critical_zpool)" = '' ]
 
-}
-
-@test "function _time_to_min" {
-	[ "$(_time_to_min 1h1m)" = '61' ]
-	[ "$(_time_to_min 1h0m)" = '60' ]
-	[ "$(_time_to_min 11h11m)" = '671' ]
 }
 
 @test "function _time" {
