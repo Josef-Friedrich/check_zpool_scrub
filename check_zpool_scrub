@@ -33,6 +33,9 @@ OS=$(uname)
 
 ##
 # Get the four digit year integer from now.
+#
+# Return:
+#   The current 4 digit year.
 ##
 _now_to_year() {
 	date +%Y
@@ -40,6 +43,12 @@ _now_to_year() {
 
 ##
 # Convert a date in the format YYYY-MM-DD to a four digit year integer.
+#
+# Parameters:
+#   a date in the format YYYY-MM-DD
+#
+# Return:
+#   four digit year integer
 ##
 _date_to_year() {
 	local OPTIONS
@@ -56,6 +65,12 @@ _date_to_year() {
 
 ##
 # Convert a UNIX timestamp to a datetime string.
+#
+# Parameters:
+#   UNIX timestamp
+#
+# Return:
+#   %Y-%m-%d.%H:%M:%S
 ##
 _timestamp_to_datetime() {
 	local OPTIONS
@@ -72,6 +87,9 @@ _timestamp_to_datetime() {
 
 ##
 # Get the current UNIX timestamp.
+#
+# Return:
+#   %current UNIX timestamp
 ##
 _now_to_timestamp() {
 	date +%s
@@ -87,6 +105,13 @@ _now_to_timestamp() {
 #
 # see https://www.freebsd.org/cgi/man.cgi?query=strftime&sektion=3
 #  %c is replaced by national representation of time and date.
+#
+# Parameters:
+#   $1: Www Mmm dd hh:mm:ss yyyy
+#
+# Return:
+#   UNIX timestamp
+##
 _ctime_to_timestamp() {
 	local OPTIONS
 	if [ "$OS" = 'Linux' ]; then
@@ -101,6 +126,12 @@ _ctime_to_timestamp() {
 ##
 # Convert a date string in the format %Y-%m-%d.%H:%M:%S to a UNIX
 # timestamp.
+#
+# Parameters:
+#   $1: %Y-%m-%d.%H:%M:%S
+#
+# Return:
+#   UNIX timestamp
 ##
 _datetime_to_timestamp() {
 	local OPTIONS
@@ -247,6 +278,15 @@ STATE_WARNING=1
 STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
+##
+# Grab a datetime string from zpool history POOL
+#
+# Parameters:
+# $1: POOL: The name of pool.
+#
+# Return:
+# A datetime string in the format %Y-%m-%d.%H:%M:%S
+##
 _last_scrub_date() {
 	if [ -n "$OPT_SUDO" ]; then
 		SUDO="sudo"
@@ -259,6 +299,13 @@ _last_scrub_date() {
 		awk '{print $1}'
 }
 
+##
+# Parameters:
+# $1: POOL: The name of pool.
+#
+# Return:
+# A Unix timestamp
+##
 _get_last_scrub() {
 	LAST_SCRUB_DATE="$(_last_scrub_date "$1")"
 	case "$LAST_SCRUB_DATE" in
@@ -271,6 +318,13 @@ _get_last_scrub() {
 	esac
 }
 
+##
+# Parameters:
+# $1: OUTPUT: The output of zpool status POOL
+#
+# Return:
+# A datetime formated in ctime format.
+##
 _grab_ctime_from_zpool_status() {
 # Www Mmm dd hh:mm:ss yyyy,
 REGEX="\
@@ -299,8 +353,6 @@ s/\
 		sed -n -E "$REGEX"
 }
 
-
-
 ##
 # /* If there's never been a scan, there's not much to say. */
 #   "none requested\n"
@@ -326,6 +378,9 @@ _get_last_scrub_from_zpool_status() {
 	echo
 }
 
+##
+# Assemble the performace data
+##
 _performance_data() {
 	echo "| \
 last_ago=$DIFF \
@@ -336,6 +391,9 @@ speed=$SPEED \
 time=$TIME"
 }
 
+##
+# Grab the scrub process from zpool status
+##
 _progress_grep() {
 	zpool status "$1" | \
 		grep -E -o '[[:digit:],]*%'
