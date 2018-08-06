@@ -30,12 +30,6 @@ setup() {
 	[ -z "$(_progress_grep first_critical_zpool)" ]
 }
 
-@test "function _progress_normalize" {
-	[ "$(_progress_normalize 96,19%)" = '96.19' ]
-	[ "$(_progress_normalize 72,38%)" = '72.38' ]
-	[ -z "$(_progress_normalize)" ]
-}
-
 @test "function _progress" {
 	[ "$(_progress first_ok_zpool)" = '96.19' ]
 	[ "$(_progress first_warning_zpool)" = '72.38' ]
