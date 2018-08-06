@@ -104,13 +104,15 @@ _ctime_to_timestamp() {
 ##
 _datetime_to_timestamp() {
 	local OPTIONS
+	local DATETIME="$1"
 	if [ "$OS" = 'Linux' ]; then
-		OPTIONS="--date $(echo "$1" | tr '.' ' ')"
+		DATETIME="$(echo "$DATETIME" | tr '.' ' ')"
+		OPTIONS="--date"
 	# FreeBSD, Darwin
 	else
-		OPTIONS="-j -f %Y-%m-%d.%H:%M:%S  $1"
+		OPTIONS="-j -f %Y-%m-%d.%H:%M:%S"
 	fi
-	date $OPTIONS +%s
+	date $OPTIONS "$DATETIME" +%s
 }
 
 PROJECT_PAGES='https://github.com/Josef-Friedrich/check_zpool_scrub
