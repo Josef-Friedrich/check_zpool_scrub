@@ -278,21 +278,36 @@ STATE_WARNING=1
 STATE_CRITICAL=2
 STATE_UNKNOWN=3
 
+########################################################################
+# Detect the date of the last scrub.
+#
+# Grab the date string of the last scrub from "zpool status". If the
+# last scrub was canceled than grab the last scrub date from "zpool
+# history". On old pool with a lot of history grabing only from "zpool
+# history" is very slow.
+########################################################################
+
+# Functions:
+
+# _last_scrub_history_grab_datetime_from_string
+# _last_scrub_history_grab_datetime_from_command
+# _last_scrub_history_to_timestamp
+# _last_scrub_status_grab_ctime_from_string
+# _last_scrub_status_grab_ctime_from_command
+# _last_scrub_status_to_timestamp
+# _get_last_scrub_timestamp
+
 ##
-# Grab a datetime string from zpool history POOL
+# Grab a datetime string from a string
 #
 # Parameters:
-# $1: POOL: The name of pool.
+#   $1: A string
 #
 # Return:
-# A datetime string in the format %Y-%m-%d.%H:%M:%S
+#   A datetime string in the format %Y-%m-%d.%H:%M:%S
 ##
-_last_scrub_date() {
-	if [ -n "$OPT_SUDO" ]; then
-		SUDO="sudo"
-	fi
-	$SUDO zpool history "$1" > /dev/null 2>&1 || echo "FAIL"
-	$SUDO zpool history "$1" | \
+_last_scrub_history_grab_datetime_from_string() {
+	echo "$1" | \
 		grep 'zpool scrub' | \
 		grep -v 'zpool scrub -s' | \
 		tail -n 1 | \
@@ -300,34 +315,47 @@ _last_scrub_date() {
 }
 
 ##
+# Grab a datetime string from zpool history POOL
+#
 # Parameters:
-# $1: POOL: The name of pool.
+#   $1: The name of the pool.
 #
 # Return:
-# A Unix timestamp
+#   A datetime string in the format %Y-%m-%d.%H:%M:%S
 ##
-_get_last_scrub() {
-	LAST_SCRUB_DATE="$(_last_scrub_date "$1")"
-	case "$LAST_SCRUB_DATE" in
-	FAIL*)
-		echo -1 ;;
-	"") # Never been scrubbed
-		echo "$(_datetime_to_timestamp 1970-01-01.01:01:01)" ;;
-	*)
-		echo "$(_datetime_to_timestamp "$LAST_SCRUB_DATE")" ;;
-	esac
+_last_scrub_history_grab_datetime_from_command() {
+	if [ -n "$OPT_SUDO" ]; then
+		SUDO="sudo"
+	fi
+	_last_scrub_history_grab_datetime_from_string "$($SUDO zpool history "$1")"
 }
 
 ##
 # Parameters:
-# $1: OUTPUT: The output of zpool status POOL
+#   $1: The name of the pool.
 #
 # Return:
-# A datetime formated in ctime format.
+#   A Unix timestamp
 ##
-_grab_ctime_from_zpool_status() {
-# Www Mmm dd hh:mm:ss yyyy,
-REGEX="\
+_last_scrub_history_to_timestamp() {
+	local DATETIME
+	DATETIME="$(_last_scrub_history_grab_datetime_from_command "$1")"
+	if [ -n "$DATETIME" ]; then
+		_datetime_to_timestamp "$DATETIME"
+	fi
+}
+
+##
+# Parameters:
+#   $1: The output of "zpool status POOL"
+#
+# Return:
+#   A datetime formated in ctime format.
+##
+_last_scrub_status_grab_ctime_from_string() {
+	# Www Mmm dd hh:mm:ss yyyy,
+	local REGEX
+	REGEX="\
 s/\
 ^.*\
 (in progress since|errors on)\
@@ -373,9 +401,39 @@ s/\
 #   "scrub in progress since %s"
 #
 #   "resilver in progress since %s"
+#
+# Parameters:
+#   $1: The name of the pool.
 ##
-_get_last_scrub_from_zpool_status() {
-	echo
+_last_scrub_status_grab_ctime_from_command() {
+	_last_scrub_status_grab_ctime_from_string "$(zpool status "$1" )"
+}
+
+##
+# Parameters:
+#   $1: The name of the pool.
+##
+_last_scrub_status_to_timestamp() {
+	local CTIME
+	CTIME="$(_last_scrub_status_grab_ctime_from_command "$1")"
+	if [ -n "$CTIME" ]; then
+		_ctime_to_timestamp "$CTIME"
+	fi
+}
+
+##
+#
+# Parameters:
+#   $1: The name of the pool.
+##
+_get_last_scrub_timestamp() {
+	local TIMESTAMP
+	TIMESTAMP=$(_last_scrub_status_to_timestamp "$1")
+	if [ -n "$TIMESTAMP" ]; then
+		echo "$TIMESTAMP"
+	else
+		_last_scrub_history_to_timestamp "$1"
+	fi
 }
 
 ##
@@ -391,8 +449,18 @@ speed=$SPEED \
 time=$TIME"
 }
 
+########################################################################
+# progress
+########################################################################
+
 ##
-# Grab the scrub process from zpool status
+# Grab the scrub progress from zpool status
+#
+# Parameters:
+#   $1: The name of the pool
+#
+# Return:
+#   A progress string (85,3%)
 ##
 _progress_grep() {
 	zpool status "$1" | \
@@ -415,9 +483,9 @@ _progress() {
 	fi
 }
 
-##
+########################################################################
 # Speed
-##
+########################################################################
 
 _speed_grep() {
 	zpool status "$1" | \
@@ -446,9 +514,9 @@ _speed() {
 	fi
 }
 
-##
-# time to go
-##
+########################################################################
+# Time to go
+########################################################################
 
 ##
 # Extract the time to go from the zpool status output.
@@ -524,7 +592,7 @@ if ! zpool status "$OPT_POOL" > /dev/null 2>&1; then
 fi
 
 NOW=$(_now_to_timestamp)
-LAST_SCRUB=$(_get_last_scrub "$OPT_POOL")
+LAST_SCRUB=$(_last_scrub_history_to_timestamp "$OPT_POOL")
 DIFF=$((NOW - LAST_SCRUB))
 
 if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then

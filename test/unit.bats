@@ -10,14 +10,14 @@ setup() {
 # last scrub
 ##
 
-@test "function _last_scrub_date" {
-	result=$(_last_scrub_date last_ok_zpool)
+@test "function _last_scrub_history_grab_datetime_from_command" {
+	result=$(_last_scrub_history_grab_datetime_from_command last_ok_zpool)
 	[ "$result" = '2017-07-17.10:25:48' ]
 }
 
-@test "function _get_last_scrub" {
-	[ "$(_get_last_scrub first_critical_zpool)" -eq 1497601547 ]
-	[ "$(_get_last_scrub last_ok_zpool)" -eq 1500279948 ]
+@test "function _last_scrub_history_to_timestamp" {
+	[ "$(_last_scrub_history_to_timestamp first_critical_zpool)" -eq 1497601547 ]
+	[ "$(_last_scrub_history_to_timestamp last_ok_zpool)" -eq 1500279948 ]
 }
 
 ##

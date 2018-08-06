@@ -70,11 +70,11 @@ setup() {
 	[ "$(_time_to_min 11h11m)" -eq 671 ]
 }
 
-@test "function _grab_ctime_from_zpool_status" {
-	result="$(_grab_ctime_from_zpool_status '  scan: scrub in progress since Sun Aug 13 00:24:02 2017')"
+@test "function _last_scrub_status_grab_ctime_from_string" {
+	result="$(_last_scrub_status_grab_ctime_from_string '  scan: scrub in progress since Sun Aug 13 00:24:02 2017')"
 	[ "$result" = 'Sun Aug 13 00:24:02 2017' ]
 
-	result="$(_grab_ctime_from_zpool_status '  scan: scrub repaired 0 in 266h29m with 0 errors on Tue Aug 15 01:12:31 2017')"
+	result="$(_last_scrub_status_grab_ctime_from_string '  scan: scrub repaired 0 in 266h29m with 0 errors on Tue Aug 15 01:12:31 2017')"
 	[ "$result" = 'Tue Aug 15 01:12:31 2017' ]
 
 	ZPOOL_STATUS="  pool: data
@@ -82,9 +82,9 @@ setup() {
   scan: scrub in progress since Sun Aug 13 00:24:02 2017
    7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
    0 repaired, 72,38% done"
-	result="$(_grab_ctime_from_zpool_status "$ZPOOL_STATUS")"
+	result="$(_last_scrub_status_grab_ctime_from_string "$ZPOOL_STATUS")"
 	[ "$result" = 'Sun Aug 13 00:24:02 2017' ]
 
-	result="$(_grab_ctime_from_zpool_status '  scan: scrub canceled on Tue Aug 15 01:12:31 2017')"
+	result="$(_last_scrub_status_grab_ctime_from_string '  scan: scrub canceled on Tue Aug 15 01:12:31 2017')"
 	[ "$result" = '' ]
 }
