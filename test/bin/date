@@ -54,40 +54,34 @@ case $@ in
 		exit 0
 		;;
 
-	# ctime_to_timestamp
-	'--date Mon Jul 17 10:25:48 2017 +%s'|'-j -f %c Mon Jul 17 10:25:48 2017 +%s')
-		echo 1500279948
-		exit 0
-		;;
-
-	# _datetime_to_timestamp
+	# _ctime_to_timestamp
 
 	# first_critical_zpool
-	'--date 2017-06-16 10:25:47 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-06-16.10:25:47 +%s')
+	'--date Fri Jun 16 10:25:47 2017 +%s'|'-j -f %c Fri Jun 16 10:25:47 2017 +%s')
 		echo 1497601547
 		exit 0
 		;;
 
 	# last_warning_zpool
-	'--date 2017-06-16 10:25:48 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-06-16.10:25:48 +%s')
+	'--date Fri Jun 16 10:25:48 2017 +%s'|'-j -f %c Fri Jun 16 10:25:48 2017 +%s')
 		echo 1497601548
 		exit 0
 		;;
 
 	# first_warning_zpool
-	'--date 2017-07-17 10:25:47 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-07-17.10:25:47 +%s')
+	'--date Mon Jul 17 10:25:47 2017 +%s'|'-j -f %c Mon Jul 17 10:25:47 2017 +%s')
 		echo 1500279947
 		exit 0
 		;;
 
 	# last_ok_zpool
-	'--date 2017-07-17 10:25:48 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-07-17.10:25:48 +%s')
+	'--date Mon Jul 17 10:25:48 2017 +%s'|'-j -f %c Mon Jul 17 10:25:48 2017 +%s')
 		echo 1500279948
 		exit 0
 		;;
 
 	# first_ok_zpool
-	'--date 2017-08-17 10:25:48 +%s'|'-j -f %Y-%m-%d.%H:%M:%S 2017-08-17.10:25:48 +%s')
+	'--date Thu Aug 17 10:25:48 2017 +%s'|'-j -f %c Thu Aug 17 10:25:48 2017 +%s')
 		echo 1502958348
 		exit 0
 		;;

@@ -54,8 +54,8 @@ critical: 2017-06-16 10:25:47  ->
 
 # Dates chosen for testing
 
-* `first_critical_zpool`: `1497601547` (`2017-06-16 10:25:47`) -> first critical date
-* `last_warning_zpool`: `1497601548` (`2017-06-16 10:25:48`) -> last warning date
-* `first_warning_zpool`: `1500279947` (`2017-07-17 10:25:47`) -> first warning date
-* `last_ok_zpool`: `1500279948` (`2017-07-17 10:25:48`) -> last ok date
-* `first_ok_zpool`: `1502958348` (`2017-08-17 10:25:48`) -> now
+* `first_critical_zpool`: `1497601547` (`2017-06-16 10:25:47`, `Fri Jun 16 10:25:47 2017`) -> first critical date
+* `last_warning_zpool`: `1497601548` (`2017-06-16 10:25:48`, `Fri Jun 16 10:25:48 2017`) -> last warning date
+* `first_warning_zpool`: `1500279947` (`2017-07-17 10:25:47`, `Mon Jul 17 10:25:47 2017`) -> first warning date
+* `last_ok_zpool`: `1500279948` (`2017-07-17 10:25:48`, `Mon Jul 17 10:25:48 2017`) -> last ok date
+* `first_ok_zpool`: `1502958348` (`2017-08-17 10:25:48`, `Thu Aug 17 10:25:48 2017`) -> now

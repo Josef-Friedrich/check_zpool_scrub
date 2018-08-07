@@ -10,7 +10,7 @@ case $@ in
 	'status first_ok_zpool')
 		echo '  pool: first_ok_zpool
  state: ONLINE
-  scan: scrub in progress since Tue Aug  1 23:20:24 2017
+  scan: scrub in progress since Thu Aug 17 10:25:48 2017
     9,12T scanned out of 9,48T at 1,90M/s, 55h33m to go
     0 repaired, 96,19% done
 config:
@@ -19,19 +19,32 @@ config:
 	data                                 ONLINE       0     0     0
 	  raidz1-0                           ONLINE       0     0     0
 	    ata-ST3000DM001-1CH166_Z1F324L3  ONLINE       0     0     0
-	    ata-ST3000DM001-1CH166_Z1F4KEG1  ONLINE       0     0     0
-	    ata-ST3000DM001-1CH166_Z1F4KDLX  ONLINE       0     0     0
-	    ata-ST3000DM001-1CH166_Z1F33FEM  ONLINE       0     0     0
 
 errors: No known data errors'
 		exit 0
 		;;
 
+	'status last_ok_zpool')
+		echo '  pool: first_ok_zpool
+ state: ONLINE
+  scan: scrub in progress since Mon Jul 17 10:25:48 2017
+    9,12T scanned out of 9,48T at 1,90M/s, 55h33m to go
+    0 repaired, 96,19% done
+config:
+
+	NAME                                 STATE     READ WRITE CKSUM
+	data                                 ONLINE       0     0     0
+	  raidz1-0                           ONLINE       0     0     0
+	    ata-ST3000DM001-1CH166_Z1F324L3  ONLINE       0     0     0
+
+errors: No known data errors'
+		exit 0
+		;;
 
 	'status first_warning_zpool')
 		echo '  pool: data
  state: ONLINE
-  scan: scrub in progress since Sun Aug 13 00:24:02 2017
+  scan: scrub in progress since Mon Jul 17 10:25:47 2017
     7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
     0 repaired, 72,38% done
 config:
@@ -40,9 +53,23 @@ config:
 	data                                          ONLINE       0     0     0
 	  raidz1-0                                    ONLINE       0     0     0
 	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4EHYCFSFV  ONLINE       0     0     0
-	    ata-WDC_WD30EZRX-00DC0B0_WD-WMC1T1621747  ONLINE       0     0     0
-	    ata-WDC_WD30EZRX-22D8PB0_WD-WCC4N4YR59K5  ONLINE       0     0     0
-	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4ENSLVC17  ONLINE       0     0     0
+
+errors: No known data errors'
+		exit 0
+		;;
+
+	'status last_warning_zpool')
+		echo '  pool: data
+ state: ONLINE
+  scan: scrub in progress since Fri Jun 16 10:25:48 2017
+    7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
+    0 repaired, 72,38% done
+config:
+
+	NAME                                          STATE     READ WRITE CKSUM
+	data                                          ONLINE       0     0     0
+	  raidz1-0                                    ONLINE       0     0     0
+	    ata-WDC_WD30EZRX-00SPEB0_WD-WCC4EHYCFSFV  ONLINE       0     0     0
 
 errors: No known data errors'
 		exit 0
@@ -52,55 +79,15 @@ errors: No known data errors'
 	'status first_critical_zpool')
 		echo '  pool: data
  state: ONLINE
-  scan: scrub repaired 0 in 266h29m with 0 errors on Tue Aug 15 01:12:31 2017
+  scan: scrub repaired 0 in 266h29m with 0 errors on Fri Jun 16 10:25:47 2017
 config:
 
 	NAME                                     STATE     READ WRITE CKSUM
 	data                                     ONLINE       0     0     0
 	  raidz1-0                               ONLINE       0     0     0
 	    ata-TOSHIBA_MD04ACA400_9614KMR9FSAA  ONLINE       0     0     0
-	    ata-TOSHIBA_MD04ACA400_86T2K4B3FSAA  ONLINE       0     0     0
-	    ata-TOSHIBA_MD04ACA400_86AIKA2QFSAA  ONLINE       0     0     0
-	    ata-TOSHIBA_MD04ACA400_86AIKA2PFSAA  ONLINE       0     0     0
 
 errors: No known data errors'
-		exit 0
-		;;
-
-	'history')
-		echo '2017-06-16.10:25:47 zpool scrub first_critical_zpool
-2017-06-16.10:25:48 zpool scrub last_warning_zpool
-2017-07-17.10:25:47 zpool scrub first_warning_zpool
-2017-07-17.10:25:48 zpool scrub last_ok_zpool
-2017-07-17.10:25:49 zpool scrub -s last_ok_zpool
-2017-08-17.10:25:48 zpool scrub first_ok_zpool'
-		exit 0
-		;;
-
-	'history first_critical_zpool')
-		echo '2017-06-16.10:25:47 zpool scrub first_critical_zpool'
-		exit 0
-		;;
-
-	'history last_warning_zpool')
-		echo '2017-06-16.10:25:48 zpool scrub last_warning_zpool'
-		exit 0
-		;;
-
-
-	'history first_warning_zpool')
-		echo '2017-07-17.10:25:47 zpool scrub first_warning_zpool'
-		exit 0
-		;;
-
-	'history last_ok_zpool')
-		echo '2017-07-17.10:25:48 zpool scrub last_ok_zpool
-2017-07-17.10:25:49 zpool scrub -s last_ok_zpool'
-		exit 0
-		;;
-
-	'history first_ok_zpool')
-		echo '2017-08-17.10:25:48 zpool scrub first_ok_zpool'
 		exit 0
 		;;
 

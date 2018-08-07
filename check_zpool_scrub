@@ -123,29 +123,6 @@ _ctime_to_timestamp() {
 	date $OPTIONS "$1" +%s
 }
 
-##
-# Convert a date string in the format %Y-%m-%d.%H:%M:%S to a UNIX
-# timestamp.
-#
-# Parameters:
-#   $1: %Y-%m-%d.%H:%M:%S
-#
-# Return:
-#   UNIX timestamp
-##
-_datetime_to_timestamp() {
-	local OPTIONS
-	local DATETIME="$1"
-	if [ "$OS" = 'Linux' ]; then
-		DATETIME="$(echo "$DATETIME" | tr '.' ' ')"
-		OPTIONS="--date"
-	# FreeBSD, Darwin
-	else
-		OPTIONS="-j -f %Y-%m-%d.%H:%M:%S"
-	fi
-	date $OPTIONS "$DATETIME" +%s
-}
-
 PROJECT_PAGES='https://github.com/Josef-Friedrich/check_zpool_scrub
 https://exchange.icinga.com/joseffriedrich/check_zpool_scrub
 https://exchange.nagios.org/directory/Plugins/System-Metrics/File-System/check_zpool_scrub/details'
@@ -163,7 +140,7 @@ Usage: check_zpool_scrub <options>
 
 Options:
  -c, --critical=OPT_CRITICAL
-    Interval in seconds for critical state. This problem is specifically in regards to the date command.
+    Interval in seconds for critical state.
  -p,--pool=OPT_POOL
     Name of the pool
  -h, --help
@@ -193,7 +170,8 @@ Performance data:
 
 Details about the implementation of this monitoring plugin:
 
-This monitoring plugin For performance reasons
+This monitoring plugin grabs the last scrub date from the command
+'zpool status POOL'.
 "
 
 _getopts() {
@@ -293,61 +271,10 @@ STATE_UNKNOWN=3
 
 # Functions:
 
-# _last_scrub_history_grab_datetime_from_string
-# _last_scrub_history_grab_datetime_from_command
-# _last_scrub_history_to_timestamp
-# _last_scrub_status_grab_ctime_from_string
-# _last_scrub_status_grab_ctime_from_command
-# _last_scrub_status_to_timestamp
+# _last_scrub_grab_ctime_from_string
+# _last_scrub_grab_ctime_from_command
+# _last_scrub_to_timestamp
 # _get_last_scrub_timestamp
-
-##
-# Grab a datetime string from a string
-#
-# Parameters:
-#   $1: A string
-#
-# Return:
-#   A datetime string in the format %Y-%m-%d.%H:%M:%S
-##
-_last_scrub_history_grab_datetime_from_string() {
-	echo "$1" | \
-		grep 'zpool scrub' | \
-		grep -v 'zpool scrub -s' | \
-		tail -n 1 | \
-		awk '{print $1}'
-}
-
-##
-# Grab a datetime string from zpool history POOL
-#
-# Parameters:
-#   $1: The name of the pool.
-#
-# Return:
-#   A datetime string in the format %Y-%m-%d.%H:%M:%S
-##
-_last_scrub_history_grab_datetime_from_command() {
-	if [ -n "$OPT_SUDO" ]; then
-		SUDO="sudo"
-	fi
-	_last_scrub_history_grab_datetime_from_string "$($SUDO zpool history "$1")"
-}
-
-##
-# Parameters:
-#   $1: The name of the pool.
-#
-# Return:
-#   A Unix timestamp
-##
-_last_scrub_history_to_timestamp() {
-	local DATETIME
-	DATETIME="$(_last_scrub_history_grab_datetime_from_command "$1")"
-	if [ -n "$DATETIME" ]; then
-		_datetime_to_timestamp "$DATETIME"
-	fi
-}
 
 ##
 # /* If there's never been a scan, there's not much to say. */
@@ -376,29 +303,15 @@ _last_scrub_history_to_timestamp() {
 # Return:
 #   A datetime formated in ctime format.
 ##
-_last_scrub_status_grab_ctime_from_string() {
+_last_scrub_grab_ctime_from_string() {
 	# Www Mmm dd hh:mm:ss yyyy,
 	local REGEX
 	REGEX="\
 s/\
 ^.*\
-(in progress since|errors on)\
+(canceled on|in progress since|errors on)\
  \
-(\
-[[:alpha:]]{3}\
- \
-[[:alpha:]]{3}\
- \
-[[:digit:]]{2}\
- \
-[[:digit:]]{2}\
-:\
-[[:digit:]]{2}\
-:\
-[[:digit:]]{2}\
- \
-[[:digit:]]{4}\
-).*$\
+(.*)$\
 /\2/p"
 	echo "$1" | \
 		grep '  scan: ' | \
@@ -409,34 +322,19 @@ s/\
 # Parameters:
 #   $1: The name of the pool.
 ##
-_last_scrub_status_grab_ctime_from_command() {
-	_last_scrub_status_grab_ctime_from_string "$(zpool status "$1" )"
+_last_scrub_grab_ctime_from_command() {
+	_last_scrub_grab_ctime_from_string "$(zpool status "$1" )"
 }
 
 ##
 # Parameters:
 #   $1: The name of the pool.
 ##
-_last_scrub_status_to_timestamp() {
+_last_scrub_to_timestamp() {
 	local CTIME
-	CTIME="$(_last_scrub_status_grab_ctime_from_command "$1")"
+	CTIME="$(_last_scrub_grab_ctime_from_command "$1")"
 	if [ -n "$CTIME" ]; then
 		_ctime_to_timestamp "$CTIME"
-	fi
-}
-
-##
-#
-# Parameters:
-#   $1: The name of the pool.
-##
-_get_last_scrub_timestamp() {
-	local TIMESTAMP
-	TIMESTAMP=$(_last_scrub_status_to_timestamp "$1")
-	if [ -n "$TIMESTAMP" ]; then
-		echo "$TIMESTAMP"
-	else
-		_last_scrub_history_to_timestamp "$1"
 	fi
 }
 
@@ -596,7 +494,7 @@ if ! zpool status "$OPT_POOL" > /dev/null 2>&1; then
 fi
 
 NOW=$(_now_to_timestamp)
-LAST_SCRUB=$(_get_last_scrub_timestamp "$OPT_POOL")
+LAST_SCRUB=$(_last_scrub_to_timestamp "$OPT_POOL")
 DIFF=$((NOW - LAST_SCRUB))
 
 if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
