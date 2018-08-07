@@ -163,7 +163,7 @@ Usage: check_zpool_scrub <options>
 
 Options:
  -c, --critical=OPT_CRITICAL
-    Interval in seconds for critical state.This problem is specifically in regards to the date command.
+    Interval in seconds for critical state. This problem is specifically in regards to the date command.
  -p,--pool=OPT_POOL
     Name of the pool
  -h, --help
@@ -190,6 +190,10 @@ Performance data:
     MB per second
  - time
     Time to go in minutes
+
+Details about the implementation of this monitoring plugin:
+
+This monitoring plugin For performance reasons
 "
 
 _getopts() {
@@ -346,6 +350,26 @@ _last_scrub_history_to_timestamp() {
 }
 
 ##
+# /* If there's never been a scan, there's not much to say. */
+#   "none requested\n"
+#     -> scan: none requested
+#
+# /* Scan is finished or canceled. */
+#   "scrub repaired %s in %lluh%um with %llu errors on %s"
+#      -> scan: scrub repaired 0 in 0h0m with 0 errors on Mon Aug  6 16:30:52 2018
+#
+#   "resilvered %s in %lluh%um with %llu errors on %s"
+#
+#   "scrub canceled on %s"
+#
+#   "resilver canceled on %s"
+#
+# /* Scan is in progress. */
+#
+#   "scrub in progress since %s"
+#
+#   "resilver in progress since %s"
+#
 # Parameters:
 #   $1: The output of "zpool status POOL"
 #
@@ -382,26 +406,6 @@ s/\
 }
 
 ##
-# /* If there's never been a scan, there's not much to say. */
-#   "none requested\n"
-#     -> scan: none requested
-#
-# /* Scan is finished or canceled. */
-#   "scrub repaired %s in %lluh%um with %llu errors on %s"
-#      -> scan: scrub repaired 0 in 0h0m with 0 errors on Mon Aug  6 16:30:52 2018
-#
-#   "resilvered %s in %lluh%um with %llu errors on %s"
-#
-#   "scrub canceled on %s"
-#
-#   "resilver canceled on %s"
-#
-# /* Scan is in progress. */
-#
-#   "scrub in progress since %s"
-#
-#   "resilver in progress since %s"
-#
 # Parameters:
 #   $1: The name of the pool.
 ##
@@ -592,7 +596,7 @@ if ! zpool status "$OPT_POOL" > /dev/null 2>&1; then
 fi
 
 NOW=$(_now_to_timestamp)
-LAST_SCRUB=$(_last_scrub_history_to_timestamp "$OPT_POOL")
+LAST_SCRUB=$(_get_last_scrub_timestamp "$OPT_POOL")
 DIFF=$((NOW - LAST_SCRUB))
 
 if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
