@@ -145,8 +145,6 @@ Options:
     Name of the pool
  -h, --help
     Show this help.
- -r, --sudo
-    Run 'zpool history' with the help of sudo.
  -s, --short-description
     Show a short description / summary.
  -v, --version
@@ -175,12 +173,11 @@ This monitoring plugin grabs the last scrub date from the command
 "
 
 _getopts() {
-	while getopts ':c:hp:rsvw:-:' OPT ; do
+	while getopts ':c:hp:svw:-:' OPT ; do
 		case $OPT in
 			c) OPT_CRITICAL=$OPTARG ;;
 			h) echo "$USAGE" ; exit 0 ;;
 			p) OPT_POOL="$OPTARG" ;;
-			r) OPT_SUDO=1 ;;
 			s) echo "$SHORT_DESCRIPTION" ; exit 0 ;;
 			v) echo "$VERSION" ; exit 0 ;;
 			w) OPT_WARNING=$OPTARG ;;
@@ -213,10 +210,6 @@ _getopts() {
 						OPT_POOL="$LONG_OPTARG"
 						;;
 
-					sudo)
-						OPT_SUDO=1
-						;;
-
 					short-description)
 						echo "$SHORT_DESCRIPTION"
 						exit 0
@@ -228,7 +221,7 @@ _getopts() {
 						OPT_WARNING=$LONG_OPTARG
 						;;
 
-					help*|short-description*|sudo*|version*)
+					help*|short-description*|version*)
 						echo "No argument allowed for the option “--$OPTARG”!" >&2
 						exit 4
 						;;

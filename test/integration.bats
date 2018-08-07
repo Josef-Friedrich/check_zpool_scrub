@@ -141,13 +141,3 @@ was performed on 2017-08-17.10:25:48 \
 speed=1.90 time=3333"
 	[ "${lines[0]}" = "$TEST" ]
 }
-
-@test "run ./check_zpool_scrub --sudo -p first_ok_zpool OUTPUT" {
-	run ./check_zpool_scrub --sudo -p first_ok_zpool
-	[ "$status" -eq 0 ]
-	local TEST="OK: The last scrub on zpool “first_ok_zpool” \
-was performed on 2017-08-17.10:25:48 \
-| last_ago=0 warning=2678400 critical=5356800 progress=96.19 \
-speed=1.90 time=3333"
-	[ "${lines[0]}" = "$TEST" ]
-}

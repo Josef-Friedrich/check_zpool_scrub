@@ -68,23 +68,6 @@ setup() {
 	[ "$status" -eq 4 ]
 }
 
-# -r
-
-@test "_getopts -r" {
-	_getopts -r
-	[ "$OPT_SUDO" = 1 ]
-}
-
-@test "_getopts --sudo" {
-	_getopts --sudo
-	[ "$OPT_SUDO" = 1 ]
-}
-
-@test "_getopts --sudo=123" {
-	run _getopts --sudo=123
-	[ "$status" -eq 4 ]
-}
-
 # -s
 
 @test "_getopts -s" {
