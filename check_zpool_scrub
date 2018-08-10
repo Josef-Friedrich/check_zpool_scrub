@@ -518,7 +518,7 @@ if [ $LAST_SCRUB = -1 ]; then
 	RETURN=$STATE_UNKNOWN
 	echo "UNKNOWN: Failed to run zpool history"
 else
-	echo "$MESSAGE The last scrub on zpool “${OPT_POOL}” was performed on $(_timestamp_to_datetime $LAST_SCRUB) $(_performance_data)"
+	echo "$MESSAGE The last scrub on zpool '${OPT_POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) $(_performance_data)"
 fi
 
 exit $RETURN
