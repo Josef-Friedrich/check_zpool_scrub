@@ -359,7 +359,8 @@ time=$TIME"
 ##
 _progress_grep() {
 	zpool status "$1" | \
-		grep -E -o '[[:digit:],]*%'
+		grep ' done' | \
+		sed -n -E "s/^.*, ([[:digit:]]{1,3},[[:digit:]]{1,2}%) done$/\1/p"
 }
 
 _progress_normalize() {
