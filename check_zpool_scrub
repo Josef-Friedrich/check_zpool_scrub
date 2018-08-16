@@ -493,7 +493,7 @@ DIFF=$((NOW - LAST_SCRUB))
 
 if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
 	echo '<warntime> must be smaller than <crittime>' >&2
-	_usage  >&2
+	echo "$USAGE" >&2
 	exit $STATE_UNKNOWN
 fi
 
