@@ -515,9 +515,9 @@ else
 	MESSAGE="OK:"
 fi
 
-if [ $LAST_SCRUB = -1 ]; then
+if [ -z "$LAST_SCRUB" ]; then
 	RETURN=$STATE_UNKNOWN
-	echo "UNKNOWN: Failed to run zpool history"
+	echo "UNKNOWN: The pool has never had a scrub."
 else
 	echo "$MESSAGE The last scrub on zpool '${OPT_POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) $(_performance_data)"
 fi

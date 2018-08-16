@@ -113,7 +113,6 @@ setup() {
 
 @test "run ./check_zpool_scrub -p first_critical_zpool OUTPUT" {
 	run ./check_zpool_scrub -p first_critical_zpool
-	echo $lines > $HOME/debug
 	[ "$status" -eq 2 ]
 	local TEST="CRITICAL: The last scrub on zpool \
 'first_critical_zpool' was performed on 2017-06-16.10:25:47 \
@@ -139,5 +138,12 @@ speed=57.4 time=852"
 was performed on 2017-08-17.10:25:48 \
 | last_ago=0 warning=2678400 critical=5356800 progress=96.19 \
 speed=1.90 time=3333"
+	[ "${lines[0]}" = "$TEST" ]
+}
+
+@test "run ./check_zpool_scrub -p never_scrubbed_zpool OUTPUT" {
+	run ./check_zpool_scrub -p never_scrubbed_zpool
+	[ "$status" -eq 3 ]
+	local TEST="UNKNOWN: The pool has never had a scrub."
 	[ "${lines[0]}" = "$TEST" ]
 }
