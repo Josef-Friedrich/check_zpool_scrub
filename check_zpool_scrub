@@ -467,59 +467,85 @@ _time() {
 	fi
 }
 
+########################################################################
+# Main functions
+########################################################################
+
+##
+# Check one ZFS pool.
+#
+# Parameters:
+#   $1: The name of the pool
+##
+_check_one_pool() {
+	local POOL="$1" NOW LAST_SCRUB DIFF PROGRESS SPEED TIME MESSAGE
+
+	if ! zpool status "$POOL" > /dev/null 2>&1; then
+		echo "“$POOL” is no ZFS pool!" >&2
+		echo "$USAGE" >&2
+		exit $STATE_UNKNOWN
+	fi
+
+	NOW=$(_now_to_timestamp)
+	LAST_SCRUB=$(_last_scrub_to_timestamp "$POOL")
+	DIFF=$((NOW - LAST_SCRUB))
+
+	# OPT_POOL: The name of the ZFS pool.
+	PROGRESS=$(_progress "$POOL")
+	SPEED="$(_speed "$POOL")"
+	TIME="$(_time "$POOL")"
+
+	RETURN=STATE_UNKNOWN
+
+	if [ "$DIFF" -gt "$OPT_CRITICAL" ]; then
+		RETURN=$STATE_CRITICAL
+		MESSAGE="CRITICAL:"
+	elif [ "$DIFF" -gt "$OPT_WARNING" ]; then
+		RETURN=$STATE_WARNING
+		MESSAGE="WARNING:"
+	else
+		RETURN=$STATE_OK
+		MESSAGE="OK:"
+	fi
+
+	if [ -z "$LAST_SCRUB" ]; then
+		RETURN=$STATE_UNKNOWN
+		echo "UNKNOWN: The pool has never had a scrub."
+	else
+		echo "$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) $(_performance_data)"
+	fi
+}
+
+##
+# Main function to jump in on execution.
+#
+# Parameters:
+#   $@: All positional arguments provided by the script.
+##
+_main() {
+	_getopts $@
+
+	if [ -z "$OPT_WARNING" ]; then
+		# 1 month 60*60*24*31
+		OPT_WARNING=2678400
+	fi
+
+	if [ -z "$OPT_CRITICAL" ]; then
+		# 2 month 60*60*24*31*2
+		OPT_CRITICAL=5356800
+	fi
+
+	if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
+		echo '<warntime> must be smaller than <crittime>' >&2
+		echo "$USAGE" >&2
+		exit $STATE_UNKNOWN
+	fi
+
+	_check_one_pool "$OPT_POOL"
+
+	exit $RETURN
+}
+
 ## This SEPARATOR is required for test purposes. Please don’t remove! ##
 
-_getopts $@
-
-if [ -z "$OPT_WARNING" ]; then
-	# 1 month 60*60*24*31
-	OPT_WARNING=2678400
-fi
-
-if [ -z "$OPT_CRITICAL" ]; then
-	# 2 month 60*60*24*31*2
-	OPT_CRITICAL=5356800
-fi
-
-if ! zpool status "$OPT_POOL" > /dev/null 2>&1; then
-	echo "“$OPT_POOL” is no ZFS pool!" >&2
-	echo "$USAGE" >&2
-	exit $STATE_UNKNOWN
-fi
-
-NOW=$(_now_to_timestamp)
-LAST_SCRUB=$(_last_scrub_to_timestamp "$OPT_POOL")
-DIFF=$((NOW - LAST_SCRUB))
-
-if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
-	echo '<warntime> must be smaller than <crittime>' >&2
-	echo "$USAGE" >&2
-	exit $STATE_UNKNOWN
-fi
-
-# OPT_POOL: The name of the ZFS pool.
-PROGRESS=$(_progress "$OPT_POOL")
-SPEED="$(_speed "$OPT_POOL")"
-TIME="$(_time "$OPT_POOL")"
-
-RETURN=STATE_UNKNOWN
-
-if [ "$DIFF" -gt "$OPT_CRITICAL" ]; then
-	RETURN=$STATE_CRITICAL
-	MESSAGE="CRITICAL:"
-elif [ "$DIFF" -gt "$OPT_WARNING" ]; then
-	RETURN=$STATE_WARNING
-	MESSAGE="WARNING:"
-else
-	RETURN=$STATE_OK
-	MESSAGE="OK:"
-fi
-
-if [ -z "$LAST_SCRUB" ]; then
-	RETURN=$STATE_UNKNOWN
-	echo "UNKNOWN: The pool has never had a scrub."
-else
-	echo "$MESSAGE The last scrub on zpool '${OPT_POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) $(_performance_data)"
-fi
-
-exit $RETURN
+_main $@
