@@ -550,7 +550,20 @@ _main() {
 		exit $STATE_UNKNOWN
 	fi
 
-	_check_one_pool "$OPT_POOL"
+
+	if [ -n "$OPT_POOL" ]; then
+		_check_one_pool "$OPT_POOL"
+	else
+		# sort in reverse order, because we append in that order
+		POOLS=$(zpool list -H -o name | sort -r)
+		for POOL in ${POOLS}; do
+			_check_one_pool "$OPT_POOL"
+			LAST_STATE=$?
+			if [ "${LAST_STATE}" -gt "${STATE}" ]; then
+				STATE="${LAST_STATE}"
+			fi
+		done
+	fi
 
 	exit $RETURN
 }
