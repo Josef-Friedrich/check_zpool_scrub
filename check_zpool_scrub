@@ -247,11 +247,22 @@ _getopts() {
 	done
 }
 
+########################################################################
+# Global variables
+########################################################################
+
+STATE=
+
 # Exit codes
 STATE_OK=0
 STATE_WARNING=1
 STATE_CRITICAL=2
 STATE_UNKNOWN=3
+
+# Message of one pool
+MESSAGE=
+# Performance data of one pool
+PERFORMANCE_DATA=
 
 ########################################################################
 # Detect the date of the last scrub.
@@ -486,7 +497,7 @@ _time() {
 #   $1: The name of the pool
 ##
 _check_one_pool() {
-	local POOL="$1" NOW LAST_SCRUB DIFF PROGRESS SPEED TIME MESSAGE PERFORMANCE_DATA
+	local POOL="$1" NOW LAST_SCRUB DIFF PROGRESS SPEED TIME
 
 	if ! zpool status "$POOL" > /dev/null 2>&1; then
 		echo "“$POOL” is no ZFS pool!" >&2
