@@ -536,10 +536,11 @@ _check_one_pool() {
 
 	if [ -z "$LAST_SCRUB" ]; then
 		STATE=$STATE_UNKNOWN
-		echo "UNKNOWN: The pool has never had a scrub."
+		MESSAGE="UNKNOWN: The pool has never had a scrub."
+		PERFORMANCE_DATA=
 	else
 		PERFORMANCE_DATA="$(_performance_data "${POOL}" "${DIFF}" "${OPT_WARNING}" "${OPT_CRITICAL}" "${PROGRESS}" "${SPEED}" "${TIME}")"
-		echo "$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) | ${PERFORMANCE_DATA}"
+		MESSAGE="$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB)"
 	fi
 }
 
@@ -550,7 +551,7 @@ _check_one_pool() {
 #   $@: All positional arguments provided by the script.
 ##
 _main() {
-	local POOL POOLS LAST_STATE
+	local POOL POOLS LAST_STATE MESSAGES
 	_getopts $@
 
 	if [ -z "$OPT_WARNING" ]; then
@@ -572,6 +573,8 @@ _main() {
 
 	if [ -n "$OPT_POOL" ]; then
 		_check_one_pool "$OPT_POOL"
+		MESSAGES="$MESSAGE"
+		PERFORMANCE_DATAS="$PERFORMANCE_DATA"
 	else
 		# sort in reverse order, because we append in that order
 		POOLS=$(zpool list -H -o name | sort -r)
@@ -584,6 +587,11 @@ _main() {
 		done
 	fi
 
+	if [ -n "$PERFORMANCE_DATAS" ]; then
+		MESSAGES="$MESSAGES | $PERFORMANCE_DATAS"
+	fi
+
+	echo "$MESSAGES"
 	exit $STATE
 }
 
