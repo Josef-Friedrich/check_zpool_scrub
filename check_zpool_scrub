@@ -503,21 +503,21 @@ _check_one_pool() {
 	SPEED="$(_speed "$POOL")"
 	TIME="$(_time "$POOL")"
 
-	RETURN=STATE_UNKNOWN
+	STATE=STATE_UNKNOWN
 
 	if [ "$DIFF" -gt "$OPT_CRITICAL" ]; then
-		RETURN=$STATE_CRITICAL
+		STATE=$STATE_CRITICAL
 		MESSAGE="CRITICAL:"
 	elif [ "$DIFF" -gt "$OPT_WARNING" ]; then
-		RETURN=$STATE_WARNING
+		STATE=$STATE_WARNING
 		MESSAGE="WARNING:"
 	else
-		RETURN=$STATE_OK
+		STATE=$STATE_OK
 		MESSAGE="OK:"
 	fi
 
 	if [ -z "$LAST_SCRUB" ]; then
-		RETURN=$STATE_UNKNOWN
+		STATE=$STATE_UNKNOWN
 		echo "UNKNOWN: The pool has never had a scrub."
 	else
 		PERFORMANCE_DATA="$(_performance_data "${POOL}" "${DIFF}" "${OPT_WARNING}" "${OPT_CRITICAL}" "${PROGRESS}" "${SPEED}" "${TIME}")"
@@ -565,7 +565,7 @@ _main() {
 		done
 	fi
 
-	exit $RETURN
+	exit $STATE
 }
 
 ## This SEPARATOR is required for test purposes. Please don’t remove! ##
