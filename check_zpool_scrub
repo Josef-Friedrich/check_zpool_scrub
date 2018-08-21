@@ -333,15 +333,25 @@ _last_scrub_to_timestamp() {
 
 ##
 # Assemble the performace data
+# $1: DIFF
+# $2: OPT_WARNING
+# $3: OPT_CRITICAL
+# $4: PROGRESS
+# $5: SPEED
+# $6: TIME
+# $7: POOL
 ##
 _performance_data() {
+	if [ -n "$7" ]; then
+		local POOL="$7_"
+	fi
 	echo "| \
-last_ago=$DIFF \
-warning=$OPT_WARNING \
-critical=$OPT_CRITICAL \
-progress=$PROGRESS \
-speed=$SPEED \
-time=$TIME"
+${POOL}last_ago=$1 \
+${POOL}warning=$2 \
+${POOL}critical=$3 \
+${POOL}progress=$4 \
+${POOL}speed=$5 \
+${POOL}time=$6"
 }
 
 ########################################################################
@@ -478,7 +488,7 @@ _time() {
 #   $1: The name of the pool
 ##
 _check_one_pool() {
-	local POOL="$1" NOW LAST_SCRUB DIFF PROGRESS SPEED TIME MESSAGE
+	local POOL="$1" NOW LAST_SCRUB DIFF PROGRESS SPEED TIME MESSAGE PERFORMANCE_DATA
 
 	if ! zpool status "$POOL" > /dev/null 2>&1; then
 		echo "“$POOL” is no ZFS pool!" >&2
@@ -512,7 +522,8 @@ _check_one_pool() {
 		RETURN=$STATE_UNKNOWN
 		echo "UNKNOWN: The pool has never had a scrub."
 	else
-		echo "$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) $(_performance_data)"
+		PERFORMANCE_DATA="$(_performance_data "${DIFF}" "${OPT_WARNING}" "${OPT_CRITICAL}" "${PROGRESS}" "${SPEED}" "${TIME}" "${POOL}")"
+		echo "$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) ${PERFORMANCE_DATA}"
 	fi
 }
 
