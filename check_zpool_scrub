@@ -333,25 +333,23 @@ _last_scrub_to_timestamp() {
 
 ##
 # Assemble the performace data
-# $1: DIFF
-# $2: OPT_WARNING
-# $3: OPT_CRITICAL
-# $4: PROGRESS
-# $5: SPEED
-# $6: TIME
-# $7: POOL
+# $1: POOL
+# $2: DIFF
+# $3: OPT_WARNING
+# $4: OPT_CRITICAL
+# $5: PROGRESS
+# $6: SPEED
+# $7: TIME
 ##
 _performance_data() {
-	if [ -n "$7" ]; then
-		local POOL="$7_"
-	fi
-	echo "| \
-${POOL}last_ago=$1 \
-${POOL}warning=$2 \
-${POOL}critical=$3 \
-${POOL}progress=$4 \
-${POOL}speed=$5 \
-${POOL}time=$6"
+	local POOL="$1_"
+	echo "\
+${POOL}last_ago=$2 \
+${POOL}warning=$3 \
+${POOL}critical=$4 \
+${POOL}progress=$5 \
+${POOL}speed=$6 \
+${POOL}time=$7"
 }
 
 ########################################################################
@@ -522,8 +520,8 @@ _check_one_pool() {
 		RETURN=$STATE_UNKNOWN
 		echo "UNKNOWN: The pool has never had a scrub."
 	else
-		PERFORMANCE_DATA="$(_performance_data "${DIFF}" "${OPT_WARNING}" "${OPT_CRITICAL}" "${PROGRESS}" "${SPEED}" "${TIME}" "${POOL}")"
-		echo "$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) ${PERFORMANCE_DATA}"
+		PERFORMANCE_DATA="$(_performance_data "${POOL}" "${DIFF}" "${OPT_WARNING}" "${OPT_CRITICAL}" "${PROGRESS}" "${SPEED}" "${TIME}")"
+		echo "$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB) | ${PERFORMANCE_DATA}"
 	fi
 }
 
