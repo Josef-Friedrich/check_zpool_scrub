@@ -23,7 +23,30 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+########################################################################
+# Global variables
+########################################################################
+
 OS=$(uname)
+
+# The state the plugin exits with
+STATE=
+
+# Exit codes
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+
+# Message of one pool
+MESSAGE=
+# Performance data of one pool
+PERFORMANCE_DATA=
+
+# Options from the command line interface
+OPT_CRITICAL=
+OPT_POOL=
+OPT_WARNING=
 
 ########################################################################
 # Date functions
@@ -173,6 +196,7 @@ This monitoring plugin grabs the last scrub date from the command
 "
 
 _getopts() {
+	local OPT
 	while getopts ':c:hp:svw:-:' OPT ; do
 		case $OPT in
 			c) OPT_CRITICAL=$OPTARG ;;
@@ -246,23 +270,6 @@ _getopts() {
 		esac
 	done
 }
-
-########################################################################
-# Global variables
-########################################################################
-
-STATE=
-
-# Exit codes
-STATE_OK=0
-STATE_WARNING=1
-STATE_CRITICAL=2
-STATE_UNKNOWN=3
-
-# Message of one pool
-MESSAGE=
-# Performance data of one pool
-PERFORMANCE_DATA=
 
 ########################################################################
 # Detect the date of the last scrub.
@@ -543,6 +550,7 @@ _check_one_pool() {
 #   $@: All positional arguments provided by the script.
 ##
 _main() {
+	local POOL POOLS LAST_STATE
 	_getopts $@
 
 	if [ -z "$OPT_WARNING" ]; then
