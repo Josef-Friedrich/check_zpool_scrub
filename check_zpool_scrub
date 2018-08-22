@@ -169,7 +169,7 @@ Options:
  -c, --critical=OPT_CRITICAL
     Interval in seconds for critical state.
  -p,--pool=OPT_POOL
-    Name of the pool
+    Name of the pool.
  -h, --help
     Show this help.
  -s, --short-description
@@ -189,9 +189,9 @@ Performance data:
  - progress
     Percent 0 - 100
  - speed
-    MB per second
+    MB per second.
  - time
-    Time to go in minutes
+    Time to go in minutes.
 
 Details about the implementation of this monitoring plugin:
 
