@@ -584,7 +584,7 @@ _check_multiple_pools() {
 #   $@: All positional arguments provided by the script.
 ##
 _main() {
-	local POOL GLOBAL_STATE=0 MESSAGES PERFORMANCE_DATAS
+	local POOL
 	_getopts $@
 
 	if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
@@ -596,19 +596,16 @@ _main() {
 
 	if [ -n "$OPT_POOL" ]; then
 		_check_one_pool "$OPT_POOL"
-		MESSAGES="${MESSAGE}"
-		PERFORMANCE_DATAS="${PERFORMANCE_DATA}"
-		GLOBAL_STATE=${STATE}
 	else
 		_check_multiple_pools $(zpool list -H -o name)
 	fi
 
-	if [ -n "$PERFORMANCE_DATAS" ]; then
-		MESSAGES="$MESSAGES | warning=${OPT_WARNING} critical=${OPT_CRITICAL} ${PERFORMANCE_DATAS}"
+	if [ -n "$PERFORMANCE_DATA" ]; then
+		MESSAGE="$MESSAGE | warning=${OPT_WARNING} critical=${OPT_CRITICAL} ${PERFORMANCE_DATA}"
 	fi
 
-	echo "$MESSAGES"
-	exit $GLOBAL_STATE
+	echo "$MESSAGE"
+	exit $STATE
 }
 
 ## This SEPARATOR is required for test purposes. Please don’t remove! ##
