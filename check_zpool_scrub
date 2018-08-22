@@ -551,7 +551,7 @@ _check_one_pool() {
 #   $@: All positional arguments provided by the script.
 ##
 _main() {
-	local POOL POOLS LAST_STATE MESSAGES
+	local POOL POOLS LAST_STATE=0 MESSAGES
 	_getopts $@
 
 	if [ -z "$OPT_WARNING" ]; then
@@ -579,8 +579,7 @@ _main() {
 		# sort in reverse order, because we append in that order
 		POOLS=$(zpool list -H -o name | sort -r)
 		for POOL in ${POOLS}; do
-			_check_one_pool "$OPT_POOL"
-			LAST_STATE=$?
+			_check_one_pool "$POOL"
 			if [ "${LAST_STATE}" -gt "${STATE}" ]; then
 				STATE="${LAST_STATE}"
 			fi
