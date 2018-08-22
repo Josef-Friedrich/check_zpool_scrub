@@ -43,7 +43,7 @@ setup() {
 ##
 
 @test "function _time_grep" {
-	[ "$(_time_grep unkown_zpool)" = '' ]
+	[ "$(_time_grep unknown_zpool)" = '' ]
 	[ "$(_time_grep first_ok_zpool)" = '55h33m' ]
 	[ "$(_time_grep first_warning_zpool)" = '14h12m' ]
 	[ "$(_time_grep first_critical_zpool)" = '' ]

@@ -2,7 +2,7 @@
 
 case $@ in
 
-	'status unkown_zpool')
+	'status unknown_zpool')
 		echo ''
 		exit 1
 		;;

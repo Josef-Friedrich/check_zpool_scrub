@@ -88,17 +88,16 @@ setup() {
 # Errors
 ##
 
-@test "run ./check_zpool_scrub -p unkown_zpool" {
-	run ./check_zpool_scrub -p unkown_zpool
+@test "run ./check_zpool_scrub -p unknown_zpool" {
+	run ./check_zpool_scrub -p unknown_zpool
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = '“unkown_zpool” is no ZFS pool!' ]
-	[ "${lines[1]}" = "check_zpool_scrub v$VERSION" ]
+	[ "${lines[0]}" = "UNKNOWN: 'unknown_zpool' is no ZFS pool!" ]
 }
 
-@test "run ./check_zpool_scrub --pool=unkown_zpool" {
-	run ./check_zpool_scrub --pool=unkown_zpool
+@test "run ./check_zpool_scrub --pool=unknown_zpool" {
+	run ./check_zpool_scrub --pool=unknown_zpool
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = '“unkown_zpool” is no ZFS pool!' ]
+	[ "${lines[0]}" = "UNKNOWN: 'unknown_zpool' is no ZFS pool!" ]
 }
 
 @test "run ./check_zpool_scrub --lol" {

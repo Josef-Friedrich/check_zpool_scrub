@@ -505,9 +505,10 @@ _check_one_pool() {
 	local POOL="$1" NOW LAST_SCRUB DIFF PROGRESS SPEED TIME
 
 	if ! zpool status "$POOL" > /dev/null 2>&1; then
-		echo "“$POOL” is no ZFS pool!" >&2
-		echo "$USAGE" >&2
-		exit $STATE_UNKNOWN
+		PERFORMANCE_DATA=
+		MESSAGE="UNKNOWN: '${POOL}' is no ZFS pool!"
+		STATE=$STATE_UNKNOWN
+		return
 	fi
 
 	NOW=$(_now_to_timestamp)
@@ -533,9 +534,9 @@ _check_one_pool() {
 	fi
 
 	if [ -z "$LAST_SCRUB" ]; then
-		STATE=$STATE_UNKNOWN
-		MESSAGE="UNKNOWN: The pool has never had a scrub."
 		PERFORMANCE_DATA=
+		MESSAGE="UNKNOWN: The pool has never had a scrub."
+		STATE=$STATE_UNKNOWN
 	else
 		PERFORMANCE_DATA="$(_performance_data_one_pool "${POOL}" "${DIFF}" "${PROGRESS}" "${SPEED}" "${TIME}")"
 		MESSAGE="$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB)"
