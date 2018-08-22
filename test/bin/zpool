@@ -108,4 +108,15 @@ errors: No known data errors'
 		exit 0
 		;;
 
+	'list -H -o name')
+		echo 'unknown_zpool
+never_scrubbed_zpool
+first_ok_zpool
+last_ok_zpool
+first_warning_zpool
+last_warning_zpool
+first_critical_zpool'
+		exit 0
+		;;
+
 esac

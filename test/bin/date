@@ -33,6 +33,12 @@ case $@ in
 		exit 0
 		;;
 
+	# last_warning_zpool
+	'--date @1497601548 +%Y-%m-%d.%H:%M:%S'|'-j -f %s 1497601548 +%Y-%m-%d.%H:%M:%S')
+		echo 2017-06-16.10:25:48
+		exit 0
+		;;
+
 	# first_warning_zpool
 	'--date @1500279947 +%Y-%m-%d.%H:%M:%S'|'-j -f %s 1500279947 +%Y-%m-%d.%H:%M:%S')
 		echo 2017-07-17.10:25:47

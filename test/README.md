@@ -46,9 +46,13 @@ critical: 2017-06-16 10:25:47  ->
 | warning  | 2017-07-17 10:25:48 | 1500279948 |
 | critical | 2017-06-16 10:25:48 | 1497601548 |
 
-# Zpool names
+# Pools for the testing
 
+* `unknown_zpool`
+* `never_scrubbed_zpool`
+* `first_ok_zpool`
 * `last_ok_zpool`
+* `first_warning_zpool`
 * `last_warning_zpool`
 * `first_critical_zpool`
 
