@@ -117,9 +117,9 @@ setup() {
 	local TEST="CRITICAL: The last scrub on zpool \
 'first_critical_zpool' was performed on 2017-06-16.10:25:47 \
 | \
+warning=2678400 \
+critical=5356800 \
 first_critical_zpool_last_ago=5356801 \
-first_critical_zpool_warning=2678400 \
-first_critical_zpool_critical=5356800 \
 first_critical_zpool_progress=100 \
 first_critical_zpool_speed=0 \
 first_critical_zpool_time=0"
@@ -132,9 +132,9 @@ first_critical_zpool_time=0"
 	local TEST="WARNING: The last scrub on zpool \
 'first_warning_zpool' was performed on 2017-07-17.10:25:47 \
 | \
+warning=2678400 \
+critical=5356800 \
 first_warning_zpool_last_ago=2678401 \
-first_warning_zpool_warning=2678400 \
-first_warning_zpool_critical=5356800 \
 first_warning_zpool_progress=72.38 \
 first_warning_zpool_speed=57.4 \
 first_warning_zpool_time=852"
@@ -147,9 +147,9 @@ first_warning_zpool_time=852"
 	local TEST="OK: The last scrub on zpool 'first_ok_zpool' \
 was performed on 2017-08-17.10:25:48 \
 | \
+warning=2678400 \
+critical=5356800 \
 first_ok_zpool_last_ago=0 \
-first_ok_zpool_warning=2678400 \
-first_ok_zpool_critical=5356800 \
 first_ok_zpool_progress=96.19 \
 first_ok_zpool_speed=1.90 \
 first_ok_zpool_time=3333"
