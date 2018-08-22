@@ -506,7 +506,7 @@ _check_one_pool() {
 
 	if ! zpool status "$POOL" > /dev/null 2>&1; then
 		PERFORMANCE_DATA=
-		MESSAGE="UNKNOWN: '${POOL}' is no ZFS pool!"
+		MESSAGE="UNKNOWN: '${POOL}' is no ZFS pool."
 		STATE=$STATE_UNKNOWN
 		return
 	fi
@@ -541,7 +541,8 @@ _check_one_pool() {
 	fi
 
 	PERFORMANCE_DATA="$(_performance_data_one_pool "${POOL}" "${DIFF}" "${PROGRESS}" "${SPEED}" "${TIME}")"
-	MESSAGE="$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB)"
+	MESSAGE="$MESSAGE The last scrub on zpool '${POOL}' was \
+performed on $(_timestamp_to_datetime $LAST_SCRUB)."
 
 }
 
@@ -591,7 +592,7 @@ _main() {
 	_getopts $@
 
 	if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
-		echo '<warntime> must be smaller than <crittime>' >&2
+		echo '<warntime> must be smaller than <crittime>.' >&2
 		echo "$USAGE" >&2
 		exit $STATE_UNKNOWN
 	fi

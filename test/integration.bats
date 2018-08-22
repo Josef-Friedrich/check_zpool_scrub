@@ -75,13 +75,13 @@ setup() {
 @test "run ./check_zpool_scrub -p first_ok_zpool -w 2 -c 1" {
 	run ./check_zpool_scrub -p first_ok_zpool -w 2 -c 1
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>' ]
+	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>.' ]
 }
 
 @test "run ./check_zpool_scrub --pool=first_ok_zpool --warning=2 --critical=1" {
 	run ./check_zpool_scrub --pool=first_ok_zpool --warning=2 --critical=1
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>' ]
+	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>.' ]
 }
 
 ##
@@ -91,13 +91,13 @@ setup() {
 @test "run ./check_zpool_scrub -p unknown_zpool" {
 	run ./check_zpool_scrub -p unknown_zpool
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = "UNKNOWN: 'unknown_zpool' is no ZFS pool!" ]
+	[ "${lines[0]}" = "UNKNOWN: 'unknown_zpool' is no ZFS pool." ]
 }
 
 @test "run ./check_zpool_scrub --pool=unknown_zpool" {
 	run ./check_zpool_scrub --pool=unknown_zpool
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = "UNKNOWN: 'unknown_zpool' is no ZFS pool!" ]
+	[ "${lines[0]}" = "UNKNOWN: 'unknown_zpool' is no ZFS pool." ]
 }
 
 @test "run ./check_zpool_scrub --lol" {
@@ -114,7 +114,7 @@ setup() {
 	run ./check_zpool_scrub -p first_critical_zpool
 	[ "$status" -eq 2 ]
 	local TEST="CRITICAL: The last scrub on zpool \
-'first_critical_zpool' was performed on 2017-06-16.10:25:47 \
+'first_critical_zpool' was performed on 2017-06-16.10:25:47. \
 | \
 warning=2678400 \
 critical=5356800 \
@@ -129,7 +129,7 @@ first_critical_zpool_time=0"
 	run ./check_zpool_scrub -p first_warning_zpool
 	[ "$status" -eq 1 ]
 	local TEST="WARNING: The last scrub on zpool \
-'first_warning_zpool' was performed on 2017-07-17.10:25:47 \
+'first_warning_zpool' was performed on 2017-07-17.10:25:47. \
 | \
 warning=2678400 \
 critical=5356800 \
@@ -144,7 +144,7 @@ first_warning_zpool_time=852"
 	run ./check_zpool_scrub -p first_ok_zpool
 	[ "$status" -eq 0 ]
 	local TEST="OK: The last scrub on zpool 'first_ok_zpool' \
-was performed on 2017-08-17.10:25:48 \
+was performed on 2017-08-17.10:25:48. \
 | \
 warning=2678400 \
 critical=5356800 \
