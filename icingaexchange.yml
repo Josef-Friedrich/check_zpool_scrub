@@ -7,13 +7,3 @@ vendor: Linux, FreeBSD, Darwin
 target: ZFS, Filesystem
 type: Plugin
 license: mit
-releases:
-  -
-    name: 1.1
-    description: "1.1 Release"
-    files:
-      -
-        name: check_zpool_scrub
-        url: "file:///check_zpool_scrub"
-        description: "1.1 Release"
-        checksum: 3a7d155cf1791765a45e07965566ebc7
