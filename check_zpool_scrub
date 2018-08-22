@@ -513,9 +513,16 @@ _check_one_pool() {
 
 	NOW=$(_now_to_timestamp)
 	LAST_SCRUB=$(_last_scrub_to_timestamp "$POOL")
+
+	if [ -z "$LAST_SCRUB" ]; then
+		PERFORMANCE_DATA=
+		MESSAGE="UNKNOWN: The pool has never had a scrub."
+		STATE=$STATE_UNKNOWN
+		return
+	fi
+
 	DIFF=$((NOW - LAST_SCRUB))
 
-	# OPT_POOL: The name of the ZFS pool.
 	PROGRESS=$(_progress "$POOL")
 	SPEED="$(_speed "$POOL")"
 	TIME="$(_time "$POOL")"
@@ -533,14 +540,9 @@ _check_one_pool() {
 		MESSAGE="OK:"
 	fi
 
-	if [ -z "$LAST_SCRUB" ]; then
-		PERFORMANCE_DATA=
-		MESSAGE="UNKNOWN: The pool has never had a scrub."
-		STATE=$STATE_UNKNOWN
-	else
-		PERFORMANCE_DATA="$(_performance_data_one_pool "${POOL}" "${DIFF}" "${PROGRESS}" "${SPEED}" "${TIME}")"
-		MESSAGE="$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB)"
-	fi
+	PERFORMANCE_DATA="$(_performance_data_one_pool "${POOL}" "${DIFF}" "${PROGRESS}" "${SPEED}" "${TIME}")"
+	MESSAGE="$MESSAGE The last scrub on zpool '${POOL}' was performed on $(_timestamp_to_datetime $LAST_SCRUB)"
+
 }
 
 _check_multiple_pools() {
