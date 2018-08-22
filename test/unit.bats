@@ -95,3 +95,68 @@ last_ok_zpool_speed=1.90 \
 last_ok_zpool_time=3333"
 	[ "$PERFORMANCE_DATA" = "$TEST" ]
 }
+
+# warning
+
+@test "function _check_multiple_pools first_ok_zpool first_warning_zpool" {
+	_check_multiple_pools \
+		first_ok_zpool \
+		first_warning_zpool
+	[ "$STATE" -eq 1 ]
+}
+
+@test "function _check_multiple_pools first_warning_zpool first_ok_zpool" {
+	_check_multiple_pools \
+		first_warning_zpool \
+		first_ok_zpool
+	[ "$STATE" -eq 1 ]
+}
+
+@test "function _check_multiple_pools first_warning_zpool first_ok_zpool never_scrubbed_zpool" {
+	_check_multiple_pools \
+		first_warning_zpool \
+		first_ok_zpool \
+		never_scrubbed_zpool
+	[ "$STATE" -eq 1 ]
+}
+
+# critical
+
+@test "function _check_multiple_pools first_ok_zpool first_critical_zpool" {
+	_check_multiple_pools \
+		first_ok_zpool \
+		first_critical_zpool
+	[ "$STATE" -eq 2 ]
+}
+
+@test "function _check_multiple_pools first_critical_zpool first_ok_zpool" {
+	_check_multiple_pools \
+		first_critical_zpool \
+		first_ok_zpool
+	[ "$STATE" -eq 2 ]
+}
+
+@test "function _check_multiple_pools first_critical_zpool first_ok_zpool first_warning_zpool never_scrubbed_zpool" {
+	_check_multiple_pools \
+		first_critical_zpool \
+		first_ok_zpool \
+		first_warning_zpool \
+		never_scrubbed_zpool
+	[ "$STATE" -eq 2 ]
+}
+
+# unknown
+
+@test "function _check_multiple_pools first_ok_zpool never_scrubbed_zpool" {
+	_check_multiple_pools \
+		first_ok_zpool \
+		never_scrubbed_zpool
+	[ "$STATE" -eq 3 ]
+}
+
+@test "function _check_multiple_pools never_scrubbed_zpool first_ok_zpool" {
+	_check_multiple_pools \
+		never_scrubbed_zpool \
+		first_ok_zpool
+	[ "$STATE" -eq 3 ]
+}
