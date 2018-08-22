@@ -170,7 +170,6 @@ first_ok_zpool_time=3333"
 @test "run ./check_zpool_scrub (all pools)" {
 	run ./check_zpool_scrub
 	[ "$status" -eq 2 ]
-	echo "${lines[0]}" > $HOME/debug
 	TEST="UNKNOWN: 'unknown_zpool' is no ZFS pool. \
 UNKNOWN: The pool has never had a scrub. \
 OK: The last scrub on zpool 'first_ok_zpool' was performed on 2017-08-17.10:25:48. \
