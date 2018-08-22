@@ -3,7 +3,7 @@ name: check_zpool_scrub
 description: "file:///README.md"
 url: "https://github.com/Josef-Friedrich/check_zpool_scrub"
 tags: ZFS, Zpool
-vendor: Linux, FreeBSD, Solaris
+vendor: Linux, FreeBSD, Darwin
 target: ZFS, Filesystem
 type: Plugin
 license: mit
