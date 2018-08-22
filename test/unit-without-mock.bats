@@ -83,3 +83,8 @@ setup() {
 	result="$(_last_scrub_grab_ctime_from_string '  scan: scrub canceled on Tue Aug 15 01:12:31 2017')"
 	[ "$result" = 'Tue Aug 15 01:12:31 2017' ]
 }
+
+@test "function _performance_data_one_pool" {
+	result="$(_performance_data_one_pool pool 1 2 3 4)"
+	[ "$result" = 'pool_last_ago=1 pool_progress=2 pool_speed=3 pool_time=4' ]
+}
