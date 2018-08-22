@@ -25,13 +25,15 @@ setup() {
 @test "run ./check_zpool_scrub -s" {
 	run ./check_zpool_scrub -s
 	[ "$status" -eq 0 ]
-	[ "${lines[0]}" = 'Monitoring plugin to check how long ago the last ZFS scrub was performed.' ]
+	[ "${lines[0]}" = "Monitoring plugin to check how long ago the \
+last ZFS scrub was performed." ]
 }
 
 @test "run ./check_zpool_scrub --short-description" {
 	run ./check_zpool_scrub --short-description
 	[ "$status" -eq 0 ]
-	[ "${lines[0]}" = 'Monitoring plugin to check how long ago the last ZFS scrub was performed.' ]
+	[ "${lines[0]}" = "Monitoring plugin to check how long ago the \
+last ZFS scrub was performed." ]
 }
 
 # Order;
@@ -75,13 +77,16 @@ setup() {
 @test "run ./check_zpool_scrub -p first_ok_zpool -w 2 -c 1" {
 	run ./check_zpool_scrub -p first_ok_zpool -w 2 -c 1
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>.' ]
+	[ "${lines[0]}" = "<warntime> must be smaller than \
+<crittime>." ]
 }
 
 @test "run ./check_zpool_scrub --pool=first_ok_zpool --warning=2 --critical=1" {
-	run ./check_zpool_scrub --pool=first_ok_zpool --warning=2 --critical=1
+	run ./check_zpool_scrub --pool=first_ok_zpool --warning=2 \
+		--critical=1
 	[ "$status" -eq 3 ]
-	[ "${lines[0]}" = '<warntime> must be smaller than <crittime>.' ]
+	[ "${lines[0]}" = "<warntime> must be smaller than \
+<crittime>." ]
 }
 
 ##

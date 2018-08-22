@@ -540,7 +540,8 @@ _check_one_pool() {
 		MESSAGE="OK:"
 	fi
 
-	PERFORMANCE_DATA="$(_performance_data_one_pool "${POOL}" "${DIFF}" "${PROGRESS}" "${SPEED}" "${TIME}")"
+	PERFORMANCE_DATA="$(_performance_data_one_pool \
+		"${POOL}" "${DIFF}" "${PROGRESS}" "${SPEED}" "${TIME}")"
 	MESSAGE="$MESSAGE The last scrub on zpool '${POOL}' was \
 performed on $(_timestamp_to_datetime $LAST_SCRUB)."
 
@@ -553,7 +554,8 @@ _check_multiple_pools() {
 		_check_one_pool "$POOL"
 
 		if [ -n "${PERFORMANCE_DATAS}" ]; then
-			PERFORMANCE_DATAS="${PERFORMANCE_DATAS} ${PERFORMANCE_DATA}"
+			PERFORMANCE_DATAS="${PERFORMANCE_DATAS} \
+${PERFORMANCE_DATA}"
 		else
 			PERFORMANCE_DATAS="${PERFORMANCE_DATA}"
 		fi
@@ -564,14 +566,18 @@ _check_multiple_pools() {
 			MESSAGES="${MESSAGE}"
 		fi
 
-		# If one pool is critial the global state turns to critical
+		# If one pool is critical the global state turns to
+		# critical.
 		if [ "${STATE}" -eq 2 ]; then
 			GLOBAL_STATE=2
 		# warning
-		elif [ "${STATE}" -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
+		elif [ "${STATE}" -eq 1 ] && \
+		     ! [ ${GLOBAL_STATE} -eq 2 ]; then
 			GLOBAL_STATE=1
 		# unkown
-		elif [ "${STATE}" -eq 3 ] && ! [ ${GLOBAL_STATE} -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
+		elif [ "${STATE}" -eq 3 ] && \
+		     ! [ ${GLOBAL_STATE} -eq 1 ] && \
+		     ! [ ${GLOBAL_STATE} -eq 2 ]; then
 			GLOBAL_STATE=3
 		fi
 	done
@@ -604,7 +610,10 @@ _main() {
 	fi
 
 	if [ -n "$PERFORMANCE_DATA" ]; then
-		MESSAGE="$MESSAGE | warning=${OPT_WARNING} critical=${OPT_CRITICAL} ${PERFORMANCE_DATA}"
+		MESSAGE="$MESSAGE | \
+warning=${OPT_WARNING} \
+critical=${OPT_CRITICAL} \
+${PERFORMANCE_DATA}"
 	fi
 
 	echo "$MESSAGE"
