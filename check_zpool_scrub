@@ -24,35 +24,11 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ########################################################################
-# Global variables
-########################################################################
-
-OS=$(uname)
-
-# The state the plugin exits with
-STATE=
-
-# Exit codes
-STATE_OK=0
-STATE_WARNING=1
-STATE_CRITICAL=2
-STATE_UNKNOWN=3
-
-# Message of one pool
-MESSAGE=
-# Performance data of one pool
-PERFORMANCE_DATA=
-
-# Options from the command line interface
-OPT_POOL=
-# 1 month 60*60*24*31
-OPT_WARNING=2678400
-# 2 month 60*60*24*31*2
-OPT_CRITICAL=5356800
-
-########################################################################
 # Date functions
 ########################################################################
+
+# This date function must be placed on the top of this file because
+# they are used in some global variables.
 
 # to_year ###
 
@@ -148,6 +124,10 @@ _ctime_to_timestamp() {
 	date $OPTIONS "$1" +%s
 }
 
+########################################################################
+# Global variables
+########################################################################
+
 PROJECT_PAGES='https://github.com/Josef-Friedrich/check_zpool_scrub
 https://exchange.icinga.com/joseffriedrich/check_zpool_scrub
 https://exchange.nagios.org/directory/Plugins/System-Metrics/File-System/check_zpool_scrub/details'
@@ -198,6 +178,29 @@ Details about the implementation of this monitoring plugin:
 This monitoring plugin grabs the last scrub date from the command
 'zpool status POOL'.
 "
+
+OS=$(uname)
+
+# The state the plugin exits with
+STATE=
+
+# Exit codes
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+
+# Message of one pool
+MESSAGE=
+# Performance data of one pool
+PERFORMANCE_DATA=
+
+# Options from the command line interface
+OPT_POOL=
+# 1 month 60*60*24*31
+OPT_WARNING=2678400
+# 2 month 60*60*24*31*2
+OPT_CRITICAL=5356800
 
 _getopts() {
 	local OPT
