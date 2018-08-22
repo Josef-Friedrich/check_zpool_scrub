@@ -547,7 +547,7 @@ _check_one_pool() {
 #   $@: All positional arguments provided by the script.
 ##
 _main() {
-	local POOL POOLS LAST_STATE=0 MESSAGES
+	local POOL GLOBAL_STATE=0 MESSAGES PERFORMANCE_DATAS
 	_getopts $@
 
 	if [ -z "$OPT_WARNING" ]; then
@@ -569,25 +569,44 @@ _main() {
 
 	if [ -n "$OPT_POOL" ]; then
 		_check_one_pool "$OPT_POOL"
-		MESSAGES="$MESSAGE"
-		PERFORMANCE_DATAS="$PERFORMANCE_DATA"
+		MESSAGES="${MESSAGE}"
+		PERFORMANCE_DATAS="${PERFORMANCE_DATA}"
+		GLOBAL_STATE=${STATE}
 	else
-		# sort in reverse order, because we append in that order
-		POOLS=$(zpool list -H -o name | sort -r)
-		for POOL in ${POOLS}; do
+		for POOL in $(zpool list -H -o name); do
 			_check_one_pool "$POOL"
-			if [ "${LAST_STATE}" -gt "${STATE}" ]; then
-				STATE="${LAST_STATE}"
+			
+			if [ -n "${PERFORMANCE_DATAS}" ]; then
+				PERFORMANCE_DATAS="${PERFORMANCE_DATAS} ${PERFORMANCE_DATA}"
+			else
+				PERFORMANCE_DATAS="${PERFORMANCE_DATA}"
+			fi
+
+			if [ -n "${MESSAGES}" ]; then
+				MESSAGES="${MESSAGES} ${MESSAGE}"
+			else
+				MESSAGES="${MESSAGE}"
+			fi
+
+			# If one pool is critial the global state turns to critical
+			if [ "${STATE}" -eq 2 ]; then
+				GLOBAL_STATE=2
+			# warning
+			elif [ "${STATE}" -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
+				GLOBAL_STATE=1
+			# unkown
+			elif [ "${STATE}" -eq 3 ] && ! [ ${GLOBAL_STATE} -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
+				GLOBAL_STATE=3
 			fi
 		done
 	fi
 
 	if [ -n "$PERFORMANCE_DATAS" ]; then
-		MESSAGES="$MESSAGES | warning=$OPT_WARNING critical=$OPT_CRITICAL ${PERFORMANCE_DATAS}"
+		MESSAGES="$MESSAGES | warning=${OPT_WARNING} critical=${OPT_CRITICAL} ${PERFORMANCE_DATAS}"
 	fi
 
 	echo "$MESSAGES"
-	exit $STATE
+	exit $GLOBAL_STATE
 }
 
 ## This SEPARATOR is required for test purposes. Please don’t remove! ##
