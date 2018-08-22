@@ -596,7 +596,6 @@ _main() {
 		exit $STATE_UNKNOWN
 	fi
 
-
 	if [ -n "$OPT_POOL" ]; then
 		_check_one_pool "$OPT_POOL"
 	else
