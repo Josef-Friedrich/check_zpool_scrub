@@ -39,6 +39,12 @@ case $@ in
 		exit 0
 		;;
 
+	# last_ok_zpool
+	'--date @1500279948 +%Y-%m-%d.%H:%M:%S'|'-j -f %s 1500279948 +%Y-%m-%d.%H:%M:%S')
+		echo 2017-07-17.10:25:48
+		exit 0
+		;;
+
 	# first_ok_zpool
 	'--date @1502958348 +%Y-%m-%d.%H:%M:%S'|'-j -f %s 1502958348 +%Y-%m-%d.%H:%M:%S')
 		echo 2017-08-17.10:25:48

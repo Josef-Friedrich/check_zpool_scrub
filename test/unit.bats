@@ -55,3 +55,43 @@ setup() {
 	[ "$(_time first_warning_zpool)" -eq 852 ]
 	[ "$(_time first_critical_zpool)" -eq 0 ]
 }
+
+##
+# main
+##
+
+@test "function _check_one_pool first_ok_zpool" {
+	_check_one_pool first_ok_zpool
+	[ "$STATE" -eq 0 ]
+	[ "$MESSAGE" = "OK: The last scrub on zpool 'first_ok_zpool' was performed on 2017-08-17.10:25:48" ]
+	[ "$PERFORMANCE_DATA" = 'first_ok_zpool_last_ago=0 first_ok_zpool_progress=96.19 first_ok_zpool_speed=1.90 first_ok_zpool_time=3333' ]
+}
+
+@test "function _check_multiple_pools first_ok_zpool" {
+	_check_multiple_pools first_ok_zpool
+	[ "$STATE" -eq 0 ]
+	[ "$MESSAGE" = "OK: The last scrub on zpool 'first_ok_zpool' was performed on 2017-08-17.10:25:48" ]
+	[ "$PERFORMANCE_DATA" = 'first_ok_zpool_last_ago=0 first_ok_zpool_progress=96.19 first_ok_zpool_speed=1.90 first_ok_zpool_time=3333' ]
+}
+
+
+@test "function _check_multiple_pools first_ok_zpool last_ok_zpool" {
+	_check_multiple_pools first_ok_zpool last_ok_zpool
+	[ "$STATE" -eq 0 ]
+
+	TEST="OK: The last scrub on zpool 'first_ok_zpool' was \
+performed on 2017-08-17.10:25:48 \
+OK: The last scrub on zpool 'last_ok_zpool' was performed on \
+2017-07-17.10:25:48"
+	[ "$MESSAGE" = "$TEST" ]
+
+	TEST="first_ok_zpool_last_ago=0 \
+first_ok_zpool_progress=96.19 \
+first_ok_zpool_speed=1.90 \
+first_ok_zpool_time=3333 \
+last_ok_zpool_last_ago=2678400 \
+last_ok_zpool_progress=96.19 \
+last_ok_zpool_speed=1.90 \
+last_ok_zpool_time=3333"
+	[ "$PERFORMANCE_DATA" = "$TEST" ]
+}

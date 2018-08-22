@@ -44,9 +44,11 @@ MESSAGE=
 PERFORMANCE_DATA=
 
 # Options from the command line interface
-OPT_CRITICAL=
 OPT_POOL=
-OPT_WARNING=
+# 1 month 60*60*24*31
+OPT_WARNING=2678400
+# 2 month 60*60*24*31*2
+OPT_CRITICAL=5356800
 
 ########################################################################
 # Date functions
@@ -540,6 +542,41 @@ _check_one_pool() {
 	fi
 }
 
+_check_multiple_pools() {
+	local POOL GLOBAL_STATE=0 MESSAGES PERFORMANCE_DATAS
+
+	for POOL in $@; do
+		_check_one_pool "$POOL"
+
+		if [ -n "${PERFORMANCE_DATAS}" ]; then
+			PERFORMANCE_DATAS="${PERFORMANCE_DATAS} ${PERFORMANCE_DATA}"
+		else
+			PERFORMANCE_DATAS="${PERFORMANCE_DATA}"
+		fi
+
+		if [ -n "${MESSAGES}" ]; then
+			MESSAGES="${MESSAGES} ${MESSAGE}"
+		else
+			MESSAGES="${MESSAGE}"
+		fi
+
+		# If one pool is critial the global state turns to critical
+		if [ "${STATE}" -eq 2 ]; then
+			GLOBAL_STATE=2
+		# warning
+		elif [ "${STATE}" -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
+			GLOBAL_STATE=1
+		# unkown
+		elif [ "${STATE}" -eq 3 ] && ! [ ${GLOBAL_STATE} -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
+			GLOBAL_STATE=3
+		fi
+	done
+
+	PERFORMANCE_DATA="${PERFORMANCE_DATAS}"
+	MESSAGE="${MESSAGES}"
+	STATE="$GLOBAL_STATE"
+}
+
 ##
 # Main function to jump in on execution.
 #
@@ -549,16 +586,6 @@ _check_one_pool() {
 _main() {
 	local POOL GLOBAL_STATE=0 MESSAGES PERFORMANCE_DATAS
 	_getopts $@
-
-	if [ -z "$OPT_WARNING" ]; then
-		# 1 month 60*60*24*31
-		OPT_WARNING=2678400
-	fi
-
-	if [ -z "$OPT_CRITICAL" ]; then
-		# 2 month 60*60*24*31*2
-		OPT_CRITICAL=5356800
-	fi
 
 	if [ "$OPT_WARNING" -gt "$OPT_CRITICAL" ]; then
 		echo '<warntime> must be smaller than <crittime>' >&2
@@ -573,32 +600,7 @@ _main() {
 		PERFORMANCE_DATAS="${PERFORMANCE_DATA}"
 		GLOBAL_STATE=${STATE}
 	else
-		for POOL in $(zpool list -H -o name); do
-			_check_one_pool "$POOL"
-			
-			if [ -n "${PERFORMANCE_DATAS}" ]; then
-				PERFORMANCE_DATAS="${PERFORMANCE_DATAS} ${PERFORMANCE_DATA}"
-			else
-				PERFORMANCE_DATAS="${PERFORMANCE_DATA}"
-			fi
-
-			if [ -n "${MESSAGES}" ]; then
-				MESSAGES="${MESSAGES} ${MESSAGE}"
-			else
-				MESSAGES="${MESSAGE}"
-			fi
-
-			# If one pool is critial the global state turns to critical
-			if [ "${STATE}" -eq 2 ]; then
-				GLOBAL_STATE=2
-			# warning
-			elif [ "${STATE}" -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
-				GLOBAL_STATE=1
-			# unkown
-			elif [ "${STATE}" -eq 3 ] && ! [ ${GLOBAL_STATE} -eq 1 ] && ! [ ${GLOBAL_STATE} -eq 2 ]; then
-				GLOBAL_STATE=3
-			fi
-		done
+		_check_multiple_pools $(zpool list -H -o name)
 	fi
 
 	if [ -n "$PERFORMANCE_DATAS" ]; then
