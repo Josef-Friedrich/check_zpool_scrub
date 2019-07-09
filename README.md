@@ -10,8 +10,8 @@
 ## Usage
 
 ```
-check_zpool_scrub v1.1
-Copyright (c) 2016-2018 Josef Friedrich <josef@friedrich.rocks>
+check_zpool_scrub v1.4
+Copyright (c) 2016-2019 Josef Friedrich <josef@friedrich.rocks>
 
 Monitoring plugin to check how long ago the last ZFS scrub was performed.
 
@@ -22,11 +22,9 @@ Options:
  -c, --critical=OPT_CRITICAL
     Interval in seconds for critical state.
  -p,--pool=OPT_POOL
-    Name of the pool
+    Name of the pool. If this option is omitted all pools are checked.
  -h, --help
     Show this help.
- -r, --sudo
-    Run 'zpool history' with the help of sudo.
  -s, --short-description
     Show a short description / summary.
  -v, --version
@@ -35,18 +33,26 @@ Options:
     Interval in seconds for warning state. Must be lower than -c.
 
 Performance data:
- - last_ago
-    Time interval in seconds for last scrub.
+
+POOL is the name of the pool
+
  - warning
     Interval in seconds.
  - critical
     Interval in seconds.
- - progress
+ - POOL_last_ago
+    Time interval in seconds for last scrub.
+ - POOL_progress
     Percent 0 - 100
- - speed
-    MB per second
- - time
-    Time to go in minutes
+ - POOL_speed
+    MB per second.
+ - POOL_time
+    Time to go in minutes.
+
+Details about the implementation of this monitoring plugin:
+
+This monitoring plugin grabs the last scrub date from the command
+'zpool status POOL'.
 
 ```
 
