@@ -529,7 +529,7 @@ _check_one_pool() {
 
 	if [ -z "$LAST_SCRUB" ]; then
 		PERFORMANCE_DATA=
-		MESSAGE="UNKNOWN: The pool has never had a scrub."
+		MESSAGE="UNKNOWN: The pool '${POOL}' has never had a scrub."
 		STATE=$STATE_UNKNOWN
 		return
 	fi

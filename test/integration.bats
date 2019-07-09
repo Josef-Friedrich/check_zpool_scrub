@@ -163,7 +163,7 @@ first_ok_zpool_time=3333"
 @test "run ./check_zpool_scrub -p never_scrubbed_zpool OUTPUT" {
 	run ./check_zpool_scrub -p never_scrubbed_zpool
 	[ "$status" -eq 3 ]
-	local TEST="UNKNOWN: The pool has never had a scrub."
+	local TEST="UNKNOWN: The pool 'never_scrubbed_zpool' has never had a scrub."
 	[ "${lines[0]}" = "$TEST" ]
 }
 
@@ -171,7 +171,7 @@ first_ok_zpool_time=3333"
 	run ./check_zpool_scrub
 	[ "$status" -eq 2 ]
 	TEST="UNKNOWN: 'unknown_zpool' is no ZFS pool. \
-UNKNOWN: The pool has never had a scrub. \
+UNKNOWN: The pool 'never_scrubbed_zpool' has never had a scrub. \
 OK: The last scrub on zpool 'first_ok_zpool' was performed on 2017-08-17.10:25:48. \
 OK: The last scrub on zpool 'last_ok_zpool' was performed on 2017-07-17.10:25:48. \
 WARNING: The last scrub on zpool 'first_warning_zpool' was performed on 2017-07-17.10:25:47. \
