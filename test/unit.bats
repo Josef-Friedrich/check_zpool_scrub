@@ -14,12 +14,14 @@ setup() {
 	[ "$(_progress_grep first_ok_zpool)" = '96,19%' ]
 	[ "$(_progress_grep first_warning_zpool)" = '72,38%' ]
 	[ -z "$(_progress_grep first_critical_zpool)" ]
+	[ "$(_progress_grep days_to_go)" = '52.05%' ]
 }
 
 @test "function _progress" {
 	[ "$(_progress first_ok_zpool)" = '96.19' ]
 	[ "$(_progress first_warning_zpool)" = '72.38' ]
 	[ "$(_progress first_critical_zpool)" -eq 100 ]
+	[ "$(_progress days_to_go)" = '52.05' ]
 }
 
 ##

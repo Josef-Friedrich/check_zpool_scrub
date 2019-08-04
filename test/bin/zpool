@@ -108,6 +108,23 @@ errors: No known data errors'
 		exit 0
 		;;
 
+	# see https://github.com/Josef-Friedrich/check_zpool_scrub/issues/11
+	'status days_to_go')
+		echo '  pool: zfsdata
+ state: ONLINE
+  scan: scrub in progress since Sat Aug  3 10:21:02 2019
+        461G scanned at 120M/s, 258G issued at 67.2M/s, 496G total
+        0B repaired, 52.05% done, 0 days 01:00:21 to go
+config:
+
+        NAME                                       STATE     READ WRITE CKSUM
+        zfsdata                                    ONLINE       0     0     0
+          mirror-0                                ONLINE       0     0     0
+            ata-SanDisk_SDSSD            ONLINE       0     0     0  (trimming)
+            ata-SanDisk_SDSSD            ONLINE       0     0     0  (trimming)'
+		exit 0
+		;;
+
 	'list -H -o name')
 		echo 'unknown_zpool
 never_scrubbed_zpool
