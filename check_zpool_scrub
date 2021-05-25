@@ -423,13 +423,13 @@ _progress() {
 
 _speed_grep() {
 	_get_zpool_status_stdout "$1" | \
-		grep -E -o '[[:digit:],]*[[:alpha:]]*/s'
+		grep -E -o '[[:digit:],]*[[:alpha:]]/s'
 }
 
 _speed_normalize() {
 	local SPEED UNIT
 	SPEED=$(echo "$1" | sed 's#/s##' | tr , .)
-	UNIT=$(echo -n "$SPEED" | tail -c  1)
+	UNIT=$(echo -n "$SPEED" | tail -c 1)
 	SPEED=$(echo "$SPEED" | sed 's/.$//' )
 
 	if [ "$UNIT" = K ]; then
@@ -480,24 +480,26 @@ _speed() {
 #   grep ' to go' |
 #   awk '{ print $8 }'
 ##
-_time_grep() {
-	_get_zpool_status_stdout "$1" | \
-		grep ' to go' |
-		sed -E 's/^.*, (.*h.*m) to go.*$/\1/g'
-}
-
-_time_to_min() {
-	local HOURS MIN
-	HOURS=$(echo "$1" | sed 's/h.*//')
-	MIN=$(echo "$1" | sed 's/.*h//' | sed 's/m//')
-	echo $((HOURS * 60 + MIN))
-}
-
-_time() {
-	local GREP
-	GREP="$(_time_grep "$1")"
-	if [ -n "$GREP" ]; then
-		_time_to_min "$GREP"
+_grab_time_to_go() {
+  local MINUTES HOURS DAYS
+  MINUTES=0
+  HOURS=0
+  DAYS=0
+  _get_line() {
+    _get_zpool_status_stdout "$1" | grep ' to go'
+  }
+  if [ -n "$(_get_zpool_status_stdout "$1" | grep 'days .*:.*:.*')" ]; then
+    DAYS="$(_get_line "$1" | sed -E 's/^.* (.*) days .*$/\1/g')"
+    HOURS="$(_get_line "$1" | sed -E 's/^.*days (..):.*$/\1/g')"
+    MINUTES="$(_get_line "$1" | sed -E 's/^.*days ..:(..):.*$/\1/g')"
+    echo $((DAYS * 1440 + HOURS * 60 + MINUTES))
+	elif [ -n "$(_get_zpool_status_stdout "$1" | grep 'h.*m.*to go')" ]; then
+    _get_duration() {
+      _get_line "$1" | sed -E 's/^.*, (.*h.*m) to go.*$/\1/g'
+    }
+    HOURS=$(_get_duration "$1" | sed 's/h.*//')
+    MINUTES=$(_get_duration "$1" | sed -E 's/^.*, (.*h.*m) to go.*$/\1/g' | sed 's/.*h//' | sed 's/m//')
+    echo $((HOURS * 60 + MINUTES))
 	else
 		echo 0
 	fi
@@ -554,7 +556,7 @@ _check_one_pool() {
 
 	PROGRESS="$(_progress "$POOL")"
 	SPEED="$(_speed "$POOL")"
-	TIME="$(_time "$POOL")"
+	TIME="$(_grab_time_to_go "$POOL")"
 
 	STATE=STATE_UNKNOWN
 

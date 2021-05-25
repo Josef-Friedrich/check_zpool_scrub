@@ -59,12 +59,6 @@ setup() {
 # time to go
 ##
 
-@test "function _time_to_min" {
-	[ "$(_time_to_min 1h1m)" -eq 61 ]
-	[ "$(_time_to_min 1h0m)" -eq 60 ]
-	[ "$(_time_to_min 11h11m)" -eq 671 ]
-}
-
 @test "function _last_scrub_grab_ctime_from_string: in process" {
 	INPUT='  scan: scrub in progress since Sun Aug 13 00:24:02 2017'
 	result="$(_last_scrub_grab_ctime_from_string "$INPUT")"

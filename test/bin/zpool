@@ -112,9 +112,9 @@ errors: No known data errors'
 	'status days_to_go')
 		echo '  pool: zfsdata
  state: ONLINE
-  scan: scrub in progress since Sat Aug  3 10:21:02 2019
+  scan: scrub in progress since Thu Aug 17 10:25:48 2017
         461G scanned at 120M/s, 258G issued at 67.2M/s, 496G total
-        0B repaired, 52.05% done, 0 days 01:00:21 to go
+        0B repaired, 52.05% done, 0 days 01:01:21 to go
 config:
 
         NAME                                       STATE     READ WRITE CKSUM
