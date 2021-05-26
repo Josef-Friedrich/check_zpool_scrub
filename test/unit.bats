@@ -17,28 +17,22 @@ setup() {
 	[ "$(_progress_grep days_to_go)" = '52.05%' ]
 }
 
-@test "function _progress" {
-	[ "$(_progress first_ok_zpool)" = '96.19' ]
-	[ "$(_progress first_warning_zpool)" = '72.38' ]
-	[ "$(_progress first_critical_zpool)" -eq 100 ]
-	[ "$(_progress days_to_go)" = '52.05' ]
+@test "function _grab_progress" {
+	[ "$(_grab_progress first_ok_zpool)" = '96.19' ]
+	[ "$(_grab_progress first_warning_zpool)" = '72.38' ]
+	[ "$(_grab_progress first_critical_zpool)" -eq 100 ]
+	[ "$(_grab_progress days_to_go)" = '52.05' ]
 }
 
 ##
 # speed
 ##
 
-@test "function _speed_grep" {
-	[ "$(_speed_grep first_ok_zpool)" = '1,90M/s' ]
-	[ "$(_speed_grep first_warning_zpool)" = '57,4M/s' ]
-	[ -z "$(_speed_grep first_critical_zpool)" ]
-}
-
-@test "function _speed" {
-	[ "$(_speed first_ok_zpool)" = '1.90' ]
-	[ "$(_speed first_warning_zpool)" = '57.4' ]
-	[ "$(_speed first_critical_zpool)" -eq 0 ]
-	[ "$(_speed days_to_go)" -eq 120 ]
+@test "function _grab_speed" {
+	[ "$(_grab_speed first_ok_zpool)" = '1.90' ]
+	[ "$(_grab_speed first_warning_zpool)" = '57.4' ]
+	[ "$(_grab_speed first_critical_zpool)" -eq 0 ]
+	[ "$(_grab_speed days_to_go)" -eq 120 ]
 }
 
 ##
@@ -50,7 +44,6 @@ setup() {
 	[ "$(_grab_time_to_go first_warning_zpool)" -eq 852 ]
 	[ "$(_grab_time_to_go first_critical_zpool)" -eq 0 ]
 	[ "$(_grab_time_to_go days_to_go)" -eq 61 ]
-
 }
 
 ##
@@ -72,7 +65,7 @@ first_ok_zpool_time=3333" ]
 	[ "$STATE" -eq 0 ]
 	[ "$MESSAGE" = "OK: The last scrub on zpool 'days_to_go' \
 was performed on 2017-08-17.10:25:48." ]
-	[ "$PERFORMANCE_DATA" = "first_ok_zpool_last_ago=0 \
+	[ "$PERFORMANCE_DATA" = "days_to_go_last_ago=0 \
 days_to_go_progress=52.05 days_to_go_speed=120 \
 days_to_go_time=61" ]
 }

@@ -45,17 +45,6 @@ setup() {
 }
 
 ##
-# speed
-##
-
-@test "function _speed_normalize" {
-	[ "$(_speed_normalize 1,90M/s)" = '1.90' ]
-	[ "$(_speed_normalize 111,90M/s)" = '111.90' ]
-	[ "$(_speed_normalize 872,90K/s)" = '0.852441' ]
-	[ "$(_speed_normalize 12K/s)" = '0.0117188' ]
-}
-
-##
 # time to go
 ##
 

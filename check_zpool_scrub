@@ -407,7 +407,7 @@ _progress_normalize() {
 		tr ',' '.'
 }
 
-_progress() {
+_grab_progress() {
 	local GREP
 	GREP="$(_progress_grep "$1")"
 	if [ -n "$GREP" ]; then
@@ -421,29 +421,21 @@ _progress() {
 # Speed
 ########################################################################
 
-_speed_grep() {
-	_get_zpool_status_stdout "$1" | \
-		grep -E -o '[[:digit:],]*[[:alpha:]]/s'
-}
-
-_speed_normalize() {
+_grab_speed() {
 	local SPEED UNIT
-	SPEED=$(echo "$1" | sed 's#/s##' | tr , .)
-	UNIT=$(echo -n "$SPEED" | tail -c 1)
-	SPEED=$(echo "$SPEED" | sed 's/.$//' )
+	SPEED="$(_get_zpool_status_stdout "$1" | grep -E -o '[[:digit:]\.,]*[[:alpha:]]*/s')"
+  SPEED="$(echo $SPEED | awk '{print $1}')"
 
-	if [ "$UNIT" = K ]; then
-		SPEED="$(echo "$SPEED" | \
-			 awk '{MB = $1 / 1024 ; print MB}')"
-	fi
-	echo $SPEED
-}
-
-_speed() {
-	local SPEED
-	SPEED="$(_speed_grep "$1")"
 	if [ -n "$SPEED" ]; then
-		_speed_normalize "$SPEED"
+    SPEED=$(echo "$SPEED" | sed 's#/s##' | tr , .)
+    UNIT=$(echo -n "$SPEED" | tail -c 1)
+    SPEED=$(echo "$SPEED" | sed 's/.$//' )
+
+    if [ "$UNIT" = K ]; then
+      SPEED="$(echo "$SPEED" | \
+        awk '{MB = $1 / 1024 ; print MB}')"
+    fi
+    echo $SPEED
 	else
 		echo 0
 	fi
@@ -554,8 +546,8 @@ _check_one_pool() {
 
 	DIFF=$((NOW - LAST_SCRUB))
 
-	PROGRESS="$(_progress "$POOL")"
-	SPEED="$(_speed "$POOL")"
+	PROGRESS="$(_grab_progress "$POOL")"
+	SPEED="$(_grab_speed "$POOL")"
 	TIME="$(_grab_time_to_go "$POOL")"
 
 	STATE=STATE_UNKNOWN
