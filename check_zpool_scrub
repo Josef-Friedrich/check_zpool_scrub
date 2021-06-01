@@ -290,18 +290,16 @@ _getopts() {
 ##
 # Detect the date of the last scrub.
 #
-# Grab the date string of the last scrub from "zpool status". If the
-# last scrub was canceled than grab the last scrub date from "zpool
-# history". On old pool with a lot of history grabing only from "zpool
-# history" is very slow.
+# Grab the date string of the last scrub from the command 'zpool
+# status'. Grabing the date from 'zpool history' is very slow on old
+# pools with a lot of history.
 #
-# /* If there's never been a scan, there's not much to say. */
-#   "none requested\n"
-#     -> scan: none requested
+# /* If there's never been a scan, there's not much to say. */ "none
+#   requested\n" -> scan: none requested
 #
-# /* Scan is finished or canceled. */
-#   "scrub repaired %s in %lluh%um with %llu errors on %s"
-#      -> scan: scrub repaired 0 in 0h0m with 0 errors on Mon Aug  6 16:30:52 2018
+# /* Scan is finished or canceled. */ "scrub repaired %s in %lluh%um
+#   with %llu errors on %s" -> scan: scrub repaired 0 in 0h0m with 0
+#   errors on Mon Aug  6 16:30:52 2018
 #
 #   "resilvered %s in %lluh%um with %llu errors on %s"
 #
@@ -316,10 +314,10 @@ _getopts() {
 #   "resilver in progress since %s"
 #
 # Parameters:
-#   $1: The name of the pool.
+#  $1: The name of the pool.
 #
 # Return:
-#   A datetime formated in ctime format.
+#  A UNIX timestamp
 ##
 _grab_last_scrub_timestamp() {
 	local CTIME
@@ -400,10 +398,9 @@ _grab_speed() {
 ##
 # Extract the time to go from the 'zpool status' output.
 #
-# Responsible for the output is this line:
-#   (void) printf(gettext(", %lluh%um to go\n"),
-# in the ZFS source code.
-# https://github.com/openzfs/openzfs/blob/ed81aacb0d0fcbf7e0c0745ea4556655050c26bf/usr/src/cmd/zpool/zpool_main.c#L4441
+# Responsible for the output see the ZFS source code:
+# - https://github.com/openzfs/openzfs/blob/ed81aacb0d0fcbf7e0c0745ea4556655050c26bf/usr/src/cmd/zpool/zpool_main.c#L4441
+# - https://github.com/openzfs/zfs/blob/a1ca39655ba446c98a2f44b2b1d45d1059738885/cmd/zpool/zpool_main.c#L7537
 #
 # For example:
 # Input:
@@ -417,10 +414,6 @@ _grab_speed() {
 #
 # Not working on FreeBSD:
 #   grep -P -o '(?<=, )[[:digit:]]*h[[:digit:]]*m(?= to go)'
-#
-# Naive solution:
-#   grep ' to go' |
-#   awk '{ print $8 }'
 #
 # Parameters:
 #   $1: The name of the pool.
