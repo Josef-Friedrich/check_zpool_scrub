@@ -125,6 +125,24 @@ config:
 		exit 0
 		;;
 
+	# https://github.com/Josef-Friedrich/check_zpool_scrub/issues/11#issuecomment-850798342
+	'status time_to_go_colons')
+		echo '  pool: zfsdata
+ state: ONLINE
+  scan: scrub in progress since Thu Aug 17 10:25:48 2017
+        461G scanned at 120M/s, 258G issued at 67.2M/s, 496G total
+        0B repaired, 52.05% done, 01:01:21 to go
+config:
+
+        NAME                                       STATE     READ WRITE CKSUM
+        zfsdata                                    ONLINE       0     0     0
+          mirror-0                                ONLINE       0     0     0
+            ata-SanDisk_SDSSD            ONLINE       0     0     0  (trimming)
+            ata-SanDisk_SDSSD            ONLINE       0     0     0  (trimming)'
+		exit 0
+		;;
+
+
 	'list -H -o name')
 		echo 'unknown_zpool
 never_scrubbed_zpool

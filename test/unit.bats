@@ -47,6 +47,7 @@ setup() {
 	[ "$(_grab_time_to_go first_warning_zpool)" -eq 852 ]
 	[ "$(_grab_time_to_go first_critical_zpool)" -eq 0 ]
 	[ "$(_grab_time_to_go days_to_go)" -eq 61 ]
+	[ "$(_grab_time_to_go time_to_go_colons)" -eq 61 ]
 }
 
 ##
