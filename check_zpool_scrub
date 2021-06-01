@@ -151,34 +151,34 @@ Usage: check_zpool_scrub <options>
 
 Options:
  -c, --critical=OPT_CRITICAL
-		Interval in seconds for critical state.
+    Interval in seconds for critical state.
  -p,--pool=OPT_POOL
-		Name of the pool. If this option is omitted all pools are checked.
+    Name of the pool. If this option is omitted all pools are checked.
  -h, --help
-		Show this help.
+    Show this help.
  -s, --short-description
-		Show a short description / summary.
+    Show a short description / summary.
  -v, --version
-		Show the version number.
+    Show the version number.
  -w, --warning=OPT_WARNING
-		Interval in seconds for warning state. Must be lower than -c.
+    Interval in seconds for warning state. Must be lower than -c.
 
 Performance data:
 
 POOL is the name of the pool
 
  - warning
-		Interval in seconds.
+    Interval in seconds.
  - critical
-		Interval in seconds.
+    Interval in seconds.
  - POOL_last_ago
-		Time interval in seconds for last scrub.
+    Time interval in seconds for last scrub.
  - POOL_progress
-		Percent 0 - 100
+    Percent 0 - 100
  - POOL_speed
-		MB per second.
+    MB per second.
  - POOL_time
-		Time to go in minutes.
+    Time to go in minutes.
 
 Details about the implementation of this monitoring plugin:
 
@@ -424,18 +424,18 @@ _grab_progress() {
 _grab_speed() {
 	local SPEED UNIT
 	SPEED="$(_get_zpool_status_stdout "$1" | grep -E -o '[[:digit:]\.,]*[[:alpha:]]*/s')"
-  SPEED="$(echo $SPEED | awk '{print $1}')"
+	SPEED="$(echo $SPEED | awk '{print $1}')"
 
 	if [ -n "$SPEED" ]; then
-    SPEED=$(echo "$SPEED" | sed 's#/s##' | tr , .)
-    UNIT=$(echo -n "$SPEED" | tail -c 1)
-    SPEED=$(echo "$SPEED" | sed 's/.$//' )
+		SPEED=$(echo "$SPEED" | sed 's#/s##' | tr , .)
+		UNIT=$(echo -n "$SPEED" | tail -c 1)
+		SPEED=$(echo "$SPEED" | sed 's/.$//' )
 
-    if [ "$UNIT" = K ]; then
-      SPEED="$(echo "$SPEED" | \
-        awk '{MB = $1 / 1024 ; print MB}')"
-    fi
-    echo $SPEED
+		if [ "$UNIT" = K ]; then
+			SPEED="$(echo "$SPEED" | \
+				awk '{MB = $1 / 1024 ; print MB}')"
+		fi
+		echo $SPEED
 	else
 		echo 0
 	fi
@@ -473,25 +473,25 @@ _grab_speed() {
 #   awk '{ print $8 }'
 ##
 _grab_time_to_go() {
-  local MINUTES HOURS DAYS
-  MINUTES=0
-  HOURS=0
-  DAYS=0
-  _get_line() {
-    _get_zpool_status_stdout "$1" | grep ' to go'
-  }
-  if [ -n "$(_get_zpool_status_stdout "$1" | grep 'days .*:.*:.*')" ]; then
-    DAYS="$(_get_line "$1" | sed -E 's/^.* (.*) days .*$/\1/g')"
-    HOURS="$(_get_line "$1" | sed -E 's/^.*days (..):.*$/\1/g')"
-    MINUTES="$(_get_line "$1" | sed -E 's/^.*days ..:(..):.*$/\1/g')"
-    echo $((DAYS * 1440 + HOURS * 60 + MINUTES))
+	local MINUTES HOURS DAYS
+	MINUTES=0
+	HOURS=0
+	DAYS=0
+	_get_line() {
+		_get_zpool_status_stdout "$1" | grep ' to go'
+	}
+	if [ -n "$(_get_zpool_status_stdout "$1" | grep 'days .*:.*:.*')" ]; then
+		DAYS="$(_get_line "$1" | sed -E 's/^.* (.*) days .*$/\1/g')"
+		HOURS="$(_get_line "$1" | sed -E 's/^.*days (..):.*$/\1/g')"
+		MINUTES="$(_get_line "$1" | sed -E 's/^.*days ..:(..):.*$/\1/g')"
+		echo $((DAYS * 1440 + HOURS * 60 + MINUTES))
 	elif [ -n "$(_get_zpool_status_stdout "$1" | grep 'h.*m.*to go')" ]; then
-    _get_duration() {
-      _get_line "$1" | sed -E 's/^.*, (.*h.*m) to go.*$/\1/g'
-    }
-    HOURS=$(_get_duration "$1" | sed 's/h.*//')
-    MINUTES=$(_get_duration "$1" | sed -E 's/^.*, (.*h.*m) to go.*$/\1/g' | sed 's/.*h//' | sed 's/m//')
-    echo $((HOURS * 60 + MINUTES))
+		_get_duration() {
+			_get_line "$1" | sed -E 's/^.*, (.*h.*m) to go.*$/\1/g'
+		}
+		HOURS=$(_get_duration "$1" | sed 's/h.*//')
+		MINUTES=$(_get_duration "$1" | sed -E 's/^.*, (.*h.*m) to go.*$/\1/g' | sed 's/.*h//' | sed 's/m//')
+		echo $((HOURS * 60 + MINUTES))
 	else
 		echo 0
 	fi
