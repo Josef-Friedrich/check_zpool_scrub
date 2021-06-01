@@ -7,6 +7,16 @@ setup() {
 }
 
 ##
+# last scrub timestamp
+##
+
+@test "function _grab_last_scrub_timestamp" {
+	[ "$(_grab_last_scrub_timestamp first_ok_zpool)" -eq 1502958348 ]
+	[ "$(_grab_last_scrub_timestamp first_warning_zpool)" -eq 1500279947 ]
+	[ "$(_grab_last_scrub_timestamp first_critical_zpool)" -eq 1497601547 ]
+}
+
+##
 # progress
 ##
 

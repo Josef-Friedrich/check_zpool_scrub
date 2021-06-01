@@ -287,23 +287,14 @@ _getopts() {
 	done
 }
 
-########################################################################
+##
 # Detect the date of the last scrub.
 #
 # Grab the date string of the last scrub from "zpool status". If the
 # last scrub was canceled than grab the last scrub date from "zpool
 # history". On old pool with a lot of history grabing only from "zpool
 # history" is very slow.
-########################################################################
-
-# Functions:
-
-# _last_scrub_grab_ctime_from_string
-# _last_scrub_grab_ctime_from_command
-# _last_scrub_to_timestamp
-# _get_last_scrub_timestamp
-
-##
+#
 # /* If there's never been a scan, there's not much to say. */
 #   "none requested\n"
 #     -> scan: none requested
@@ -325,53 +316,28 @@ _getopts() {
 #   "resilver in progress since %s"
 #
 # Parameters:
-#   $1: The output of "zpool status POOL"
+#   $1: The name of the pool.
 #
 # Return:
 #   A datetime formated in ctime format.
 ##
-_last_scrub_grab_ctime_from_string() {
-	# Www Mmm dd hh:mm:ss yyyy,
-	local REGEX
-	REGEX="\
-s/\
-^.*\
-(canceled on|in progress since|errors on)\
- \
-(.*)$\
-/\2/p"
-	echo "$1" | \
-		grep '  scan: ' | \
-		sed -n -E "$REGEX"
-}
-
-##
-# Parameters:
-#   $1: The name of the pool.
-##
-_last_scrub_grab_ctime_from_command() {
-	_last_scrub_grab_ctime_from_string "$(zpool status "$1" )"
-}
-
-##
-# Parameters:
-#   $1: The name of the pool.
-##
-_last_scrub_to_timestamp() {
+_grab_last_scrub_timestamp() {
 	local CTIME
-	CTIME="$(_last_scrub_grab_ctime_from_command "$1")"
+	CTIME="$(_get_zpool_status_stdout "$1" | grep '  scan: ' | sed -n -E "s/^.*(canceled on|in progress since|errors on) (.*)$/\2/p")"
 	if [ -n "$CTIME" ]; then
 		_ctime_to_timestamp "$CTIME"
 	fi
 }
 
 ##
-# Assemble the performace data of one pool
-# $1: POOL
-# $2: DIFF
-# $3: PROGRESS
-# $4: SPEED
-# $5: TIME
+# Assemble the performance data of one pool.
+#
+# Parameters:
+#   $1: POOL
+#   $2: LAST_AGO
+#   $3: PROGRESS
+#   $4: SPEED
+#   $5: TIME
 ##
 _performance_data_one_pool() {
 	local POOL="$1_"
@@ -382,30 +348,35 @@ ${POOL}speed=$4 \
 ${POOL}time=$5"
 }
 
-########################################################################
-# progress
-########################################################################
-
 ##
-# Grab the scrub progress from zpool status
+# Grab the scrub progress from the 'zpool status' output.
+#
+# Parameters:
+#   $1: The name of the pool.
 #
 # Return:
-#   A progress string (85,3%)
+#   A floating point number from 0 to 100 that represents the progress
+#  (for example '85.3').
 ##
 _grab_progress() {
-	local GREP
-	GREP="$(_get_zpool_status_stdout "$1" | grep ' done' | sed -n -E "s/^.*, ([[:digit:]]{1,3}[,\.][[:digit:]]{1,2}%) done.*$/\1/p")"
-	if [ -n "$GREP" ]; then
-		echo "$GREP" | sed 's/%//' | tr ',' '.'
+	local STDOUT
+	STDOUT="$(_get_zpool_status_stdout "$1" | grep ' done' | sed -n -E "s/^.*, ([[:digit:]]{1,3}[,\.][[:digit:]]{1,2}%) done.*$/\1/p")"
+	if [ -n "$STDOUT" ]; then
+		echo "$STDOUT" | sed 's/%//' | tr ',' '.'
 	else
 		echo 100
 	fi
 }
 
-########################################################################
-# Speed
-########################################################################
-
+##
+# Grab the scrub speed from the 'zpool status' output.
+#
+# Parameters:
+#   $1: The name of the pool.
+#
+# Return:
+#   A floating point number like '57.4' or '1.9' in M/s.
+##
 _grab_speed() {
 	local SPEED UNIT
 	SPEED="$(_get_zpool_status_stdout "$1" | grep -E -o '[[:digit:]\.,]*[[:alpha:]]*/s')"
@@ -426,12 +397,8 @@ _grab_speed() {
 	fi
 }
 
-########################################################################
-# Time to go
-########################################################################
-
 ##
-# Extract the time to go from the zpool status output.
+# Extract the time to go from the 'zpool status' output.
 #
 # Responsible for the output is this line:
 #   (void) printf(gettext(", %lluh%um to go\n"),
@@ -445,8 +412,6 @@ _grab_speed() {
 #     7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
 #     0 repaired, 72,38% done
 #   ...
-# Output:
-#     14h12m
 #
 # Other solutions:
 #
@@ -456,6 +421,12 @@ _grab_speed() {
 # Naive solution:
 #   grep ' to go' |
 #   awk '{ print $8 }'
+#
+# Parameters:
+#   $1: The name of the pool.
+#
+# Return:
+#   The time to go in minutes as an integer number.
 ##
 _grab_time_to_go() {
 	local MINUTES HOURS DAYS
@@ -482,19 +453,20 @@ _grab_time_to_go() {
 	fi
 }
 
-########################################################################
-# Main functions
-########################################################################
-
 ##
+# Get the stdout of the command 'zpool status'
 # To avoid that the command 'zpool status' is executed more than once.
+#
+# Parameters:
+#   $1: The name of the pool.
 ##
 _get_zpool_status_stdout() {
 	if [ -n "$ZPOOL_STATUS_STDOUT" ] && [ "$CURRENT_POOL" = "$1" ]; then
 		echo "$ZPOOL_STATUS_STDOUT"
 	else
-		ZPOOL_STATUS_STDOUT="$(zpool status "$1")" > /dev/null 2>&1
 		CURRENT_POOL=$1
+		ZPOOL_STATUS_STDOUT="$(zpool status "$1")" > /dev/null 2>&1
+		ZPOOL_STATUS_EXIT_CODE=$?
 		echo "$ZPOOL_STATUS_STDOUT"
 	fi
 }
@@ -503,14 +475,16 @@ _get_zpool_status_stdout() {
 # Check one ZFS pool.
 #
 # Parameters:
-#   $1: The name of the pool
+#   $1: The name of the pool.
 ##
 _check_one_pool() {
-	local POOL="$1" NOW LAST_SCRUB DIFF PROGRESS SPEED TIME
+	local POOL NOW LAST_SCRUB DIFF PROGRESS SPEED TIME
+	 POOL="$1"
 
-	CURRENT_POOL="$POOL"
-	ZPOOL_STATUS_STDOUT="$(zpool status "$POOL")" > /dev/null 2>&1
-	ZPOOL_STATUS_EXIT_CODE=$?
+	CURRENT_POOL=
+	ZPOOL_STATUS_STDOUT=
+	ZPOOL_STATUS_EXIT_CODE=
+	_get_zpool_status_stdout "$1" > /dev/null 2>&1
 
 	if [ "$ZPOOL_STATUS_EXIT_CODE" != 0 ]; then
 		PERFORMANCE_DATA=
@@ -520,7 +494,7 @@ _check_one_pool() {
 	fi
 
 	NOW=$(_now_to_timestamp)
-	LAST_SCRUB=$(_last_scrub_to_timestamp "$POOL")
+	LAST_SCRUB=$(_grab_last_scrub_timestamp "$POOL")
 
 	if [ -z "$LAST_SCRUB" ]; then
 		PERFORMANCE_DATA=

@@ -34,39 +34,6 @@ setup() {
 	[ "$result" -eq 1500279948 ]
 }
 
-##
-# time to go
-##
-
-@test "function _last_scrub_grab_ctime_from_string: in process" {
-	INPUT='  scan: scrub in progress since Sun Aug 13 00:24:02 2017'
-	result="$(_last_scrub_grab_ctime_from_string "$INPUT")"
-	[ "$result" = 'Sun Aug 13 00:24:02 2017' ]
-}
-
-@test "function _last_scrub_grab_ctime_from_string: finished" {
-	INPUT="  scan: scrub repaired 0 in 266h29m with 0 errors on \
-Tue Aug 15 01:12:31 2017"
-	result="$(_last_scrub_grab_ctime_from_string "$INPUT")"
-	[ "$result" = 'Tue Aug 15 01:12:31 2017' ]
-}
-
-@test "function _last_scrub_grab_ctime_from_string: multiple line" {
-	INPUT="  pool: data
- state: ONLINE
-  scan: scrub in progress since Sun Aug 13 00:24:02 2017
-   7,34T scanned out of 10,1T at 57,4M/s, 14h12m to go
-   0 repaired, 72,38% done"
-	result="$(_last_scrub_grab_ctime_from_string "$INPUT")"
-	[ "$result" = 'Sun Aug 13 00:24:02 2017' ]
-}
-
-@test "function _last_scrub_grab_ctime_from_string: canceled" {
-	INPUT='  scan: scrub canceled on Tue Aug 15 01:12:31 2017'
-	result="$(_last_scrub_grab_ctime_from_string "$INPUT")"
-	[ "$result" = 'Tue Aug 15 01:12:31 2017' ]
-}
-
 @test "function _performance_data_one_pool" {
 	result="$(_performance_data_one_pool pool 1 2 3 4)"
 	[ "$result" = "pool_last_ago=1 pool_progress=2 pool_speed=3 \
