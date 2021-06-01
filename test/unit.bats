@@ -10,13 +10,6 @@ setup() {
 # progress
 ##
 
-@test "function _progress_grep" {
-	[ "$(_progress_grep first_ok_zpool)" = '96,19%' ]
-	[ "$(_progress_grep first_warning_zpool)" = '72,38%' ]
-	[ -z "$(_progress_grep first_critical_zpool)" ]
-	[ "$(_progress_grep days_to_go)" = '52.05%' ]
-}
-
 @test "function _grab_progress" {
 	[ "$(_grab_progress first_ok_zpool)" = '96.19' ]
 	[ "$(_grab_progress first_warning_zpool)" = '72.38' ]

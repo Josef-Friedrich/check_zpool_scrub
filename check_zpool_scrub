@@ -392,26 +392,11 @@ ${POOL}time=$5"
 # Return:
 #   A progress string (85,3%)
 ##
-_progress_grep() {
-	local REGEX
-	REGEX="s/^.*, ([[:digit:]]{1,3}[,\.][[:digit:]]{1,2}%) done.*$/\1/p"
-
-	_get_zpool_status_stdout "$1" | \
-		grep ' done' | \
-		sed -n -E "${REGEX}"
-}
-
-_progress_normalize() {
-	echo $1 | \
-		sed 's/%//' | \
-		tr ',' '.'
-}
-
 _grab_progress() {
 	local GREP
-	GREP="$(_progress_grep "$1")"
+	GREP="$(_get_zpool_status_stdout "$1" | grep ' done' | sed -n -E "s/^.*, ([[:digit:]]{1,3}[,\.][[:digit:]]{1,2}%) done.*$/\1/p")"
 	if [ -n "$GREP" ]; then
-		_progress_normalize "$GREP"
+		echo "$GREP" | sed 's/%//' | tr ',' '.'
 	else
 		echo 100
 	fi

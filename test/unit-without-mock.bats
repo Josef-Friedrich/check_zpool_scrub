@@ -35,16 +35,6 @@ setup() {
 }
 
 ##
-# progress
-##
-
-@test "function _progress_normalize" {
-	[ "$(_progress_normalize 96,19%)" = '96.19' ]
-	[ "$(_progress_normalize 72,38%)" = '72.38' ]
-	[ -z "$(_progress_normalize)" ]
-}
-
-##
 # time to go
 ##
 
