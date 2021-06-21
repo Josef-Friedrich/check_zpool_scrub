@@ -37,6 +37,6 @@ setup() {
 @test "function _performance_data_one_pool" {
 	result="$(_performance_data_one_pool pool 1 2 3 4)"
   echo "$result" > $HOME/debug
-	[ "$result" = "pool_last_ago=1;2678400;5356800 pool_progress=2 pool_speed=3 \
-pool_time=4" ]
+	[ "$result" = "pool_last_ago=1s;2678400;5356800;0 pool_progress=2%;;;0;100 pool_speed=3 \
+pool_time=4s" ]
 }
