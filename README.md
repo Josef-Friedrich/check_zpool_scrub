@@ -43,7 +43,7 @@ POOL is the name of the pool
  - POOL_speed
     MB per second.
  - POOL_time
-    Time to go in minutes.
+    Time to go in seconds.
 
 Details about the implementation of this monitoring plugin:
 

@@ -43,11 +43,11 @@ setup() {
 ##
 
 @test "function _grab_time_to_go" {
-	[ "$(_grab_time_to_go first_ok_zpool)" -eq 3333 ]
-	[ "$(_grab_time_to_go first_warning_zpool)" -eq 852 ]
+	[ "$(_grab_time_to_go first_ok_zpool)" -eq 199980 ]
+	[ "$(_grab_time_to_go first_warning_zpool)" -eq 51120 ]
 	[ "$(_grab_time_to_go first_critical_zpool)" -eq 0 ]
-	[ "$(_grab_time_to_go days_to_go)" -eq 61 ]
-	[ "$(_grab_time_to_go time_to_go_colons)" -eq 61 ]
+	[ "$(_grab_time_to_go days_to_go)" -eq 3681 ]
+	[ "$(_grab_time_to_go time_to_go_colons)" -eq 3681 ]
 }
 
 ##
@@ -59,9 +59,9 @@ setup() {
 	[ "$STATE" -eq 0 ]
 	[ "$MESSAGE" = "OK: The last scrub on zpool 'first_ok_zpool' \
 was performed on 2017-08-17.10:25:48." ]
-	[ "$PERFORMANCE_DATA" = "first_ok_zpool_last_ago=0;2678400;5356800 \
-first_ok_zpool_progress=96.19 first_ok_zpool_speed=1.90 \
-first_ok_zpool_time=3333" ]
+	[ "$PERFORMANCE_DATA" = "first_ok_zpool_last_ago=0s;2678400;5356800;0 \
+first_ok_zpool_progress=96.19%;;;0;100 first_ok_zpool_speed=1.90 \
+first_ok_zpool_time=199980s" ]
 }
 
 @test "function _check_one_pool days_to_go" {
@@ -69,9 +69,9 @@ first_ok_zpool_time=3333" ]
 	[ "$STATE" -eq 0 ]
 	[ "$MESSAGE" = "OK: The last scrub on zpool 'days_to_go' \
 was performed on 2017-08-17.10:25:48." ]
-	[ "$PERFORMANCE_DATA" = "days_to_go_last_ago=0;2678400;5356800 \
-days_to_go_progress=52.05 days_to_go_speed=120 \
-days_to_go_time=61" ]
+	[ "$PERFORMANCE_DATA" = "days_to_go_last_ago=0s;2678400;5356800;0 \
+days_to_go_progress=52.05%;;;0;100 days_to_go_speed=120 \
+days_to_go_time=3681s" ]
 }
 
 @test "function _check_multiple_pools first_ok_zpool" {
@@ -79,9 +79,9 @@ days_to_go_time=61" ]
 	[ "$STATE" -eq 0 ]
 	[ "$MESSAGE" = "OK: The last scrub on zpool 'first_ok_zpool' \
 was performed on 2017-08-17.10:25:48." ]
-	[ "$PERFORMANCE_DATA" = "first_ok_zpool_last_ago=0;2678400;5356800 \
-first_ok_zpool_progress=96.19 first_ok_zpool_speed=1.90 \
-first_ok_zpool_time=3333" ]
+	[ "$PERFORMANCE_DATA" = "first_ok_zpool_last_ago=0s;2678400;5356800;0 \
+first_ok_zpool_progress=96.19%;;;0;100 first_ok_zpool_speed=1.90 \
+first_ok_zpool_time=199980s" ]
 }
 
 
@@ -95,14 +95,14 @@ OK: The last scrub on zpool 'last_ok_zpool' was performed on \
 2017-07-17.10:25:48."
 	[ "$MESSAGE" = "$TEST" ]
 
-	TEST="first_ok_zpool_last_ago=0;2678400;5356800 \
-first_ok_zpool_progress=96.19 \
+	TEST="first_ok_zpool_last_ago=0s;2678400;5356800;0 \
+first_ok_zpool_progress=96.19%;;;0;100 \
 first_ok_zpool_speed=1.90 \
-first_ok_zpool_time=3333 \
-last_ok_zpool_last_ago=2678400;2678400;5356800 \
-last_ok_zpool_progress=96.19 \
+first_ok_zpool_time=199980s \
+last_ok_zpool_last_ago=2678400s;2678400;5356800;0 \
+last_ok_zpool_progress=96.19%;;;0;100 \
 last_ok_zpool_speed=1.90 \
-last_ok_zpool_time=3333"
+last_ok_zpool_time=199980s"
 	[ "$PERFORMANCE_DATA" = "$TEST" ]
 }
 
