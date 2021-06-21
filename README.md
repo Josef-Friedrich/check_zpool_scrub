@@ -10,7 +10,7 @@
 ## Usage
 
 ```
-check_zpool_scrub v1.6
+check_zpool_scrub v1.7
 Copyright (c) 2016-2021 Josef Friedrich <josef@friedrich.rocks>
 
 Monitoring plugin to check how long ago the last ZFS scrub was performed.
@@ -36,11 +36,7 @@ Performance data:
 
 POOL is the name of the pool
 
- - warning
-    Interval in seconds.
- - critical
-    Interval in seconds.
- - POOL_last_ago
+ - POOL_last_ago;warning;critical
     Time interval in seconds for last scrub.
  - POOL_progress
     Percent 0 - 100

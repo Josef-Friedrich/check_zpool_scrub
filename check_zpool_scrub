@@ -167,11 +167,7 @@ Performance data:
 
 POOL is the name of the pool
 
- - warning
-    Interval in seconds.
- - critical
-    Interval in seconds.
- - POOL_last_ago
+ - POOL_last_ago;warning;critical
     Time interval in seconds for last scrub.
  - POOL_progress
     Percent 0 - 100
@@ -340,7 +336,7 @@ _grab_last_scrub_timestamp() {
 _performance_data_one_pool() {
 	local POOL="$1_"
 	echo "\
-${POOL}last_ago=$2 \
+${POOL}last_ago=$2;$OPT_WARNING;$OPT_CRITICAL \
 ${POOL}progress=$3 \
 ${POOL}speed=$4 \
 ${POOL}time=$5"
@@ -588,8 +584,6 @@ _main() {
 
 	if [ -n "$PERFORMANCE_DATA" ]; then
 		MESSAGE="$MESSAGE | \
-warning=${OPT_WARNING} \
-critical=${OPT_CRITICAL} \
 ${PERFORMANCE_DATA}"
 	fi
 
