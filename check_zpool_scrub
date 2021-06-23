@@ -136,7 +136,7 @@ PROJECT_PAGES='https://github.com/Josef-Friedrich/check_zpool_scrub
 https://exchange.icinga.com/joseffriedrich/check_zpool_scrub
 https://exchange.nagios.org/directory/Plugins/System-Metrics/File-System/check_zpool_scrub/details'
 
-VERSION=1.7
+VERSION=2.0
 FIRST_RELEASE=2016-09-08
 SHORT_DESCRIPTION="Monitoring plugin to check how long ago the last \
 ZFS scrub was performed."
@@ -167,7 +167,7 @@ Performance data:
 
 POOL is the name of the pool
 
- - POOL_last_ago;warning;critical
+ - POOL_last_ago
     Time interval in seconds for last scrub.
  - POOL_progress
     Percent 0 - 100
