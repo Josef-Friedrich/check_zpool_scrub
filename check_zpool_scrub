@@ -423,9 +423,22 @@ _grab_time_to_go() {
 	MINUTES=0
 	HOURS=0
 	DAYS=0
+
 	_get_line() {
 		_get_zpool_status_stdout "$1" | grep ' to go'
 	}
+
+	 # some sh implementations (can) interpret numbers with leading zeros as octal numbers.
+	_remove_leading_zeros() {
+		local NUMBER
+		NUMBER="$(echo "$1" | sed -E 's/^0*//')"
+		if [ -n "$NUMBER" ]; then
+			echo "$NUMBER"
+		else
+			echo 0
+		fi
+	}
+
 	if [ -n "$(_get_line "$1" | grep '..:..:.. to go')" ]; then
 		if [ -n "$(_get_line "$1" | grep days)" ]; then
 			DAYS="$(_get_line "$1" | sed -E 's/^.* (.*) days .*$/\1/')"
@@ -440,6 +453,12 @@ _grab_time_to_go() {
 		HOURS=$(_get_duration "$1" | sed 's/h.*//')
 		MINUTES=$(_get_duration "$1" | sed -E 's/^.*, (.*h.*m) to go.*$/\1/' | sed 's/.*h//' | sed 's/m//')
 	fi
+
+	DAYS="$(_remove_leading_zeros "$DAYS")"
+	HOURS="$(_remove_leading_zeros "$HOURS")"
+	MINUTES="$(_remove_leading_zeros "$MINUTES")"
+	SECONDS="$(_remove_leading_zeros "$SECONDS")"
+
 	echo $(((DAYS * 1440 + HOURS * 60 + MINUTES) * 60 + SECONDS))
 }
 
