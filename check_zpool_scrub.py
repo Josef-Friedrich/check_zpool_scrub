@@ -4,6 +4,8 @@ import argparse
 from nagiosplugin.runtime import guarded
 from typing import cast
 
+__version__: str = "2.0"
+
 
 class OptionContainer:
     pass
@@ -51,15 +53,18 @@ def get_argparser() -> argparse.ArgumentParser:
         "--pool",
         help="Name of the pool. If this option is omitted all pools are checked.",
     )
+
     parser.add_argument(
         "-s",
         "--short-description",
         help="Show a short description / summary.",
     )
+
     parser.add_argument(
         "-v",
         "--version",
-        help="Show the version number.",
+        action="version",
+        version="%(prog)s {}".format(__version__),
     )
 
     parser.add_argument(
