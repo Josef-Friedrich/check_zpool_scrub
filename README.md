@@ -1,4 +1,8 @@
-[![Build Status](https://travis-ci.org/Josef-Friedrich/check_zpool_scrub.svg?branch=master)](https://travis-ci.org/Josef-Friedrich/check_zpool_scrub)
+Note: The monitoring plugin is currently being rewritten from
+Shell
+([check_zpool_scrub](https://github.com/Josef-Friedrich/check_zpool_scrub/blob/master/check_zpool_scrub)) to
+Python
+([check_zpool_scrub.py](https://github.com/Josef-Friedrich/check_zpool_scrub/blob/master/check_zpool_scrub.py)). Use the Shell version until further notice.
 
 # check_zpool_scrub
 
@@ -63,4 +67,3 @@ This monitoring plugin grabs the last scrub date from the command
 ```
 make test
 ```
-
