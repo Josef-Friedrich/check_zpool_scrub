@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from typing import cast
 
-from nagiosplugin.runtime import guarded
+# from nagiosplugin.runtime import guarded
 
 __version__: str = "2.0"
 
