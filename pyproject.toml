@@ -19,24 +19,19 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-nagiosplugin = "^1.2"
+nagiosplugin = "^1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.6.0"
-flake8 ="^4.0.1"
 freezegun = "^1.2.2"
-isort = "^5.10.1"
 mypy = "^0.961"
-nagiosplugin-stubs = "^0.4.0"
-nose2 = "^0.11.0"
-readme-patcher = "^0.6.0"
-tox = "^3.25.1"
-tox-poetry-installer = {extras = ["poetry"], version = "^0.10.0"}
-
+nagiosplugin-stubs = "^0"
+readme-patcher = "^0"
+tox = "^4"
+ruff = "^0"
 
 [build-system]
-requires = ["poetry>=1.2.0b2"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 "check_zpool_scrub.py" = "check_zpool_scrub:main"
