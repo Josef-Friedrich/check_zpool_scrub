@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 from typing import cast
 
@@ -18,6 +19,49 @@ class OptionContainer:
 
 
 opts: OptionContainer = OptionContainer()
+
+
+class PoolStatus:
+    pool: str
+
+    __zpool_status_output: str
+
+    last_ago: int
+    """Time interval in seconds for last scrub."""
+
+    time: int
+    """Time to go in seconds."""
+
+    def __init__(self, pool: str) -> None:
+        self.pool = pool
+        self.__zpool_status_output = subprocess.check_output(
+            ["zpool", "status", pool], encoding="UTF-8"
+        )
+
+    @property
+    def progress(self) -> float:
+        """Grab the scrub progress from the 'zpool status' output.
+
+        Percent 0 - 100
+
+        A floating point number from 0 to 100 that represents the progress
+        (for example ``85.3``)."""
+        match = re.search(r"(\d+,\d+)% done", self.__zpool_status_output)
+        if match is None:
+            return 100.0
+        progress = match[1]
+        progress = progress.replace(",", ".")
+        return float(progress)
+
+    @property
+    def speed(self) -> float:
+        """MB per second."""
+        match = re.search(r"at (\d+,\d+)M/s", self.__zpool_status_output)
+        if match is None:
+            return 0
+        speed = match[1]
+        speed = speed.replace(",", ".")
+        return float(speed)
 
 
 class StatusResource(nagiosplugin.Resource):
