@@ -1,10 +1,10 @@
-[tool.poetry]
+[project]
 name = "check_zpool_scrub"
 version = "0.1.0"
 description = ""
-authors = ["Josef Friedrich <josef@friedrich.rocks>"]
+authors = [{ name = "Josef Friedrich", email = "josef@friedrich.rocks" }]
+requires-python = ">=3.8,<4"
 readme = "README.md"
-repository = "https://github.com/Josef-Friedrich/check_zpool_scrub"
 license = "MIT"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -15,23 +15,27 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Utilities",
     "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = ["nagiosplugin>=1,<2"]
+
+[project.urls]
+Repository = "https://github.com/Josef-Friedrich/check_zpool_scrub"
+
+[project.scripts]
+"check_zpool_scrub" = "check_zpool_scrub:main"
+
+[dependency-groups]
+dev = [
+    "freezegun>=1.5.5",
+    "mypy>=0.961",
+    "nagiosplugin-stubs>=0.6.4",
+    "pytest>=8.3.5",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-nagiosplugin = "^1"
-
-[tool.poetry.group.dev.dependencies]
-freezegun = "^1.2.2"
-mypy = "^0.961"
-nagiosplugin-stubs = "^0"
-readme-patcher = "^0"
-tox = "^4"
-ruff = "^0"
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-"check_zpool_scrub.py" = "check_zpool_scrub:main"
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"
