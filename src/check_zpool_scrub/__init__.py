@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 from typing import cast
+
+import nagiosplugin
 
 # from nagiosplugin.runtime import guarded
 
@@ -15,6 +18,23 @@ class OptionContainer:
 
 
 opts: OptionContainer = OptionContainer()
+
+
+class StatusResource(nagiosplugin.Resource):
+    name = "status"
+
+    dataset: str
+
+    def __init__(self, dataset: str) -> None:
+        self.dataset = dataset
+
+    def probe(self) -> nagiosplugin.Metric:
+
+        output = subprocess.check_output(
+            ["zpool", "status", self.dataset], encoding="UTF-8"
+        )
+
+        return nagiosplugin.Metric("snapshot_count", output)
 
 
 def get_argparser() -> argparse.ArgumentParser:
