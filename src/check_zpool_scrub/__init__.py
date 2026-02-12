@@ -5,7 +5,8 @@ from __future__ import annotations
 import argparse
 import re
 import subprocess
-from typing import cast
+from datetime import datetime
+from typing import Optional, cast
 
 import nagiosplugin
 
@@ -34,6 +35,7 @@ class PoolStatus:
 
     def __init__(self, pool: str) -> None:
         self.pool = pool
+        # https://github.com/openzfs/zfs/blob/master/cmd/zpool/zpool_main.c
         self.__zpool_status_output = subprocess.check_output(
             ["zpool", "status", pool], encoding="UTF-8"
         )
@@ -62,6 +64,17 @@ class PoolStatus:
         speed = match[1]
         speed = speed.replace(",", ".")
         return float(speed)
+
+    @property
+    def since(self) -> Optional[datetime]:
+        match = re.search(
+            "(canceled on|in progress since|errors on) (.*)\n",
+            self.__zpool_status_output,
+        )
+        if match is None:
+            return None
+
+        return datetime.strptime(match[2], "%c")
 
 
 class StatusResource(nagiosplugin.Resource):

@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import Mock, patch
 
 from check_zpool_scrub import PoolStatus
@@ -23,3 +24,4 @@ errors: No known data errors'
     status = PoolStatus("first_ok_zpool")
     assert status.progress == 96.19
     assert status.speed == 1.9
+    assert status.since == datetime(2017, 8, 17, 10, 25, 48)
