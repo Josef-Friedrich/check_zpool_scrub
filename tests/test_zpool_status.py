@@ -25,3 +25,4 @@ errors: No known data errors'
     assert status.progress == 96.19
     assert status.speed == 1.9
     assert status.since == datetime(2017, 8, 17, 10, 25, 48)
+    assert status.time_to_go == (55 * 60 + 33) * 60

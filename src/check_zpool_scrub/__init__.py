@@ -77,6 +77,14 @@ class PoolStatus:
 
         return datetime.strptime(match[2], "%c")
 
+    @property
+    def time_to_go(self) -> int:
+        """https://github.com/openzfs/zfs/blob/cdf89f413c72fb17107a2b830a86161a21c74f82/cmd/zpool/zpool_main.c#L10229"""
+        match = re.search(r"(\d+)h(\d+)m to go\n", self.__zpool_status_output)
+        if match is None:
+            return 0
+        return (int(match[1]) * 60 + int(match[2])) * 60
+
 
 class StatusResource(nagiosplugin.Resource):
     name = "status"
