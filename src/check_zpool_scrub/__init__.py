@@ -6,13 +6,14 @@ import argparse
 import re
 import subprocess
 from datetime import datetime
+from importlib import metadata
 from typing import Optional, cast
 
 import nagiosplugin
 
 # from nagiosplugin.runtime import guarded
 
-__version__: str = "2.0"
+__version__: str = metadata.version("check_zpool_scrub")
 
 
 class OptionContainer:
