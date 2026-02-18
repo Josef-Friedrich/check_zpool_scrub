@@ -248,6 +248,15 @@ def get_argparser() -> argparse.ArgumentParser:
         "'zpool status POOL'.\n",
     )
 
+    # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase output verbosity (use up to 3 times).",
+    )
+
     parser.add_argument(
         "-c",
         "--critical",
@@ -267,7 +276,7 @@ def get_argparser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "-v",
+        "-V",
         "--version",
         action="version",
         version="%(prog)s {}".format(__version__),
