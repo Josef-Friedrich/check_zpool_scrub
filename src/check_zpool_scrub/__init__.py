@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import re
 import subprocess
+import typing
 from datetime import datetime
 from importlib import metadata
 from typing import Optional, cast
@@ -17,10 +19,127 @@ __version__: str = metadata.version("check_zpool_scrub")
 
 
 class OptionContainer:
-    pass
+    pool: Optional[str]
+    debug: int
+    verbose: int
+    warning: int
+    critical: int
 
 
 opts: OptionContainer = OptionContainer()
+
+
+class Logger:
+    """A wrapper around the Python logging module with 3 debug logging levels.
+
+    1. ``-d``: info
+    2. ``-dd``: debug
+    3. ``-ddd``: verbose
+    """
+
+    __logger: logging.Logger
+
+    __BLUE = "\x1b[0;34m"
+    __PURPLE = "\x1b[0;35m"
+    __CYAN = "\x1b[0;36m"
+    __RESET = "\x1b[0m"
+
+    __INFO = logging.INFO
+    __DEBUG = logging.DEBUG
+    __VERBOSE = 5
+
+    def __init__(self) -> None:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        logging.basicConfig(handlers=[handler])
+        self.__logger = logging.getLogger(__name__)
+
+    def set_level(self, level: int) -> None:
+        # NOTSET=0
+        # custom level: VERBOSE=5
+        # DEBUG=10
+        # INFO=20
+        # WARN=30
+        # ERROR=40
+        # CRITICAL=50
+        if level == 1:
+            self.__logger.setLevel(logging.INFO)
+        elif level == 2:
+            self.__logger.setLevel(logging.DEBUG)
+        elif level > 2:
+            self.__logger.setLevel(5)
+
+    def __log(self, level: int, color: str, msg: str, *args: object) -> None:
+        a: list[str] = []
+        for arg in args:
+            a.append(color + str(arg) + self.__RESET)
+        self.__logger.log(level, msg, *a)
+
+    def info(self, msg: str, *args: object) -> None:
+        """Log on debug level ``1``: ``-d``.
+
+        :param msg: A message format string. Note that this means that you can
+            use keywords in the format string, together with a single
+            dictionary argument. No ``%`` formatting operation is performed on
+            ``msg`` when no args are supplied.
+        :param args: The arguments which are merged into ``msg`` using the
+            string formatting operator.
+        """
+        self.__log(self.__INFO, self.__BLUE, msg, *args)
+
+    def debug(self, msg: str, *args: object) -> None:
+        """Log on debug level ``2``: ``-dd``.
+
+        :param msg: A message format string. Note that this means that you can
+            use keywords in the format string, together with a single
+            dictionary argument. No ``%`` formatting operation is performed on
+            ``msg`` when no args are supplied.
+        :param args: The arguments which are merged into ``msg`` using the
+            string formatting operator.
+        """
+        self.__log(self.__DEBUG, self.__PURPLE, msg, *args)
+
+    def verbose(self, msg: str, *args: object) -> None:
+        """Log on debug level ``3``: ``-ddd``
+
+        :param msg: A message format string. Note that this means that you can
+            use keywords in the format string, together with a single
+            dictionary argument. No ``%`` formatting operation is performed on
+            ``msg`` when no args are supplied.
+        :param args: The arguments which are merged into ``msg`` using the
+            string formatting operator.
+        """
+        self.__log(self.__VERBOSE, self.__CYAN, msg, *args)
+
+    def show_levels(self) -> None:
+        msg = "log level %s (%s): %s"
+        self.info(msg, 1, "info", "-d")
+        self.debug(msg, 2, "debug", "-dd")
+        self.verbose(msg, 3, "verbose", "-ddd")
+
+
+logger = Logger()
+
+
+def _list_pools() -> list[str]:
+    pools: list[str] = (
+        subprocess.check_output(
+            [
+                "zpool",
+                "list",
+                # -H Scripted mode.  Do not display headers, and separate fields by a single tab instead of arbitrary space.
+                "-H",
+                # -o property Comma-separated list of properties to display.  See the zpoolprops(7) manual page for a list of valid properties.  The default list is name, size, allocated, free, checkpoint, expandsize, fragmentation, capacity, dedupratio, health, altroot.
+                "-o",
+                "name",
+            ],
+            encoding="utf-8",
+        )
+        .strip()
+        .splitlines()
+    )
+    logger.verbose("Output from %s: %s", "zpool list -H -o name", pools)
+    return pools
 
 
 class PoolStatus:
@@ -40,6 +159,7 @@ class PoolStatus:
         self.__zpool_status_output = subprocess.check_output(
             ["zpool", "status", pool], encoding="UTF-8"
         )
+        logger.verbose("Output from %s: %s", "zpool status", self.__zpool_status_output)
 
     @property
     def progress(self) -> float:
@@ -86,21 +206,18 @@ class PoolStatus:
         return (int(match[1]) * 60 + int(match[2])) * 60
 
 
-class StatusResource(nagiosplugin.Resource):
-    name = "status"
+class PoolResource(nagiosplugin.Resource):
+    pool: str
 
-    dataset: str
+    def __init__(self, pool: str) -> None:
+        self.pool = pool
 
-    def __init__(self, dataset: str) -> None:
-        self.dataset = dataset
+    def probe(self) -> typing.Generator[nagiosplugin.Metric, typing.Any, None]:
+        status = PoolStatus(self.pool)
 
-    def probe(self) -> nagiosplugin.Metric:
-
-        output = subprocess.check_output(
-            ["zpool", "status", self.dataset], encoding="UTF-8"
-        )
-
-        return nagiosplugin.Metric("snapshot_count", output)
+        yield nagiosplugin.Metric(f"{self.pool}_progress", status.progress)
+        yield nagiosplugin.Metric(f"{self.pool}_speed", status.speed)
+        yield nagiosplugin.Metric(f"{self.pool}_time_to_go", status.time_to_go)
 
 
 def get_argparser() -> argparse.ArgumentParser:
@@ -122,7 +239,7 @@ def get_argparser() -> argparse.ArgumentParser:
         "    Percent 0 - 100\n"
         " - POOL_speed\n"
         "    MB per second.\n"
-        " - POOL_time\n"
+        " - POOL_time_to_go\n"
         "    Time to go in seconds.\n"
         "\n"
         "Details about the implementation of this monitoring plugin:\n"
@@ -162,14 +279,37 @@ def get_argparser() -> argparse.ArgumentParser:
         help="Interval in seconds for warning state. Must be lower than -c.",
     )
 
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="count",
+        default=0,
+        help="Increase debug verbosity (use up to 3 times): -D: info -DD: debug. -DDD verbose",
+    )
+
     return parser
 
 
 # @guarded(verbose=0)
-def main():
-    pass
+def main() -> None:
     global opts
     opts = cast(OptionContainer, get_argparser().parse_args())
+
+    checks: list[typing.Union[nagiosplugin.Resource, nagiosplugin.Context]] = []
+
+    pools = _list_pools()
+
+    if opts.pool is not None:
+        if opts.pool not in pools:
+            raise ValueError(f"-p {opts.pool} is not in {pools}")
+        checks.append(PoolResource(opts.pool))
+    else:
+        for pool in pools:
+            checks.append(PoolResource(pool))
+
+    check: nagiosplugin.Check = nagiosplugin.Check(*checks)
+    check.name = "zpool_scrub"
+    check.main(opts.verbose)
 
 
 if __name__ == "__main__":

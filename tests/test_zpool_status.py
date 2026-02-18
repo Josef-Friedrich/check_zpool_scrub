@@ -1,7 +1,30 @@
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-from check_zpool_scrub import PoolStatus
+from check_zpool_scrub import PoolStatus, _list_pools  # type: ignore
+
+
+@patch("check_zpool_scrub.subprocess.check_output")
+def test_list_pools(mock_run: Mock) -> None:
+    mock_run.return_value = """
+unknown_zpool
+never_scrubbed_zpool
+first_ok_zpool
+last_ok_zpool
+first_warning_zpool
+last_warning_zpool
+first_critical_zpool
+"""
+    pools = _list_pools()
+    assert pools == [
+        "unknown_zpool",
+        "never_scrubbed_zpool",
+        "first_ok_zpool",
+        "last_ok_zpool",
+        "first_warning_zpool",
+        "last_warning_zpool",
+        "first_critical_zpool",
+    ]
 
 
 @patch("check_zpool_scrub.subprocess.check_output")
