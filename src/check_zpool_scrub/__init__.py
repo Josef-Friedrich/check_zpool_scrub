@@ -229,7 +229,8 @@ class PoolResource(nagiosplugin.Resource):
 
 
 class ProgressContext(nagiosplugin.Context):
-    name = "progress"
+    def __init__(self) -> None:
+        super().__init__("progress")
 
     def evaluate(
         self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
@@ -238,7 +239,8 @@ class ProgressContext(nagiosplugin.Context):
 
 
 class SpeedContext(nagiosplugin.Context):
-    name = "speed"
+    def __init__(self) -> None:
+        super().__init__("speed")
 
     def evaluate(
         self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
@@ -247,7 +249,8 @@ class SpeedContext(nagiosplugin.Context):
 
 
 class TimeToGoContext(nagiosplugin.Context):
-    name = "time_to_go"
+    def __init__(self) -> None:
+        super().__init__("time_to_go")
 
     def evaluate(
         self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
@@ -256,7 +259,8 @@ class TimeToGoContext(nagiosplugin.Context):
 
 
 class LastScrubContext(nagiosplugin.Context):
-    name = "last_scrub"
+    def __init__(self) -> None:
+        super().__init__("last_scrub")
 
     def evaluate(
         self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
@@ -269,7 +273,7 @@ def get_argparser() -> argparse.ArgumentParser:
         prog="check_zpool_scrub",  # To get the right command name in the README.
         formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(
             prog, width=80
-        ),  # noqa: E501
+        ),
         description="Copyright (c) 2016-22 Josef Friedrich <josef@friedrich.rocks>\n"
         "\n"
         "Monitoring plugin to check how long ago the last ZFS scrub was performed.\n",  # noqa: E501
@@ -277,7 +281,7 @@ def get_argparser() -> argparse.ArgumentParser:
         "\n"
         "POOL is the name of the pool\n"
         "\n"
-        " - POOL_last_ago\n"
+        " - POOL_last_scrub\n"
         "    Time interval in seconds for last scrub.\n"
         " - POOL_progress\n"
         "    Percent 0 - 100\n"
@@ -304,6 +308,9 @@ def get_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-c",
         "--critical",
+        type=int,
+        # 2 month 60*60*24*31*2
+        default=5356800,
         help="Interval in seconds for critical state.",
     )
 
@@ -330,6 +337,9 @@ def get_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-w",
         "--warning",
+        type=int,
+        # 1 month 60*60*24*31
+        default=2678400,
         help="Interval in seconds for warning state. Must be lower than -c.",
     )
 
@@ -350,7 +360,12 @@ def main() -> None:
 
     opts = cast(OptionContainer, get_argparser().parse_args())
 
-    checks: list[typing.Union[nagiosplugin.Resource, nagiosplugin.Context]] = []
+    checks: list[typing.Union[nagiosplugin.Resource, nagiosplugin.Context]] = [
+        ProgressContext(),
+        SpeedContext(),
+        TimeToGoContext(),
+        LastScrubContext(),
+    ]
 
     pools = _list_pools()
 

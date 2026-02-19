@@ -115,7 +115,9 @@ first_critical_zpool"""
         file_stdout: io.StringIO = io.StringIO()
         file_stderr: io.StringIO = io.StringIO()
         with redirect_stdout(file_stdout), redirect_stderr(file_stderr):
-            importlib.import_module("check_zpool_scrub").main()
+            check_zpool_scrub = importlib.import_module("check_zpool_scrub")
+            importlib.reload(check_zpool_scrub)
+            check_zpool_scrub.main()
 
     return MockResult(
         sys_exit_mock=sys_exit,
