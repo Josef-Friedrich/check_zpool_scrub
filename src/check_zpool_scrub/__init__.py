@@ -6,6 +6,7 @@ import argparse
 import logging
 import re
 import subprocess
+import sys
 import typing
 from datetime import datetime
 from importlib import metadata
@@ -258,9 +259,9 @@ class TimeToGoContext(nagiosplugin.Context):
         return super().evaluate(metric, resource)
 
 
-class LastScrubContext(nagiosplugin.Context):
-    def __init__(self) -> None:
-        super().__init__("last_scrub")
+class LastScrubContext(nagiosplugin.ScalarContext):
+    def __init__(self, warning: int, critical: int) -> None:
+        super().__init__("last_scrub", warning=warning, critical=critical)
 
     def evaluate(
         self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
@@ -268,8 +269,17 @@ class LastScrubContext(nagiosplugin.Context):
         return super().evaluate(metric, resource)
 
 
+class CustomArgumentParser(argparse.ArgumentParser):
+    """To get --help and --version exit with 3"""
+
+    def exit(self, status: int = 3, message: Optional[str] = None) -> typing.NoReturn:
+        if message:
+            self._print_message(message, sys.stderr)
+        sys.exit(status)
+
+
 def get_argparser() -> argparse.ArgumentParser:
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(
+    parser: argparse.ArgumentParser = CustomArgumentParser(
         prog="check_zpool_scrub",  # To get the right command name in the README.
         formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(
             prog, width=80
@@ -364,7 +374,7 @@ def main() -> None:
         ProgressContext(),
         SpeedContext(),
         TimeToGoContext(),
-        LastScrubContext(),
+        LastScrubContext(warning=opts.warning, critical=opts.critical),
     ]
 
     pools = _list_pools()
