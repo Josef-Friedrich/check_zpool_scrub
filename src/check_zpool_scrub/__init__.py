@@ -283,6 +283,7 @@ def get_argparser() -> argparse.ArgumentParser:
         help="Show a short description / summary.",
     )
 
+    # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
     parser.add_argument(
         "-V",
         "--version",
