@@ -6,6 +6,7 @@ import argparse
 import logging
 import re
 import subprocess
+import sys
 import typing
 from datetime import datetime
 from importlib import metadata
@@ -307,9 +308,15 @@ def get_argparser() -> argparse.ArgumentParser:
 
 
 # @guarded(verbose=0)
-def main() -> None:
+def main(*args: str) -> None:
     global opts
-    opts = cast(OptionContainer, get_argparser().parse_args())
+
+    argv: list[str]
+    if len(args) == 0:
+        argv = sys.argv
+    else:
+        argv = list(args)
+    opts = cast(OptionContainer, get_argparser().parse_args(argv))
 
     checks: list[typing.Union[nagiosplugin.Resource, nagiosplugin.Context]] = []
 
