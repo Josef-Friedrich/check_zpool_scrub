@@ -216,14 +216,52 @@ class PoolResource(nagiosplugin.Resource):
 
     def probe(self) -> typing.Generator[nagiosplugin.Metric, typing.Any, None]:
         status = PoolScrubStatus(self.pool)
+        yield nagiosplugin.Metric(
+            f"{self.pool}_progress", status.progress, context="progress"
+        )
+        yield nagiosplugin.Metric(f"{self.pool}_speed", status.speed, context="speed")
+        yield nagiosplugin.Metric(
+            f"{self.pool}_time_to_go", status.time_to_go, context="time_to_go"
+        )
+        yield nagiosplugin.Metric(
+            f"{self.pool}_last_scrub", status.time_to_go, context="last_scrub"
+        )
 
-        yield nagiosplugin.Metric(f"{self.pool}_progress", status.progress)
-        yield nagiosplugin.Metric(f"{self.pool}_speed", status.speed)
-        yield nagiosplugin.Metric(f"{self.pool}_time_to_go", status.time_to_go)
+
+class ProgressContext(nagiosplugin.Context):
+    name = "progress"
+
+    def evaluate(
+        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
+    ) -> nagiosplugin.Result:
+        return super().evaluate(metric, resource)
 
 
-class ScrubContext(nagiosplugin.Context):
-    pass
+class SpeedContext(nagiosplugin.Context):
+    name = "speed"
+
+    def evaluate(
+        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
+    ) -> nagiosplugin.Result:
+        return super().evaluate(metric, resource)
+
+
+class TimeToGoContext(nagiosplugin.Context):
+    name = "time_to_go"
+
+    def evaluate(
+        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
+    ) -> nagiosplugin.Result:
+        return super().evaluate(metric, resource)
+
+
+class LastScrubContext(nagiosplugin.Context):
+    name = "last_scrub"
+
+    def evaluate(
+        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
+    ) -> nagiosplugin.Result:
+        return super().evaluate(metric, resource)
 
 
 def get_argparser() -> argparse.ArgumentParser:
