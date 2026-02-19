@@ -6,15 +6,13 @@ import argparse
 import logging
 import re
 import subprocess
-import sys
 import typing
 from datetime import datetime
 from importlib import metadata
 from typing import Optional, cast
 
 import nagiosplugin
-
-# from nagiosplugin.runtime import guarded
+from nagiosplugin.runtime import guarded
 
 __version__: str = metadata.version("check_zpool_scrub")
 
@@ -308,16 +306,11 @@ def get_argparser() -> argparse.ArgumentParser:
     return parser
 
 
-# @guarded(verbose=0)
-def main(*args: str) -> None:
+@guarded(verbose=0)  # type: ignore
+def main() -> None:
     global opts
 
-    argv: list[str]
-    if len(args) == 0:
-        argv = sys.argv
-    else:
-        argv = list(args)
-    opts = cast(OptionContainer, get_argparser().parse_args(argv))
+    opts = cast(OptionContainer, get_argparser().parse_args())
 
     checks: list[typing.Union[nagiosplugin.Resource, nagiosplugin.Context]] = []
 
@@ -325,7 +318,10 @@ def main(*args: str) -> None:
 
     if opts.pool is not None:
         if opts.pool not in pools:
-            raise ValueError(f"-p {opts.pool} is not in {pools}")
+            formatted_pools = map(lambda pool: f"'{pool}'", pools)
+            raise ValueError(
+                f"Unknown pool '{opts.pool}'. Available pools: {', '.join(formatted_pools)}"
+            )
         checks.append(PoolResource(opts.pool))
     else:
         for pool in pools:

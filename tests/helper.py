@@ -90,7 +90,7 @@ def execute_main(
     ) -> str:
         command: str = " ".join(args)
 
-        if command == "zpool list -H -o":
+        if command == "zpool list -H -o name":
             return """unknown_zpool
 never_scrubbed_zpool
 first_ok_zpool
