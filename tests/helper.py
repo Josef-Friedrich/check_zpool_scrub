@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import io
 import subprocess
 import typing
@@ -8,8 +9,6 @@ from unittest import mock
 from unittest.mock import Mock
 
 from freezegun import freeze_time
-
-from check_zpool_scrub import main
 
 
 def run(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -116,7 +115,7 @@ first_critical_zpool"""
         file_stdout: io.StringIO = io.StringIO()
         file_stderr: io.StringIO = io.StringIO()
         with redirect_stdout(file_stdout), redirect_stderr(file_stderr):
-            main()
+            importlib.import_module("check_zpool_scrub").main()
 
     return MockResult(
         sys_exit_mock=sys_exit,
