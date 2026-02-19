@@ -1,7 +1,9 @@
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-from check_zpool_scrub import PoolStatus, _list_pools  # type: ignore
+from freezegun import freeze_time
+
+from check_zpool_scrub import PoolScrubStatus, _list_pools  # type: ignore
 
 
 @patch("check_zpool_scrub.subprocess.check_output")
@@ -27,25 +29,41 @@ first_critical_zpool
     ]
 
 
-@patch("check_zpool_scrub.subprocess.check_output")
-def test_first_ok_zpool(mock_run: Mock) -> None:
-    mock_run.return_value = """
-  pool: first_ok_zpool
- state: ONLINE
-  scan: scrub in progress since Thu Aug 17 10:25:48 2017
+@freeze_time("2026-02-19")
+class TestPoolScrubStatus:
+    status: PoolScrubStatus
+
+    def setup_method(self, method) -> None:
+
+        with patch("check_zpool_scrub.subprocess.check_output") as mock_run:
+            mock_run.return_value = """
+ pool: first_ok_zpool
+state: ONLINE
+ scan: scrub in progress since Thu Aug 17 10:25:48 2017
     9,12T scanned out of 9,48T at 1,90M/s, 55h33m to go
     0 repaired, 96,19% done
 config:
 
-	NAME                                 STATE     READ WRITE CKSUM
-	data                                 ONLINE       0     0     0
-	  raidz1-0                           ONLINE       0     0     0
-	    ata-ST3000DM001-1CH166_Z1F324L3  ONLINE       0     0     0
+    NAME                                 STATE     READ WRITE CKSUM
+    data                                 ONLINE       0     0     0
+    raidz1-0                           ONLINE       0     0     0
+        ata-ST3000DM001-1CH166_Z1F324L3  ONLINE       0     0     0
 
 errors: No known data errors'
-"""
-    status = PoolStatus("first_ok_zpool")
-    assert status.progress == 96.19
-    assert status.speed == 1.9
-    assert status.since == datetime(2017, 8, 17, 10, 25, 48)
-    assert status.time_to_go == (55 * 60 + 33) * 60
+    """
+            self.status = PoolScrubStatus("first_ok_zpool")
+
+    def test_progress(self) -> None:
+        assert self.status.progress == 96.19
+
+    def test_speed(self) -> None:
+        assert self.status.speed == 1.9
+
+    def test_last_scrub(self) -> None:
+        assert self.status.last_scrub == datetime(2017, 8, 17, 10, 25, 48)
+
+    def test_time_to_go(self) -> None:
+        assert self.status.time_to_go == (55 * 60 + 33) * 60
+
+    def test_last_scrub_interval(self) -> None:
+        assert self.status.last_scrub_interval == 268493652.0

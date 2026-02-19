@@ -142,16 +142,10 @@ def _list_pools() -> list[str]:
     return pools
 
 
-class PoolStatus:
+class PoolScrubStatus:
     pool: str
 
     __zpool_status_output: str
-
-    last_ago: int
-    """Time interval in seconds for last scrub."""
-
-    time: int
-    """Time to go in seconds."""
 
     def __init__(self, pool: str) -> None:
         self.pool = pool
@@ -187,7 +181,17 @@ class PoolStatus:
         return float(speed)
 
     @property
-    def since(self) -> Optional[datetime]:
+    def time_to_go(self) -> int:
+        """Time to go in seconds.
+
+        https://github.com/openzfs/zfs/blob/cdf89f413c72fb17107a2b830a86161a21c74f82/cmd/zpool/zpool_main.c#L10229"""
+        match = re.search(r"(\d+)h(\d+)m to go\n", self.__zpool_status_output)
+        if match is None:
+            return 0
+        return (int(match[1]) * 60 + int(match[2])) * 60
+
+    @property
+    def last_scrub(self) -> Optional[datetime]:
         match = re.search(
             "(canceled on|in progress since|errors on) (.*)\n",
             self.__zpool_status_output,
@@ -198,12 +202,11 @@ class PoolStatus:
         return datetime.strptime(match[2], "%c")
 
     @property
-    def time_to_go(self) -> int:
-        """https://github.com/openzfs/zfs/blob/cdf89f413c72fb17107a2b830a86161a21c74f82/cmd/zpool/zpool_main.c#L10229"""
-        match = re.search(r"(\d+)h(\d+)m to go\n", self.__zpool_status_output)
-        if match is None:
-            return 0
-        return (int(match[1]) * 60 + int(match[2])) * 60
+    def last_scrub_interval(self) -> Optional[float]:
+        """Time interval in seconds for last scrub."""
+        if self.last_scrub is not None:
+            return datetime.now().timestamp() - self.last_scrub.timestamp()
+        return None
 
 
 class PoolResource(nagiosplugin.Resource):
@@ -213,11 +216,15 @@ class PoolResource(nagiosplugin.Resource):
         self.pool = pool
 
     def probe(self) -> typing.Generator[nagiosplugin.Metric, typing.Any, None]:
-        status = PoolStatus(self.pool)
+        status = PoolScrubStatus(self.pool)
 
         yield nagiosplugin.Metric(f"{self.pool}_progress", status.progress)
         yield nagiosplugin.Metric(f"{self.pool}_speed", status.speed)
         yield nagiosplugin.Metric(f"{self.pool}_time_to_go", status.time_to_go)
+
+
+class ScrubContext(nagiosplugin.Context):
+    pass
 
 
 def get_argparser() -> argparse.ArgumentParser:
