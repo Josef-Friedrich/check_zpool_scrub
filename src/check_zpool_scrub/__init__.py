@@ -277,6 +277,72 @@ class CustomArgumentParser(argparse.ArgumentParser):
             self._print_message(message, sys.stderr)
         sys.exit(status)
 
+    # systemd.time(7)
+    #    •   usec, us, μs
+    #    •   msec, ms
+    #    •   seconds, second, sec, s
+    #    •   minutes, minute, min, m
+    #    •   hours, hour, hr, h
+    #    •   days, day, d
+    #    •   weeks, week, w
+    #    •   months, month, M (defined as 30.44 days)
+    #    •   years, year, y (defined as 365.25 days)
+
+
+def _convert_timespan_to_sec(fmt_timespan: str) -> int:
+    """Convert a timespan format string to seconds. Take a look at the
+    systemd `time-util.c
+    <https://github.com/systemd/systemd/blob/master/src/basic/time-util.c>`_
+    source code.
+
+    :param fmt_timespan: for example ``2.345s`` or ``3min 45.234s`` or
+    ``34min left`` or ``2 months 8 days``
+
+    :return: The seconds
+    """
+
+    # Remove all whitespaces
+    fmt_timespan = re.sub(r"\s+", "", fmt_timespan)
+
+    replacements: list[tuple[list[str], str]] = [
+        (["years", "year"], "y"),
+        (["months", "month"], "M"),
+        (["weeks", "week"], "w"),
+        (["days", "day"], "d"),
+        (["hours", "hour", "hr"], "h"),
+        (["minutes", "minute", "min"], "m"),
+        (["seconds", "second", "sec"], "s"),
+        # (["msec"], "ms"),
+        # (["usec", "μ"], "us"),
+    ]
+
+    for replacement in replacements:
+        for r in replacement[0]:
+            fmt_timespan = fmt_timespan.replace(r, replacement[1])
+
+    # Add a whitespace after the units
+    fmt_timespan = re.sub(r"([a-zA-Z]+)", r"\1 ", fmt_timespan)
+
+    seconds: dict[str, float] = {
+        "y": 31557600,  # 365.25 days
+        "M": 2630016,  # 30.44 days
+        "w": 604800,  # 7 * 24 * 60 * 60
+        "d": 86400,  # 24 * 60 * 60
+        "h": 3600,  # 60 * 60
+        "m": 60,
+        "s": 1,
+        # "ms": 0.001,
+    }
+    result: float = 0
+    # Split on the whitespaces
+    for span in fmt_timespan.split():
+        match = re.search(r"([\d\.]+)([a-zA-Z]+)", span)
+        if match:
+            value = match.group(1)
+            unit = match.group(2)
+            result += float(value) * seconds[unit]
+    return round(result)
+
 
 def get_argparser() -> argparse.ArgumentParser:
     parser: argparse.ArgumentParser = CustomArgumentParser(
