@@ -21,7 +21,11 @@ classifiers = [
 dependencies = ["nagiosplugin>=1,<2"]
 
 [project.urls]
+Download = "https://pypi.org/project/check_zpool_scrub/"
 Repository = "https://github.com/Josef-Friedrich/check_zpool_scrub"
+Issues = "https://github.com/Josef-Friedrich/check_zpool_scrub/issues"
+Changelog = "https://github.com/Josef-Friedrich/check_zpool_scrub/blob/main/CHANGELOG.md"
+
 
 [project.scripts]
 "check_zpool_scrub" = "check_zpool_scrub:main"
