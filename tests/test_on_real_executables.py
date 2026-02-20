@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def test_ok() -> None:
-    bin_dir = Path(__file__).parent / ".." / "test" / "bin"
+    bin_dir = Path(__file__).parent / "bin"
 
     env = os.environ.copy()
     env["PATH"] = str(bin_dir) + ":" + env["PATH"]
