@@ -410,9 +410,13 @@ def get_argparser() -> argparse.ArgumentParser:
         formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(
             prog, width=80
         ),
-        description="Copyright (c) 2016-22 Josef Friedrich <josef@friedrich.rocks>\n"
+        # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
+        description=f"version {__version__}\n"
+        "Licensed under the MIT.\n"
+        "Repository: https://github.com/Josef-Friedrich/check_zpool_scrub\n"
+        f"Copyright (c) 2016-{datetime.now().year} Josef Friedrich <josef@friedrich.rocks>\n"
         "\n"
-        "Monitoring plugin to check how long ago the last ZFS scrub was performed.\n",  # noqa: E501
+        "Monitoring plugin to check how long ago the last ZFS scrub was performed.\n",
         epilog="Performance data:\n"
         "\n"
         "POOL is the name of the pool\n"
