@@ -12,8 +12,8 @@ from datetime import datetime
 from importlib import metadata
 from typing import Any, Optional, Sequence, Union, cast
 
-import nagiosplugin
-from nagiosplugin.runtime import guarded
+import mplugin
+from mplugin.runtime import guarded
 
 __version__: str = metadata.version("check_zpool_scrub")
 
@@ -209,63 +209,63 @@ class PoolScrubStatus:
         return None
 
 
-class PoolResource(nagiosplugin.Resource):
+class PoolResource(mplugin.Resource):
     pool: str
 
     def __init__(self, pool: str) -> None:
         self.pool = pool
 
-    def probe(self) -> typing.Generator[nagiosplugin.Metric, typing.Any, None]:
+    def probe(self) -> typing.Generator[mplugin.Metric, typing.Any, None]:
         status = PoolScrubStatus(self.pool)
-        yield nagiosplugin.Metric(
+        yield mplugin.Metric(
             f"{self.pool}_progress", status.progress, context="progress"
         )
-        yield nagiosplugin.Metric(f"{self.pool}_speed", status.speed, context="speed")
-        yield nagiosplugin.Metric(
+        yield mplugin.Metric(f"{self.pool}_speed", status.speed, context="speed")
+        yield mplugin.Metric(
             f"{self.pool}_time_to_go", status.time_to_go, context="time_to_go"
         )
-        yield nagiosplugin.Metric(
+        yield mplugin.Metric(
             f"{self.pool}_last_scrub", status.time_to_go, context="last_scrub"
         )
 
 
-class ProgressContext(nagiosplugin.Context):
+class ProgressContext(mplugin.Context):
     def __init__(self) -> None:
         super().__init__("progress")
 
     def evaluate(
-        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
-    ) -> nagiosplugin.Result:
+        self, metric: mplugin.Metric, resource: mplugin.Resource
+    ) -> mplugin.Result:
         return super().evaluate(metric, resource)
 
 
-class SpeedContext(nagiosplugin.Context):
+class SpeedContext(mplugin.Context):
     def __init__(self) -> None:
         super().__init__("speed")
 
     def evaluate(
-        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
-    ) -> nagiosplugin.Result:
+        self, metric: mplugin.Metric, resource: mplugin.Resource
+    ) -> mplugin.Result:
         return super().evaluate(metric, resource)
 
 
-class TimeToGoContext(nagiosplugin.Context):
+class TimeToGoContext(mplugin.Context):
     def __init__(self) -> None:
         super().__init__("time_to_go")
 
     def evaluate(
-        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
-    ) -> nagiosplugin.Result:
+        self, metric: mplugin.Metric, resource: mplugin.Resource
+    ) -> mplugin.Result:
         return super().evaluate(metric, resource)
 
 
-class LastScrubContext(nagiosplugin.ScalarContext):
+class LastScrubContext(mplugin.ScalarContext):
     def __init__(self, warning: int, critical: int) -> None:
         super().__init__("last_scrub", warning=f"@{warning}", critical=f"@{critical}")
 
     def evaluate(
-        self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
-    ) -> nagiosplugin.Result:
+        self, metric: mplugin.Metric, resource: mplugin.Resource
+    ) -> mplugin.Result:
         return super().evaluate(metric, resource)
 
 
@@ -469,7 +469,7 @@ def main() -> None:
 
     opts = cast(OptionContainer, get_argparser().parse_args())
 
-    checks: list[typing.Union[nagiosplugin.Resource, nagiosplugin.Context]] = [
+    checks: list[typing.Union[mplugin.Resource, mplugin.Context]] = [
         ProgressContext(),
         SpeedContext(),
         TimeToGoContext(),
@@ -489,7 +489,7 @@ def main() -> None:
         for pool in pools:
             checks.append(PoolResource(pool))
 
-    check: nagiosplugin.Check = nagiosplugin.Check(*checks)
+    check: mplugin.Check = mplugin.Check(*checks)
     check.name = "zpool_scrub"
     check.main(opts.verbose)
 

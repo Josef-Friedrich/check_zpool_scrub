@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-dependencies = ["nagiosplugin>=1,<2"]
+dependencies = ["nagiosplugin>=1,<2", "mplugin"]
 
 [project.urls]
 Download = "https://pypi.org/project/check_zpool_scrub/"
@@ -41,3 +41,8 @@ dev = [
 [build-system]
 requires = ["uv_build>=0.10.0,<0.11.0"]
 build-backend = "uv_build"
+
+[tool.uv]
+
+[tool.uv.sources]
+mplugin = { git = "https://github.com/Josef-Friedrich/mplugin.git" }
