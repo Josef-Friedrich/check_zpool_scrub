@@ -10,7 +10,7 @@ import sys
 import typing
 from datetime import datetime
 from importlib import metadata
-from typing import Optional, cast
+from typing import Any, Optional, Sequence, Union, cast
 
 import nagiosplugin
 from nagiosplugin.runtime import guarded
@@ -289,7 +289,7 @@ class CustomArgumentParser(argparse.ArgumentParser):
     #    •   years, year, y (defined as 365.25 days)
 
 
-def _convert_timespan_to_sec(fmt_timespan: str) -> int:
+def _convert_timespan_to_seconds(fmt_timespan: typing.Union[str, int, float]) -> int:
     """Convert a timespan format string to seconds. Take a look at the
     systemd `time-util.c
     <https://github.com/systemd/systemd/blob/master/src/basic/time-util.c>`_
@@ -300,6 +300,15 @@ def _convert_timespan_to_sec(fmt_timespan: str) -> int:
 
     :return: The seconds
     """
+
+    # A int or a float encoded as string without an extension
+    try:
+        fmt_timespan = float(fmt_timespan)
+    except ValueError:
+        pass
+
+    if isinstance(fmt_timespan, int) or isinstance(fmt_timespan, float):
+        return round(fmt_timespan)
 
     # Remove all whitespaces
     fmt_timespan = re.sub(r"\s+", "", fmt_timespan)
@@ -345,6 +354,31 @@ def _convert_timespan_to_sec(fmt_timespan: str) -> int:
 
 
 def get_argparser() -> argparse.ArgumentParser:
+
+    class TimeSpanAction(argparse.Action):
+        def __init__(
+            self,
+            option_strings: list[str],
+            dest: str,
+            nargs: Optional[str] = None,
+            **kwargs: Any,
+        ) -> None:
+            if nargs is not None:
+                raise ValueError("nargs not allowed")
+            super().__init__(option_strings, dest, **kwargs)
+
+        def __call__(
+            self,
+            parser: argparse.ArgumentParser,
+            namespace: argparse.Namespace,
+            values: Optional[Union[str, Sequence[Any]]],
+            option_string: Optional[str] = None,
+        ) -> None:
+            if not isinstance(values, str):
+                raise ValueError("Only strings are allowed")
+
+            setattr(namespace, self.dest, _convert_timespan_to_seconds(values))
+
     parser: argparse.ArgumentParser = CustomArgumentParser(
         prog="check_zpool_scrub",  # To get the right command name in the README.
         formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(
@@ -382,12 +416,21 @@ def get_argparser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "-w",
+        "--warning",
+        # 1 month 60*60*24*31
+        default=2678400,
+        help="Interval in seconds for warning state. Must be lower than -c.",
+        action=TimeSpanAction,
+    )
+
+    parser.add_argument(
         "-c",
         "--critical",
-        type=int,
         # 2 month 60*60*24*31*2
         default=5356800,
         help="Interval in seconds for critical state.",
+        action=TimeSpanAction,
     )
 
     parser.add_argument(
@@ -408,15 +451,6 @@ def get_argparser() -> argparse.ArgumentParser:
         "--version",
         action="version",
         version="%(prog)s {}".format(__version__),
-    )
-
-    parser.add_argument(
-        "-w",
-        "--warning",
-        type=int,
-        # 1 month 60*60*24*31
-        default=2678400,
-        help="Interval in seconds for warning state. Must be lower than -c.",
     )
 
     parser.add_argument(
