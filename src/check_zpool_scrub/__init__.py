@@ -12,8 +12,16 @@ from datetime import datetime
 from importlib import metadata
 from typing import Any, Optional, Sequence, Union, cast
 
-import mplugin
-from mplugin.runtime import guarded
+from mplugin import (
+    Check,
+    Context,
+    Metric,
+    Resource,
+    Result,
+    ScalarContext,
+    ServiceState,
+    guarded,
+)
 
 __version__: str = metadata.version("check_zpool_scrub")
 
@@ -209,63 +217,55 @@ class PoolScrubStatus:
         return None
 
 
-class PoolResource(mplugin.Resource):
+class PoolResource(Resource):
     pool: str
 
     def __init__(self, pool: str) -> None:
         self.pool = pool
 
-    def probe(self) -> typing.Generator[mplugin.Metric, typing.Any, None]:
+    def probe(self) -> typing.Generator[Metric, typing.Any, None]:
         status = PoolScrubStatus(self.pool)
-        yield mplugin.Metric(
-            f"{self.pool}_progress", status.progress, context="progress"
-        )
-        yield mplugin.Metric(f"{self.pool}_speed", status.speed, context="speed")
-        yield mplugin.Metric(
-            f"{self.pool}_time_to_go", status.time_to_go, context="time_to_go"
-        )
-        yield mplugin.Metric(
-            f"{self.pool}_last_scrub", status.time_to_go, context="last_scrub"
-        )
+        yield Metric(f"{self.pool}_progress", status.progress, context="progress")
+        yield Metric(f"{self.pool}_speed", status.speed, context="speed")
+        yield Metric(f"{self.pool}_time_to_go", status.time_to_go, context="time_to_go")
+        yield Metric(f"{self.pool}_last_scrub", status.time_to_go, context="last_scrub")
 
 
-class ProgressContext(mplugin.Context):
+class ProgressContext(Context):
     def __init__(self) -> None:
         super().__init__("progress")
 
     def evaluate(
-        self, metric: mplugin.Metric, resource: mplugin.Resource
-    ) -> mplugin.Result:
+        self, metric: Metric, resource: Resource
+    ) -> Union[Result, ServiceState]:
         return super().evaluate(metric, resource)
 
 
-class SpeedContext(mplugin.Context):
+class SpeedContext(Context):
     def __init__(self) -> None:
         super().__init__("speed")
 
     def evaluate(
-        self, metric: mplugin.Metric, resource: mplugin.Resource
-    ) -> mplugin.Result:
+        self, metric: Metric, resource: Resource
+    ) -> Union[Result, ServiceState]:
         return super().evaluate(metric, resource)
 
 
-class TimeToGoContext(mplugin.Context):
+class TimeToGoContext(Context):
     def __init__(self) -> None:
         super().__init__("time_to_go")
 
     def evaluate(
-        self, metric: mplugin.Metric, resource: mplugin.Resource
-    ) -> mplugin.Result:
+        self, metric: Metric, resource: Resource
+    ) -> Union[Result, ServiceState]:
         return super().evaluate(metric, resource)
 
 
-class LastScrubContext(mplugin.ScalarContext):
+class LastScrubContext(ScalarContext):
     def __init__(self, warning: int, critical: int) -> None:
         super().__init__("last_scrub", warning=f"@{warning}", critical=f"@{critical}")
 
-    def evaluate(
-        self, metric: mplugin.Metric, resource: mplugin.Resource
-    ) -> mplugin.Result:
+    def evaluate(self, metric: Metric, resource: Resource) -> Result:
         return super().evaluate(metric, resource)
 
 
@@ -469,7 +469,7 @@ def main() -> None:
 
     opts = cast(OptionContainer, get_argparser().parse_args())
 
-    checks: list[typing.Union[mplugin.Resource, mplugin.Context]] = [
+    checks: list[typing.Union[Resource, Context]] = [
         ProgressContext(),
         SpeedContext(),
         TimeToGoContext(),
@@ -489,7 +489,7 @@ def main() -> None:
         for pool in pools:
             checks.append(PoolResource(pool))
 
-    check: mplugin.Check = mplugin.Check(*checks)
+    check: Check = Check(*checks)
     check.name = "zpool_scrub"
     check.main(opts.verbose)
 
