@@ -1,4 +1,4 @@
-# #!/usr/bin/env bats
+from tests.helper import execute_main as main
 
 # setup() {
 # 	. ./test/lib/test-helper.sh
@@ -45,10 +45,21 @@
 # # Return status
 # ##
 
-# @test "run ./check_zpool_scrub -p first_critical_zpool" {
+# @test "run ./check_zpool_^scrub -p first_critical_zpool" {
 # 	run ./check_zpool_scrub -p first_critical_zpool
 # 	[ "$status" -eq 2 ]
 # }
+
+
+def test_first_critical_zpool() -> None:
+    result = main(["-p", "first_critical_zpool"])
+    assert result.exitcode == 2
+    assert result.stdout
+    assert (
+        "ZPOOL_SCRUB CRITICAL - first_critical_zpool_last_scrub is 0 (outside range @0:5356800) | first_critical_zpool_last_scrub=0;@2678400;@5356800"
+        == result.first_line
+    )
+
 
 # @test "run ./check_zpool_scrub -p last_warning_zpool" {
 # 	run ./check_zpool_scrub -p last_warning_zpool

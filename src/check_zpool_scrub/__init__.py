@@ -193,7 +193,7 @@ class PoolScrubStatus:
     @property
     def last_scrub(self) -> Optional[datetime]:
         match = re.search(
-            "(canceled on|in progress since|errors on) (.*)\n",
+            r"(canceled on|in progress since|errors on) (.*)\n",
             self.__zpool_status_output,
         )
         if match is None:
@@ -261,7 +261,7 @@ class TimeToGoContext(nagiosplugin.Context):
 
 class LastScrubContext(nagiosplugin.ScalarContext):
     def __init__(self, warning: int, critical: int) -> None:
-        super().__init__("last_scrub", warning=warning, critical=critical)
+        super().__init__("last_scrub", warning=f"@{warning}", critical=f"@{critical}")
 
     def evaluate(
         self, metric: nagiosplugin.Metric, resource: nagiosplugin.Resource
