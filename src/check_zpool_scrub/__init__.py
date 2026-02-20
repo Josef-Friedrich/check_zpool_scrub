@@ -18,7 +18,6 @@ from mplugin import (
     Metric,
     Resource,
     Result,
-    ScalarContext,
     ServiceState,
     guarded,
 )
@@ -165,18 +164,16 @@ class PoolScrubStatus:
 
     @property
     def progress(self) -> float:
-        """Grab the scrub progress from the 'zpool status' output.
+        """The scrub progress from the ``zpool status`` output.
 
-        Percent 0 - 100
-
-        A floating point number from 0 to 100 that represents the progress
-        (for example ``85.3``)."""
+        :return: A floating point number from ``0`` to ``1`` that represents the progress
+        (for example ``0.853``)."""
         match = re.search(r"(\d+,\d+)% done", self.__zpool_status_output)
         if match is None:
             return 100.0
         progress = match[1]
         progress = progress.replace(",", ".")
-        return float(progress)
+        return float(progress) / 100
 
     @property
     def speed(self) -> float:
@@ -210,10 +207,10 @@ class PoolScrubStatus:
         return datetime.strptime(match[2], "%c")
 
     @property
-    def last_scrub_interval(self) -> Optional[float]:
+    def last_scrub_timespan(self) -> Optional[int]:
         """Time interval in seconds for last scrub."""
         if self.last_scrub is not None:
-            return datetime.now().timestamp() - self.last_scrub.timestamp()
+            return round(datetime.now().timestamp() - self.last_scrub.timestamp())
         return None
 
 
@@ -225,10 +222,21 @@ class PoolResource(Resource):
 
     def probe(self) -> typing.Generator[Metric, typing.Any, None]:
         status = PoolScrubStatus(self.pool)
-        yield Metric(f"{self.pool}_progress", status.progress, context="progress")
-        yield Metric(f"{self.pool}_speed", status.speed, context="speed")
-        yield Metric(f"{self.pool}_time_to_go", status.time_to_go, context="time_to_go")
-        yield Metric(f"{self.pool}_last_scrub", status.time_to_go, context="last_scrub")
+        yield Metric(f"{self.pool}: progress", status.progress, context="progress")
+        yield Metric(f"{self.pool}: speed", status.speed, context="speed")
+        yield Metric(
+            f"{self.pool}: time_to_go", status.time_to_go, context="time_to_go"
+        )
+        yield Metric(
+            f"{self.pool}: last_scrub_timestamp",
+            status.last_scrub_timespan,
+            context="last_scrub_timestamp",
+        )
+        yield Metric(
+            f"{self.pool}: last_scrub_timespan",
+            status.last_scrub_timespan,
+            context="last_scrub_timespan",
+        )
 
 
 class ProgressContext(Context):
@@ -261,12 +269,31 @@ class TimeToGoContext(Context):
         return super().evaluate(metric, resource)
 
 
-class LastScrubContext(ScalarContext):
-    def __init__(self, warning: int, critical: int) -> None:
-        super().__init__("last_scrub", warning=f"@{warning}", critical=f"@{critical}")
+class LastScrubTimestampContext(Context):
+    def __init__(self) -> None:
+        super().__init__("last_scrub_timestamp")
+
+
+class LastScrubTimespanContext(Context):
+    def __init__(self) -> None:
+        super().__init__("last_scrub_timespan")
 
     def evaluate(self, metric: Metric, resource: Resource) -> Result:
-        return super().evaluate(metric, resource)
+        r = cast(PoolResource, resource)
+        if metric.value > opts.critical:
+            return self.critical(
+                metric=metric,
+                hint=f"Pool “{r.pool}”: {metric.value} >= {opts.critical}",
+            )
+        if metric.value > opts.warning:
+            return self.warn(
+                metric=metric,
+                hint=f"Pool “{r.pool}”: {metric.value} >= {opts.critical}",
+            )
+        return self.ok(
+            metric=metric,
+            hint=f"Pool “{r.pool}”: {metric.value} < {opts.warning}",
+        )
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -473,7 +500,8 @@ def main() -> None:
         ProgressContext(),
         SpeedContext(),
         TimeToGoContext(),
-        LastScrubContext(warning=opts.warning, critical=opts.critical),
+        LastScrubTimestampContext(),
+        LastScrubTimespanContext(),
     ]
 
     pools = _list_pools()

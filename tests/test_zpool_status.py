@@ -54,7 +54,7 @@ errors: No known data errors'
 """)
 
     def test_progress(self) -> None:
-        assert self.status.progress == 96.19
+        assert self.status.progress == 0.9619
 
     def test_speed(self) -> None:
         assert self.status.speed == 1.9
@@ -66,7 +66,7 @@ errors: No known data errors'
         assert self.status.time_to_go == (55 * 60 + 33) * 60
 
     def test_last_scrub_interval(self) -> None:
-        assert self.status.last_scrub_interval == 268493652.0
+        assert self.status.last_scrub_timespan == 268493652
 
 
 @freeze_time("2026-02-19")
@@ -97,4 +97,4 @@ errors: No known data errors
         assert self.status.time_to_go == 0
 
     def test_last_scrub_interval(self) -> None:
-        assert self.status.last_scrub_interval == 273850453.0
+        assert self.status.last_scrub_timespan == 273850453

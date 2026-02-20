@@ -83,7 +83,7 @@ class MockResult:
 
 def execute_main(
     argv: list[str] = ["check_zpool_scrub"],
-    time: str = "2017-09-01 10:55:34",
+    time: str = "2017-08-17 10:25:48",
 ) -> MockResult:
     def perform_subprocess_output(args: list[str], **kwargs: typing.Any) -> str:
         command: str = " ".join(args)

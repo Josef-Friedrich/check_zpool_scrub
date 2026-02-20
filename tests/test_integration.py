@@ -45,10 +45,39 @@ from tests.helper import execute_main as main
 # # Return status
 # ##
 
-# @test "run ./check_zpool_^scrub -p first_critical_zpool" {
-# 	run ./check_zpool_scrub -p first_critical_zpool
-# 	[ "$status" -eq 2 ]
-# }
+
+def test_first_ok_zpool() -> None:
+    result = main(["-p", "first_ok_zpool"])
+    assert result.exitcode == 0
+    assert result.stdout
+    assert "ZPOOL_SCRUB OK" == result.first_line
+
+
+def test_last_ok_zpool() -> None:
+    result = main(["-p", "last_ok_zpool"])
+    assert result.exitcode == 0
+    assert result.stdout
+    assert "ZPOOL_SCRUB OK" == result.first_line
+
+
+def test_first_warning_zpool() -> None:
+    result = main(["-p", "first_warning_zpool"])
+    assert result.exitcode == 1
+    assert result.stdout
+    assert (
+        "ZPOOL_SCRUB WARNING - Pool “first_warning_zpool”: 2678401 >= 5356800"
+        == result.first_line
+    )
+
+
+def test_last_warning_zpool() -> None:
+    result = main(["-p", "last_warning_zpool"])
+    assert result.exitcode == 1
+    assert result.stdout
+    assert (
+        "ZPOOL_SCRUB WARNING - Pool “last_warning_zpool”: 5356800 >= 5356800"
+        == result.first_line
+    )
 
 
 def test_first_critical_zpool() -> None:
@@ -56,25 +85,10 @@ def test_first_critical_zpool() -> None:
     assert result.exitcode == 2
     assert result.stdout
     assert (
-        "ZPOOL_SCRUB CRITICAL - first_critical_zpool_last_scrub is 0 (outside range @0:5356800) | first_critical_zpool_last_scrub=0;@2678400;@5356800"
+        "ZPOOL_SCRUB CRITICAL - Pool “first_critical_zpool”: 5356801 >= 5356800"
         == result.first_line
     )
 
-
-# @test "run ./check_zpool_scrub -p last_warning_zpool" {
-# 	run ./check_zpool_scrub -p last_warning_zpool
-# 	[ "$status" -eq 1 ]
-# }
-
-# @test "run ./check_zpool_scrub -p last_ok_zpool" {
-# 	run ./check_zpool_scrub -p last_ok_zpool
-# 	[ "$status" -eq 0 ]
-# }
-
-# @test "run ./check_zpool_scrub -p first_ok_zpool" {
-# 	run ./check_zpool_scrub -p first_ok_zpool
-# 	[ "$status" -eq 0 ]
-# }
 
 # ##
 # # Warning / critical options

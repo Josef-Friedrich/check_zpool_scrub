@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-dependencies = ["nagiosplugin>=1,<2", "mplugin"]
+dependencies = ["mplugin"]
 
 [project.urls]
 Download = "https://pypi.org/project/check_zpool_scrub/"
@@ -34,7 +34,6 @@ Changelog = "https://github.com/Josef-Friedrich/check_zpool_scrub/blob/main/CHAN
 dev = [
     "freezegun>=1.5.5",
     "mypy>=0.961",
-    "nagiosplugin-stubs>=0.7.0",
     "pytest>=8.3.5",
 ]
 
