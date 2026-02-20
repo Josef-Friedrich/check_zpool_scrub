@@ -7,18 +7,6 @@
 * ctime: Mon Jul 17 10:25:48 2017
 * timestamp: 1502958348
 
-## Date to Timestamp
-
-```
-date  +%s --date=DATE"
-```
-
-## Timestamp to Date
-
-```
-date  +"%Y-%m-%d %H:%M:%SZ --date=@TIMESTAMP"
-```
-
 # Calculations
 
 ```

@@ -376,7 +376,6 @@ def get_argparser() -> argparse.ArgumentParser:
         ) -> None:
             if not isinstance(values, str):
                 raise ValueError("Only strings are allowed")
-
             setattr(namespace, self.dest, _convert_timespan_to_seconds(values))
 
     parser: argparse.ArgumentParser = CustomArgumentParser(
