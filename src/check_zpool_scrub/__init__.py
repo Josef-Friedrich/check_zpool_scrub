@@ -20,6 +20,7 @@ from mplugin import (
     Result,
     ServiceState,
     guarded,
+    setup_argparser,
 )
 
 __version__: str = metadata.version("check_zpool_scrub")
@@ -381,6 +382,14 @@ def _convert_timespan_to_seconds(fmt_timespan: typing.Union[str, int, float]) ->
 
 
 def get_argparser() -> argparse.ArgumentParser:
+    parser: argparse.ArgumentParser = setup_argparser(
+        name="zpool_scrub",
+        version=__version__,
+        license="MIT",
+        repository="https://github.com/Josef-Friedrich/check_zpool_scrub",
+        copyright=f"Copyright (c) 2016-{datetime.now().year} Josef Friedrich <josef@friedrich.rocks>",
+        description="Monitoring plugin to check how long ago the last ZFS scrub was performed.",
+    )
 
     class TimeSpanAction(argparse.Action):
         def __init__(
@@ -404,37 +413,6 @@ def get_argparser() -> argparse.ArgumentParser:
             if not isinstance(values, str):
                 raise ValueError("Only strings are allowed")
             setattr(namespace, self.dest, _convert_timespan_to_seconds(values))
-
-    parser: argparse.ArgumentParser = CustomArgumentParser(
-        prog="check_zpool_scrub",  # To get the right command name in the README.
-        formatter_class=lambda prog: argparse.RawDescriptionHelpFormatter(
-            prog, width=80
-        ),
-        # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
-        description=f"version {__version__}\n"
-        "Licensed under the MIT.\n"
-        "Repository: https://github.com/Josef-Friedrich/check_zpool_scrub\n"
-        f"Copyright (c) 2016-{datetime.now().year} Josef Friedrich <josef@friedrich.rocks>\n"
-        "\n"
-        "Monitoring plugin to check how long ago the last ZFS scrub was performed.\n",
-        epilog="Performance data:\n"
-        "\n"
-        "POOL is the name of the pool\n"
-        "\n"
-        " - POOL_last_scrub\n"
-        "    Time interval in seconds for last scrub.\n"
-        " - POOL_progress\n"
-        "    Percent 0 - 100\n"
-        " - POOL_speed\n"
-        "    MB per second.\n"
-        " - POOL_time_to_go\n"
-        "    Time to go in seconds.\n"
-        "\n"
-        "Details about the implementation of this monitoring plugin:\n"
-        "\n"
-        "This monitoring plugin grabs the last scrub date from the command\n"
-        "'zpool status POOL'.\n",
-    )
 
     # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
     parser.add_argument(
