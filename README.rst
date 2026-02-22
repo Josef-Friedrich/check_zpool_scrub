@@ -16,8 +16,8 @@ Command line interface
 
 :: 
 
-    usage: check_zpool_scrub [-h] [-v] [-w WARNING] [-c CRITICAL] [-p POOL]
-                             [-s SHORT_DESCRIPTION] [-V] [-d]
+    usage: check_zpool_scrub [-h] [-V] [-v] [-w WARNING] [-c CRITICAL] [-p POOL]
+                             [-s SHORT_DESCRIPTION] [-d]
 
     version 3.0.0a0
     Licensed under the MIT.
@@ -28,6 +28,7 @@ Command line interface
 
     options:
       -h, --help            show this help message and exit
+      -V, --version         show program's version number and exit
       -v, --verbose         Increase output verbosity (use up to 3 times).
       -w, --warning WARNING
                             Interval in seconds for warning state. Must be lower
@@ -38,7 +39,6 @@ Command line interface
                             are checked.
       -s, --short-description SHORT_DESCRIPTION
                             Show a short description / summary.
-      -V, --version         show program's version number and exit
       -d, --debug           Increase debug verbosity (use up to 3 times): -D: info
                             -DD: debug. -DDD verbose
 

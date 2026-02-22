@@ -16,9 +16,9 @@ from mplugin import (
     Check,
     Context,
     Metric,
+    Performance,
     Resource,
     Result,
-    ServiceState,
     guarded,
     setup_argparser,
 )
@@ -164,36 +164,36 @@ class PoolScrubStatus:
         logger.verbose("Output from %s: %s", "zpool status", self.__zpool_status_output)
 
     @property
-    def progress(self) -> float:
+    def progress(self) -> Optional[float]:
         """The scrub progress from the ``zpool status`` output.
 
         :return: A floating point number from ``0`` to ``1`` that represents the progress
         (for example ``0.853``)."""
         match = re.search(r"(\d+,\d+)% done", self.__zpool_status_output)
         if match is None:
-            return 100.0
+            return None
         progress = match[1]
         progress = progress.replace(",", ".")
         return float(progress) / 100
 
     @property
-    def speed(self) -> float:
+    def speed(self) -> Optional[float]:
         """MB per second."""
         match = re.search(r"at (\d+,\d+)M/s", self.__zpool_status_output)
         if match is None:
-            return 0
+            return None
         speed = match[1]
         speed = speed.replace(",", ".")
         return float(speed)
 
     @property
-    def time_to_go(self) -> int:
+    def time_to_go(self) -> Optional[int]:
         """Time to go in seconds.
 
         https://github.com/openzfs/zfs/blob/cdf89f413c72fb17107a2b830a86161a21c74f82/cmd/zpool/zpool_main.c#L10229"""
         match = re.search(r"(\d+)h(\d+)m to go\n", self.__zpool_status_output)
         if match is None:
-            return 0
+            return None
         return (int(match[1]) * 60 + int(match[2])) * 60
 
     @property
@@ -230,7 +230,7 @@ class PoolResource(Resource):
         )
         yield Metric(
             f"{self.pool}: last_scrub_timestamp",
-            status.last_scrub_timespan,
+            status.last_scrub,
             context="last_scrub_timestamp",
         )
         yield Metric(
@@ -244,35 +244,40 @@ class ProgressContext(Context):
     def __init__(self) -> None:
         super().__init__("progress")
 
-    def evaluate(
-        self, metric: Metric, resource: Resource
-    ) -> Union[Result, ServiceState]:
-        return super().evaluate(metric, resource)
+    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+        if metric.value is None:
+            return None
+        return Performance(label=metric.name, value=metric.value * 100, uom="%")
 
 
 class SpeedContext(Context):
     def __init__(self) -> None:
         super().__init__("speed")
 
-    def evaluate(
-        self, metric: Metric, resource: Resource
-    ) -> Union[Result, ServiceState]:
-        return super().evaluate(metric, resource)
+    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+        if metric.value is None:
+            return None
+        return Performance(label=metric.name, value=metric.value, uom="m/s")
 
 
 class TimeToGoContext(Context):
     def __init__(self) -> None:
         super().__init__("time_to_go")
 
-    def evaluate(
-        self, metric: Metric, resource: Resource
-    ) -> Union[Result, ServiceState]:
-        return super().evaluate(metric, resource)
+    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+        if metric.value is None:
+            return None
+        return Performance(label=metric.name, value=metric.value, uom="s")
 
 
 class LastScrubTimestampContext(Context):
     def __init__(self) -> None:
         super().__init__("last_scrub_timestamp")
+
+    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+        if metric.value is None:
+            return None
+        return Performance(label=metric.name, value=round(metric.value.timestamp()))
 
 
 class LastScrubTimespanContext(Context):
@@ -295,6 +300,11 @@ class LastScrubTimespanContext(Context):
             metric=metric,
             hint=f"Pool “{r.pool}”: {metric.value} < {opts.warning}",
         )
+
+    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+        if metric.value is None:
+            return None
+        return Performance(label=metric.name, value=metric.value, uom="s")
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
@@ -451,14 +461,6 @@ def get_argparser() -> argparse.ArgumentParser:
         "-s",
         "--short-description",
         help="Show a short description / summary.",
-    )
-
-    # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version="%(prog)s {}".format(__version__),
     )
 
     parser.add_argument(

@@ -85,16 +85,16 @@ errors: No known data errors
 """)
 
     def test_progress(self) -> None:
-        assert self.status.progress == 100.0
+        assert self.status.progress is None
 
     def test_speed(self) -> None:
-        assert self.status.speed == 0
+        assert self.status.speed is None
 
     def test_last_scrub(self) -> None:
         assert self.status.last_scrub == datetime(2017, 6, 16, 10, 25, 47)
 
     def test_time_to_go(self) -> None:
-        assert self.status.time_to_go == 0
+        assert self.status.time_to_go is None
 
     def test_last_scrub_interval(self) -> None:
         assert self.status.last_scrub_timespan == 273850453
