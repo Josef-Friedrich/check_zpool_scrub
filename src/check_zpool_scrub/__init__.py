@@ -475,12 +475,6 @@ def get_argparser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "-s",
-        "--short-description",
-        help="Show a short description / summary.",
-    )
-
-    parser.add_argument(
         "-d",
         "--debug",
         action="count",
