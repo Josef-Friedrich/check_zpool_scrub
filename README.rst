@@ -19,7 +19,7 @@ Command line interface
     usage: check_zpool_scrub [-h] [-V] [-v] [-w WARNING] [-c CRITICAL] [-p POOL]
                              [-s SHORT_DESCRIPTION] [-d]
 
-    version 3.0.0a0
+    version 3.0.0a1
     Licensed under the MIT.
     Repository: https://github.com/Josef-Friedrich/check_zpool_scrub.
     Copyright (c) 2016-2026 Josef Friedrich <josef@friedrich.rocks>

@@ -4,7 +4,7 @@ requires-python = ">=3.10, <4"
 
 [[package]]
 name = "check-zpool-scrub"
-version = "3.0.0a0"
+version = "3.0.0a1"
 source = { editable = "." }
 dependencies = [
     { name = "mplugin" },
@@ -157,7 +157,7 @@ wheels = [
 [[package]]
 name = "mplugin"
 version = "2.0.0a0"
-source = { git = "https://github.com/Josef-Friedrich/mplugin.git#dd0685d8300c4393fc707d0fc02616b562abf8ca" }
+source = { git = "https://github.com/Josef-Friedrich/mplugin.git#c1094dcb7f57cd73499e5641f388899d67b72aaa" }
 dependencies = [
     { name = "typing-extensions" },
 ]
