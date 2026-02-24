@@ -17,9 +17,9 @@ Command line interface
 :: 
 
     usage: check_zpool_scrub [-h] [-V] [-v] [-w WARNING] [-c CRITICAL] [-p POOL]
-                             [-s SHORT_DESCRIPTION] [-d]
+                             [-d]
 
-    version 3.0.0a1
+    version 3.0.0a2
     Licensed under the MIT.
     Repository: https://github.com/Josef-Friedrich/check_zpool_scrub.
     Copyright (c) 2016-2026 Josef Friedrich <josef@friedrich.rocks>
@@ -37,8 +37,6 @@ Command line interface
                             Interval in seconds for critical state.
       -p, --pool POOL       Name of the pool. If this option is omitted all pools
                             are checked.
-      -s, --short-description SHORT_DESCRIPTION
-                            Show a short description / summary.
       -d, --debug           Increase debug verbosity (use up to 3 times): -D: info
                             -DD: debug. -DDD verbose
 

@@ -1,6 +1,6 @@
 [project]
 name = "check_zpool_scrub"
-version = "3.0.0a1"
+version = "3.0.0a2"
 description = "Monitoring plugin to check how long ago the last ZFS scrub was performed."
 authors = [{ name = "Josef Friedrich", email = "josef@friedrich.rocks" }]
 requires-python = ">=3.10,<4"

@@ -4,7 +4,7 @@ requires-python = ">=3.10, <4"
 
 [[package]]
 name = "check-zpool-scrub"
-version = "3.0.0a1"
+version = "3.0.0a2"
 source = { editable = "." }
 dependencies = [
     { name = "mplugin" },
