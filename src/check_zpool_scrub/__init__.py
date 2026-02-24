@@ -399,6 +399,23 @@ def get_argparser() -> argparse.ArgumentParser:
         repository="https://github.com/Josef-Friedrich/check_zpool_scrub",
         copyright=f"Copyright (c) 2016-{datetime.now().year} Josef Friedrich <josef@friedrich.rocks>",
         description="Monitoring plugin to check how long ago the last ZFS scrub was performed.",
+        epilog="Performance data:\n"
+        "\n"
+        "POOL is the name of the pool\n"
+        "\n"
+        " - POOL_last_scrub\n"
+        "    Time interval in seconds for last scrub.\n"
+        " - POOL_progress\n"
+        "    Percent 0 - 100\n"
+        " - POOL_speed\n"
+        "    MB per second.\n"
+        " - POOL_time_to_go\n"
+        "    Time to go in seconds.\n"
+        "\n"
+        "Details about the implementation of this monitoring plugin:\n"
+        "\n"
+        "This monitoring plugin grabs the last scrub date from the command\n"
+        "'zpool status POOL'.\n",
     )
 
     class TimeSpanAction(argparse.Action):

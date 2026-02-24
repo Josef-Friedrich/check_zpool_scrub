@@ -42,6 +42,24 @@ Command line interface
       -d, --debug           Increase debug verbosity (use up to 3 times): -D: info
                             -DD: debug. -DDD verbose
 
+    Performance data:
+
+    POOL is the name of the pool
+
+     - POOL_last_scrub
+        Time interval in seconds for last scrub.
+     - POOL_progress
+        Percent 0 - 100
+     - POOL_speed
+        MB per second.
+     - POOL_time_to_go
+        Time to go in seconds.
+
+    Details about the implementation of this monitoring plugin:
+
+    This monitoring plugin grabs the last scrub date from the command
+    'zpool status POOL'.
+
 Project pages
 -------------
 
