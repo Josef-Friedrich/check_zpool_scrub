@@ -497,6 +497,11 @@ def main() -> None:
 
     opts = cast(OptionContainer, get_argparser().parse_args())
 
+    if opts.warning > opts.critical:
+        raise ValueError(
+            f"-w SECONDS must be smaller than -c SECONDS. -w {opts.warning} > -c {opts.critical}"
+        )
+
     checks: list[typing.Union[Resource, Context]] = [
         ProgressContext(),
         SpeedContext(),
