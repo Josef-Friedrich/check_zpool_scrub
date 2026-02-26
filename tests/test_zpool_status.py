@@ -1,3 +1,5 @@
+"""Test the class PoolScrubStatus"""
+
 from datetime import datetime
 from unittest.mock import Mock, patch
 

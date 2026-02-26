@@ -1,3 +1,5 @@
+"""Test the method _convert_timespan_to_seconds"""
+
 from check_zpool_scrub import _convert_timespan_to_seconds as convert  # type: ignore
 
 

@@ -286,16 +286,22 @@ class LastScrubTimespanContext(Context):
 
     def evaluate(self, metric: Metric, resource: Resource) -> Result:
         r = cast(PoolResource, resource)
+
+        if metric.value is None:
+            return self.unknown(f"The pool “{r.pool}” has never had a scrub.")
+
         if metric.value > opts.critical:
             return self.critical(
                 metric=metric,
                 hint=f"Pool “{r.pool}”: {metric.value} >= {opts.critical}",
             )
+
         if metric.value > opts.warning:
             return self.warn(
                 metric=metric,
                 hint=f"Pool “{r.pool}”: {metric.value} >= {opts.critical}",
             )
+
         return self.ok(
             metric=metric,
             hint=f"Pool “{r.pool}”: {metric.value} < {opts.warning}",

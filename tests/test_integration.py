@@ -210,3 +210,13 @@ def test_first_critical_zpool() -> None:
 # first_critical_zpool_last_ago=5356801s;2678400;5356800;0 first_critical_zpool_progress=100%;;;0;100 first_critical_zpool_speed=0 first_critical_zpool_time=0s"
 # 	[ "${lines[0]}" = "$TEST" ]
 # }
+
+
+def test_all_pools() -> None:
+    result = main([])
+    assert result.exitcode == 3
+    assert result.stdout
+    assert (
+        "ZPOOL_SCRUB UNKNOWN - The pool “unknown_zpool” has never had a scrub. | 'first_critical_zpool: last_scrub_timespan'=5356801s 'first_critical_zpool: last_scrub_timestamp'=1497608747 'first_ok_zpool: last_scrub_timespan'=0s 'first_ok_zpool: last_scrub_timestamp'=1502965548 'first_ok_zpool: progress'=96.19% 'first_ok_zpool: speed'=1.9m/s 'first_ok_zpool: time_to_go'=199980s 'first_warning_zpool: last_scrub_timespan'=2678401s 'first_warning_zpool: last_scrub_timestamp'=1500287147 'first_warning_zpool: progress'=72.38% 'first_warning_zpool: speed'=57.4m/s 'first_warning_zpool: time_to_go'=51120s 'last_ok_zpool: last_scrub_timespan'=2678400s 'last_ok_zpool: last_scrub_timestamp'=1500287148 'last_ok_zpool: progress'=96.19% 'last_ok_zpool: speed'=1.9m/s 'last_ok_zpool: time_to_go'=199980s 'last_warning_zpool: last_scrub_timespan'=5356800s 'last_warning_zpool: last_scrub_timestamp'=1497608748 'last_warning_zpool: progress'=72.38% 'last_warning_zpool: speed'=57.4m/s 'last_warning_zpool: time_to_go'=51120s"
+        == result.first_line
+    )

@@ -5,9 +5,9 @@ import subprocess
 import typing
 from contextlib import redirect_stderr, redirect_stdout
 from unittest import mock
-from unittest.mock import Mock
 
 from freezegun import freeze_time
+from mplugin.testing import MockResult
 
 import check_zpool_scrub
 
@@ -19,66 +19,6 @@ def run(args: list[str]) -> subprocess.CompletedProcess[str]:
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-
-
-class MockResult:
-    """A class to collect all results of a mocked execution of the main
-    function."""
-
-    __sys_exit: Mock
-    __stdout: str | None
-    __stderr: str | None
-
-    def __init__(self, sys_exit_mock: Mock, stdout: str, stderr: str) -> None:
-        self.__sys_exit = sys_exit_mock
-        self.__stdout = stdout
-        self.__stderr = stderr
-
-    @property
-    def exitcode(self) -> int:
-        """The captured exit code"""
-        return int(self.__sys_exit.call_args[0][0])
-
-    @property
-    def stdout(self) -> str | None:
-        """The function ``redirect_stdout()`` is used to capture the ``stdout``
-        output."""
-        if self.__stdout:
-            return self.__stdout
-        return None
-
-    @property
-    def stderr(self) -> str | None:
-        """The function ``redirect_stderr()`` is used to capture the ``stderr``
-        output."""
-        if self.__stderr:
-            return self.__stderr
-        return None
-
-    @property
-    def output(self) -> str:
-        """A combined string of the captured stderr, stdout  and the print
-        calls. Somehow the whole stdout couldn’t be read. The help text could
-        be read, but not the plugin output using the function
-        ``redirect_stdout()``."""
-        out: str = ""
-
-        if self.__stderr:
-            out += self.__stderr
-
-        if self.__stdout:
-            out += self.__stdout
-
-        return out
-
-    @property
-    def first_line(self) -> str | None:
-        """The first line of the output without a newline break at the
-        end as a string.
-        """
-        if self.output:
-            return self.output.split("\n", 1)[0]
-        return None
 
 
 def execute_main(
@@ -244,6 +184,6 @@ first_critical_zpool"""
 
     return MockResult(
         sys_exit_mock=sys_exit,
-        stdout=file_stdout.getvalue(),
-        stderr=file_stderr.getvalue(),
+        stdout=file_stdout,
+        stderr=file_stderr,
     )
