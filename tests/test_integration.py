@@ -76,7 +76,7 @@ def test_warning_gt_critical() -> None:
     assert result.exitcode == 3
     assert result.stdout
     assert (
-        "ZPOOL_SCRUB UNKNOWN: ValueError: -w SECONDS must be smaller than -c SECONDS. -w 2 > -c 1"
+        "ZPOOL_SCRUB UNKNOWN: ValueError: -w SECONDS must be smaller than -c SECONDS. -w 2.0 > -c 1.0"
         == result.first_line
     )
 

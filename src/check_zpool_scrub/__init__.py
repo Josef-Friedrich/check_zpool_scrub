@@ -6,11 +6,10 @@ import argparse
 import logging
 import re
 import subprocess
-import sys
 import typing
 from datetime import datetime
 from importlib import metadata
-from typing import Any, Optional, Sequence, Union, cast
+from typing import Optional, cast
 
 from mplugin import (
     Check,
@@ -19,6 +18,7 @@ from mplugin import (
     Performance,
     Resource,
     Result,
+    TimespanAction,
     guarded,
     setup_argparser,
 )
@@ -313,90 +313,6 @@ class LastScrubTimespanContext(Context):
         return Performance(label=metric.name, value=metric.value, uom="s")
 
 
-class CustomArgumentParser(argparse.ArgumentParser):
-    """To get --help and --version exit with 3"""
-
-    def exit(self, status: int = 3, message: Optional[str] = None) -> typing.NoReturn:
-        if message:
-            self._print_message(message, sys.stderr)
-        sys.exit(status)
-
-    # systemd.time(7)
-    #    •   usec, us, μs
-    #    •   msec, ms
-    #    •   seconds, second, sec, s
-    #    •   minutes, minute, min, m
-    #    •   hours, hour, hr, h
-    #    •   days, day, d
-    #    •   weeks, week, w
-    #    •   months, month, M (defined as 30.44 days)
-    #    •   years, year, y (defined as 365.25 days)
-
-
-def _convert_timespan_to_seconds(fmt_timespan: typing.Union[str, int, float]) -> int:
-    """Convert a timespan format string to seconds. Take a look at the
-    systemd `time-util.c
-    <https://github.com/systemd/systemd/blob/master/src/basic/time-util.c>`_
-    source code.
-
-    :param fmt_timespan: for example ``2.345s`` or ``3min 45.234s`` or
-    ``34min left`` or ``2 months 8 days``
-
-    :return: The seconds
-    """
-
-    # A int or a float encoded as string without an extension
-    try:
-        fmt_timespan = float(fmt_timespan)
-    except ValueError:
-        pass
-
-    if isinstance(fmt_timespan, int) or isinstance(fmt_timespan, float):
-        return round(fmt_timespan)
-
-    # Remove all whitespaces
-    fmt_timespan = re.sub(r"\s+", "", fmt_timespan)
-
-    replacements: list[tuple[list[str], str]] = [
-        (["years", "year"], "y"),
-        (["months", "month"], "M"),
-        (["weeks", "week"], "w"),
-        (["days", "day"], "d"),
-        (["hours", "hour", "hr"], "h"),
-        (["minutes", "minute", "min"], "m"),
-        (["seconds", "second", "sec"], "s"),
-        # (["msec"], "ms"),
-        # (["usec", "μ"], "us"),
-    ]
-
-    for replacement in replacements:
-        for r in replacement[0]:
-            fmt_timespan = fmt_timespan.replace(r, replacement[1])
-
-    # Add a whitespace after the units
-    fmt_timespan = re.sub(r"([a-zA-Z]+)", r"\1 ", fmt_timespan)
-
-    seconds: dict[str, float] = {
-        "y": 31557600,  # 365.25 days
-        "M": 2630016,  # 30.44 days
-        "w": 604800,  # 7 * 24 * 60 * 60
-        "d": 86400,  # 24 * 60 * 60
-        "h": 3600,  # 60 * 60
-        "m": 60,
-        "s": 1,
-        # "ms": 0.001,
-    }
-    result: float = 0
-    # Split on the whitespaces
-    for span in fmt_timespan.split():
-        match = re.search(r"([\d\.]+)([a-zA-Z]+)", span)
-        if match:
-            value = match.group(1)
-            unit = match.group(2)
-            result += float(value) * seconds[unit]
-    return round(result)
-
-
 def get_argparser() -> argparse.ArgumentParser:
     parser: argparse.ArgumentParser = setup_argparser(
         name="zpool_scrub",
@@ -424,29 +340,6 @@ def get_argparser() -> argparse.ArgumentParser:
         "'zpool status POOL'.\n",
     )
 
-    class TimeSpanAction(argparse.Action):
-        def __init__(
-            self,
-            option_strings: list[str],
-            dest: str,
-            nargs: Optional[str] = None,
-            **kwargs: Any,
-        ) -> None:
-            if nargs is not None:
-                raise ValueError("nargs not allowed")
-            super().__init__(option_strings, dest, **kwargs)
-
-        def __call__(
-            self,
-            parser: argparse.ArgumentParser,
-            namespace: argparse.Namespace,
-            values: Optional[Union[str, Sequence[Any]]],
-            option_string: Optional[str] = None,
-        ) -> None:
-            if not isinstance(values, str):
-                raise ValueError("Only strings are allowed")
-            setattr(namespace, self.dest, _convert_timespan_to_seconds(values))
-
     # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
     parser.add_argument(
         "-v",
@@ -462,7 +355,7 @@ def get_argparser() -> argparse.ArgumentParser:
         # 1 month 60*60*24*31
         default=2678400,
         help="Interval in seconds for warning state. Must be lower than -c.",
-        action=TimeSpanAction,
+        action=TimespanAction,
     )
 
     parser.add_argument(
@@ -471,7 +364,7 @@ def get_argparser() -> argparse.ArgumentParser:
         # 2 month 60*60*24*31*2
         default=5356800,
         help="Interval in seconds for critical state.",
-        action=TimeSpanAction,
+        action=TimespanAction,
     )
 
     parser.add_argument(
