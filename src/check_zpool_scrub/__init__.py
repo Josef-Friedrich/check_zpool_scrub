@@ -12,13 +12,14 @@ from importlib import metadata
 from typing import Optional, cast
 
 from mplugin import (
+    TIMESPAN_FORMAT_HELP,
     Check,
     Context,
     Metric,
     Performance,
     Resource,
     Result,
-    TimespanAction,
+    convert_timespan_to_seconds,
     guarded,
     setup_argparser,
 )
@@ -337,7 +338,7 @@ def get_argparser() -> argparse.ArgumentParser:
         "Details about the implementation of this monitoring plugin:\n"
         "\n"
         "This monitoring plugin grabs the last scrub date from the command\n"
-        "'zpool status POOL'.\n",
+        "'zpool status POOL'.\n" + TIMESPAN_FORMAT_HELP,
         verbose=True,
     )
 
@@ -351,18 +352,20 @@ def get_argparser() -> argparse.ArgumentParser:
         "-w",
         "--warning",
         # 1 month 60*60*24*31
+        metavar="TIMESPAN",
         default=2678400,
-        help="Interval in seconds for warning state. Must be lower than -c.",
-        action=TimespanAction,
+        help="Interval in seconds for warning state. See timespan format specification below. Must be lower than -c.",
+        type=convert_timespan_to_seconds,
     )
 
     parser.add_argument(
         "-c",
         "--critical",
-        # 2 month 60*60*24*31*2
+        # 2 month 60*60*24*31*2,
+        metavar="TIMESPAN",
         default=5356800,
-        help="Interval in seconds for critical state.",
-        action=TimespanAction,
+        help="Interval in seconds for critical state. See timespan format specification below.",
+        type=convert_timespan_to_seconds,
     )
 
     parser.add_argument(
