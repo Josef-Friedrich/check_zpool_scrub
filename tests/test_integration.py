@@ -86,6 +86,6 @@ def test_unknown_option() -> None:
     assert result.exitcode == 3
     assert result.stdout
     assert (
-        "usage: check_zpool_scrub [-h] [-V] [-v] [-w WARNING] [-c CRITICAL] [-p POOL]"
+        "usage: check_zpool_scrub [-h] [-V] [-v] [-p POOL] [-w WARNING] [-c CRITICAL]"
         == result.first_line
     )

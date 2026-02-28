@@ -23,25 +23,44 @@ class TestWithSubprocess:
 parser: ArgumentParser = get_argparser()
 
 
-def parse_args(*args: str) -> argparse.Namespace:
+def args(*args: str) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
 class TestMethod:
+    class TestPool:
+        def test_none(self) -> None:
+            assert args().pool is None
+
+        def test_long_option(self) -> None:
+            assert args("--pool", "test-pool").pool == "test-pool"
+
+        def test_short_option(self) -> None:
+            assert args("-p", "test-pool").pool == "test-pool"
+
     class TestWarning:
         def test_int(self) -> None:
-            args = parse_args("--warning", "42")
-            assert args.warning == 42
+            assert args("--warning", "42").warning == 42
 
         def test_timespan(self) -> None:
-            args = parse_args("--warning", "1s1m")
-            assert args.warning == 61
+            assert args("--warning", "1s1m").warning == 61
 
     class TestCritical:
         def test_int(self) -> None:
-            args = parse_args("--critical", "123")
-            assert args.critical == 123
+            assert args("--critical", "123").critical == 123
 
         def test_critical_timespan(self) -> None:
-            args = parse_args("--critical", "1 min")
-            assert args.critical == 60
+            assert args("--critical", "1 min").critical == 60
+
+    class TestVerbose:
+        def test_zero(self) -> None:
+            assert args().verbose == 0
+
+        def test_one(self) -> None:
+            assert args("-v").verbose == 1
+
+        def test_two(self) -> None:
+            assert args("-vv").verbose == 2
+
+        def test_three(self) -> None:
+            assert args("-vvv").verbose == 3
