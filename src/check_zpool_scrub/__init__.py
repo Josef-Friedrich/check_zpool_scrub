@@ -297,7 +297,7 @@ class LastScrubTimespanContext(Context):
             )
 
         if metric.value > opts.warning:
-            return self.warn(
+            return self.warning(
                 metric=metric,
                 hint=f"Pool “{r.pool}”: {metric.value} >= {opts.critical}",
             )
