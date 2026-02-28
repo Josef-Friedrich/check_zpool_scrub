@@ -338,15 +338,7 @@ def get_argparser() -> argparse.ArgumentParser:
         "\n"
         "This monitoring plugin grabs the last scrub date from the command\n"
         "'zpool status POOL'.\n",
-    )
-
-    # https://github.com/monitoring-plugins/monitoring-plugin-guidelines/blob/main/monitoring_plugins_interface/02.Input.md
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="count",
-        default=0,
-        help="Increase output verbosity (use up to 3 times).",
+        verbose=True,
     )
 
     parser.add_argument(
@@ -384,7 +376,7 @@ def get_argparser() -> argparse.ArgumentParser:
     return parser
 
 
-@guarded(verbose=0)  # type: ignore
+@guarded(verbose=0)
 def main() -> None:
     global opts
 

@@ -29,7 +29,7 @@ Command line interface
     options:
       -h, --help            show this help message and exit
       -V, --version         show program's version number and exit
-      -v, --verbose         Increase output verbosity (use up to 3 times).
+      -v, --verbose         Increase the output verbosity.
       -p, --pool POOL       Name of the pool. If this option is omitted all pools
                             are checked.
       -w, --warning WARNING
