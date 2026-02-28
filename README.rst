@@ -16,7 +16,7 @@ Command line interface
 
 :: 
 
-    usage: check_zpool_scrub [-h] [-V] [-v] [-w WARNING] [-c CRITICAL] [-p POOL]
+    usage: check_zpool_scrub [-h] [-V] [-v] [-p POOL] [-w WARNING] [-c CRITICAL]
                              [-d]
 
     version 3.0.0a2
@@ -30,13 +30,13 @@ Command line interface
       -h, --help            show this help message and exit
       -V, --version         show program's version number and exit
       -v, --verbose         Increase output verbosity (use up to 3 times).
+      -p, --pool POOL       Name of the pool. If this option is omitted all pools
+                            are checked.
       -w, --warning WARNING
                             Interval in seconds for warning state. Must be lower
                             than -c.
       -c, --critical CRITICAL
                             Interval in seconds for critical state.
-      -p, --pool POOL       Name of the pool. If this option is omitted all pools
-                            are checked.
       -d, --debug           Increase debug verbosity (use up to 3 times): -D: info
                             -DD: debug. -DDD verbose
 

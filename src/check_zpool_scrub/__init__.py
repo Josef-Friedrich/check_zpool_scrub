@@ -350,6 +350,12 @@ def get_argparser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "-p",
+        "--pool",
+        help="Name of the pool. If this option is omitted all pools are checked.",
+    )
+
+    parser.add_argument(
         "-w",
         "--warning",
         # 1 month 60*60*24*31
@@ -365,12 +371,6 @@ def get_argparser() -> argparse.ArgumentParser:
         default=5356800,
         help="Interval in seconds for critical state.",
         action=TimespanAction,
-    )
-
-    parser.add_argument(
-        "-p",
-        "--pool",
-        help="Name of the pool. If this option is omitted all pools are checked.",
     )
 
     parser.add_argument(
