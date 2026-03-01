@@ -19,9 +19,9 @@ from mplugin import (
     Performance,
     Resource,
     Result,
-    convert_timespan_to_seconds,
     guarded,
     setup_argparser,
+    timespan,
 )
 
 __version__: str = metadata.version("check_zpool_scrub")
@@ -355,7 +355,7 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="TIMESPAN",
         default=2678400,
         help="Interval in seconds for warning state. See timespan format specification below. Must be lower than -c.",
-        type=convert_timespan_to_seconds,
+        type=timespan,
     )
 
     parser.add_argument(
@@ -365,7 +365,7 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="TIMESPAN",
         default=5356800,
         help="Interval in seconds for critical state. See timespan format specification below.",
-        type=convert_timespan_to_seconds,
+        type=timespan,
     )
 
     parser.add_argument(
