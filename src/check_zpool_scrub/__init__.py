@@ -11,7 +11,6 @@ from importlib import metadata
 from typing import Optional, cast
 
 from mplugin import (
-    TIMESPAN_FORMAT_HELP,
     Check,
     Context,
     Metric,
@@ -21,8 +20,8 @@ from mplugin import (
     guarded,
     log,
     setup_argparser,
-    timespan,
 )
+from mplugin.timespan import TIMESPAN_FORMAT_HELP, convert_timespan_to_sec
 
 __version__: str = metadata.version("check_zpool_scrub")
 
@@ -263,7 +262,7 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="TIMESPAN",
         default=2678400,
         help="Interval in seconds for warning state. See timespan format specification below. Must be lower than -c.",
-        type=timespan,
+        type=convert_timespan_to_sec,
     )
 
     parser.add_argument(
@@ -273,7 +272,7 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="TIMESPAN",
         default=5356800,
         help="Interval in seconds for critical state. See timespan format specification below.",
-        type=timespan,
+        type=convert_timespan_to_sec,
     )
 
     parser.add_argument(
