@@ -19,8 +19,8 @@ from mplugin import (
     Result,
     guarded,
     log,
-    setup_argparser,
 )
+from mplugin.cli import setup_argparser
 from mplugin.timespan import TIMESPAN_FORMAT_HELP, convert_timespan_to_sec
 
 __version__: str = metadata.version("check_zpool_scrub")
