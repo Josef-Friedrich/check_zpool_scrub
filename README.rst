@@ -29,7 +29,12 @@ Command line interface
     options:
       -h, --help            show this help message and exit
       -V, --version         show program's version number and exit
-      -v, --verbose         Increase the output verbosity.
+      -v, --verbose         Increase the output verbosity. Use this option up to
+                            three times (-vvv):0: one line output, log.error,
+                            log.warning; 1 (-v): multi-line output, log.error,
+                            log.warning; 2 (-vv): multi-line output, log.error,
+                            log.warning, log.info; 3 (-vvv): multi-line output,
+                            log.error, log.warning, log.info, log.debug
       -p, --pool POOL       Name of the pool. If this option is omitted all pools
                             are checked.
       -w, --warning TIMESPAN
@@ -77,13 +82,13 @@ Command line interface
 
     The following are valid examples of timespan specifications:
 
-    - `1`
-    - `1.23`
-    - `2.345s`
-    - `3min 45.234s`
-    - `34min`
-    - `2 months 8 days`
-    - `1h30m`
+    - 1
+    - 1.23
+    - 2.345s
+    - 3min 45.234s
+    - 34min
+    - 2 months 8 days
+    - 1h30m
 
 Project pages
 -------------

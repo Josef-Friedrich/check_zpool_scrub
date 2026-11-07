@@ -16,15 +16,18 @@ def run(args: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["check_zpool_scrub"] + args,
         encoding="utf-8",
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
+        check=False,
     )
 
 
 def execute_main(
-    argv: list[str] = ["check_zpool_scrub"],
+    argv: list[str] | None = None,
     time: str = "2017-08-17 10:25:48",
 ) -> MockResult:
+    if argv is None:
+        argv = ["check_zpool_scrub"]
+
     def perform_subprocess_output(args: list[str], **kwargs: typing.Any) -> str:
         command: str = " ".join(args)
 

@@ -8,7 +8,7 @@ import subprocess
 import typing
 from datetime import datetime
 from importlib import metadata
-from typing import Optional, cast
+from typing import cast
 
 from mplugin import (
     Check,
@@ -27,7 +27,7 @@ __version__: str = metadata.version("check_zpool_scrub")
 
 
 class OptionContainer:
-    pool: Optional[str]
+    pool: str | None
     debug: int
     verbose: int
     warning: int
@@ -72,7 +72,7 @@ class PoolScrubStatus:
         log.debug("Output from %s: %s", "zpool status", self.__zpool_status_output)
 
     @property
-    def progress(self) -> Optional[float]:
+    def progress(self) -> float | None:
         """The scrub progress from the ``zpool status`` output.
 
         :return: A floating point number from ``0`` to ``1`` that represents the progress
@@ -85,7 +85,7 @@ class PoolScrubStatus:
         return float(progress) / 100
 
     @property
-    def speed(self) -> Optional[float]:
+    def speed(self) -> float | None:
         """MB per second."""
         match = re.search(r"at (\d+,\d+)M/s", self.__zpool_status_output)
         if match is None:
@@ -95,7 +95,7 @@ class PoolScrubStatus:
         return float(speed)
 
     @property
-    def time_to_go(self) -> Optional[int]:
+    def time_to_go(self) -> int | None:
         """Time to go in seconds.
 
         https://github.com/openzfs/zfs/blob/cdf89f413c72fb17107a2b830a86161a21c74f82/cmd/zpool/zpool_main.c#L10229"""
@@ -105,7 +105,7 @@ class PoolScrubStatus:
         return (int(match[1]) * 60 + int(match[2])) * 60
 
     @property
-    def last_scrub(self) -> Optional[datetime]:
+    def last_scrub(self) -> datetime | None:
         match = re.search(
             r"(canceled on|in progress since|errors on) (.*)\n",
             self.__zpool_status_output,
@@ -116,7 +116,7 @@ class PoolScrubStatus:
         return datetime.strptime(match[2], "%c")
 
     @property
-    def last_scrub_timespan(self) -> Optional[int]:
+    def last_scrub_timespan(self) -> int | None:
         """Time interval in seconds for last scrub."""
         if self.last_scrub is not None:
             return round(datetime.now().timestamp() - self.last_scrub.timestamp())
@@ -152,7 +152,7 @@ class ProgressContext(Context):
     def __init__(self) -> None:
         super().__init__("progress")
 
-    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+    def performance(self, metric: Metric, resource: Resource) -> Performance | None:
         if metric.value is None:
             return None
         return Performance(label=metric.name, value=metric.value * 100, uom="%")
@@ -162,7 +162,7 @@ class SpeedContext(Context):
     def __init__(self) -> None:
         super().__init__("speed")
 
-    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+    def performance(self, metric: Metric, resource: Resource) -> Performance | None:
         if metric.value is None:
             return None
         return Performance(label=metric.name, value=metric.value, uom="m/s")
@@ -172,7 +172,7 @@ class TimeToGoContext(Context):
     def __init__(self) -> None:
         super().__init__("time_to_go")
 
-    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+    def performance(self, metric: Metric, resource: Resource) -> Performance | None:
         if metric.value is None:
             return None
         return Performance(label=metric.name, value=metric.value, uom="s")
@@ -182,7 +182,7 @@ class LastScrubTimestampContext(Context):
     def __init__(self) -> None:
         super().__init__("last_scrub_timestamp")
 
-    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+    def performance(self, metric: Metric, resource: Resource) -> Performance | None:
         if metric.value is None:
             return None
         return Performance(label=metric.name, value=round(metric.value.timestamp()))
@@ -215,7 +215,7 @@ class LastScrubTimespanContext(Context):
             hint=f"Pool “{r.pool}”: {metric.value} < {opts.warning}",
         )
 
-    def performance(self, metric: Metric, resource: Resource) -> Optional[Performance]:
+    def performance(self, metric: Metric, resource: Resource) -> Performance | None:
         if metric.value is None:
             return None
         return Performance(label=metric.name, value=metric.value, uom="s")
@@ -297,7 +297,7 @@ def main() -> None:
             f"-w SECONDS must be smaller than -c SECONDS. -w {opts.warning} > -c {opts.critical}"
         )
 
-    checks: list[typing.Union[Resource, Context]] = [
+    checks: list[Resource | Context] = [
         ProgressContext(),
         SpeedContext(),
         TimeToGoContext(),
@@ -309,7 +309,7 @@ def main() -> None:
 
     if opts.pool is not None:
         if opts.pool not in pools:
-            formatted_pools = map(lambda pool: f"'{pool}'", pools)
+            formatted_pools = (f"'{pool}'" for pool in pools)
             raise ValueError(
                 f"Unknown pool '{opts.pool}'. Available pools: {', '.join(formatted_pools)}"
             )
